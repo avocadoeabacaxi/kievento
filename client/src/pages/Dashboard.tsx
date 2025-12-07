@@ -3,12 +3,13 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, CheckCircle, Clock, Plus } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Header from "@/components/Header";
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
   const { data: events, isLoading } = trpc.events.myEvents.useQuery();
 
   if (isLoading) {
@@ -68,8 +69,11 @@ export default function Dashboard() {
               const formattedTime = format(eventDate, "HH:mm", { locale: ptBR });
 
               return (
-                <Link key={event.id} href={`/events/${event.id}`}>
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                <Card 
+                  key={event.id}
+                  className="hover:shadow-lg transition-shadow cursor-pointer h-full"
+                  onClick={() => setLocation(`/events/${event.id}`)}
+                >
                     {event.bannerUrl && (
                       <div className="aspect-video w-full overflow-hidden rounded-t-lg">
                         <img
@@ -124,8 +128,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
-                </Link>
+                </Card>
               );
             })}
           </div>

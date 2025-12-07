@@ -128,3 +128,6 @@
 - [x] Adicionar campo de FAQ no formulário de criação de evento
 - [x] Interface para adicionar/remover perguntas e respostas
 - [x] Exibir FAQs na página pública de inscrição do evento
+
+## Bugs a Corrigir
+- [x] Erro de `<a>` aninhado no Dashboard - removido Link wrapper, usando onClick no Card
