@@ -137,3 +137,8 @@
 - [x] Atualizar Header: remover texto, usar logo centralizada
 - [x] Adicionar logo KiEvento ao projeto
 - [x] Logo centralizada no topo da página pública de eventos
+
+## Simplificação do Header
+- [x] Remover links de navegação (Eventos, Meus Eventos, Admin) do header
+- [x] Manter apenas logo centralizada e menu dropdown do usuário
+- [x] Adicionar opções de navegação dentro do menu dropdown

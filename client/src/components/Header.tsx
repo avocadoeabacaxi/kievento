@@ -35,40 +35,14 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Spacer */}
-        <div className="w-10" />
-        
+      <div className="container flex h-16 items-center justify-center relative">
         {/* Logo Centralizada */}
-        <Link href="/" className="absolute left-1/2 transform -translate-x-1/2">
+        <Link href="/">
           <img src="/logo.png" alt="KiEvento" className="h-10 hover:opacity-80 transition-opacity" />
         </Link>
 
-        {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="/">
-            <a className="text-sm font-medium transition-colors hover:text-primary">
-              Eventos
-            </a>
-          </Link>
-          {isAuthenticated && (
-            <Link href="/dashboard">
-              <a className="text-sm font-medium transition-colors hover:text-primary">
-                Meus Eventos
-              </a>
-            </Link>
-          )}
-          {user?.role === "admin" && (
-            <Link href="/admin">
-              <a className="text-sm font-medium transition-colors hover:text-primary">
-                Admin
-              </a>
-            </Link>
-          )}
-        </nav>
-
-        {/* User Menu */}
-        <div className="flex items-center gap-4">
+        {/* User Menu - Posicionado absolutamente no canto direito */}
+        <div className="absolute right-4 flex items-center gap-4">
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -92,10 +66,10 @@ export default function Header() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">
+                  <Link href="/">
                     <a className="flex items-center w-full">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Meu Perfil</span>
+                      <Calendar className="mr-2 h-4 w-4" />
+                      <span>Eventos</span>
                     </a>
                   </Link>
                 </DropdownMenuItem>
@@ -103,7 +77,15 @@ export default function Header() {
                   <Link href="/dashboard">
                     <a className="flex items-center w-full">
                       <LayoutDashboard className="mr-2 h-4 w-4" />
-                      <span>Dashboard</span>
+                      <span>Meus Eventos</span>
+                    </a>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <a className="flex items-center w-full">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Meu Perfil</span>
                     </a>
                   </Link>
                 </DropdownMenuItem>
