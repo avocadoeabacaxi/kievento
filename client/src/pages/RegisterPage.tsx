@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import parse from "html-react-parser";
+import InputMask from "react-input-mask";
 
 export default function RegisterPage() {
   const [, params] = useRoute("/register/:id");
@@ -33,6 +34,32 @@ export default function RegisterPage() {
       toast.error(`Erro ao realizar inscrição: ${error.message}`);
     },
   });
+
+  // Função para buscar endereço pelo CEP
+  const handleCepBlur = async (cep: string, fieldLabel: string) => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length === 8) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        const data = await response.json();
+        
+        if (!data.erro) {
+          toast.success("Endereço encontrado!");
+          // Atualizar campos relacionados se existirem
+          const addressInfo = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+          setFormData((prev) => ({
+            ...prev,
+            [fieldLabel]: cep,
+            [`${fieldLabel}_endereco`]: addressInfo,
+          }));
+        } else {
+          toast.error("CEP não encontrado");
+        }
+      } catch (error) {
+        toast.error("Erro ao buscar CEP");
+      }
+    }
+  };
 
   if (isLoading) {
     return (
@@ -129,6 +156,11 @@ export default function RegisterPage() {
     );
   }
 
+  // Separar endereço e link se existir
+  const addressParts = eventData.address?.split("|") || [];
+  const displayAddress = addressParts[0] || "";
+  const addressLink = addressParts[1] || "";
+
   return (
     <div className="min-h-screen bg-background">
       {/* Event Header */}
@@ -147,10 +179,16 @@ export default function RegisterPage() {
                 <Calendar className="h-4 w-4" />
                 <span>{format(new Date(eventData.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
               </div>
-              {eventData.address && (
+              {displayAddress && (
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  <span>{eventData.address}</span>
+                  {addressLink ? (
+                    <a href={addressLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      {displayAddress}
+                    </a>
+                  ) : (
+                    <span>{displayAddress}</span>
+                  )}
                 </div>
               )}
             </div>
@@ -158,7 +196,7 @@ export default function RegisterPage() {
 
           {eventData.description && (
             <Card>
-              <CardContent className="pt-6 prose prose-sm max-w-none">
+              <CardContent className="pt-6 prose prose-sm max-w-none dark:prose-invert">
                 {parse(eventData.description)}
               </CardContent>
             </Card>
@@ -205,13 +243,84 @@ export default function RegisterPage() {
                   )}
 
                   {field.fieldType === "phone" && (
-                    <Input
-                      id={`field-${field.id}`}
-                      type="tel"
+                    <InputMask
+                      mask="(99) 99999-9999"
                       value={formData[field.label] || ""}
                       onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
-                      required={field.required === 1}
-                    />
+                    >
+                      {/* @ts-ignore */}
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          id={`field-${field.id}`}
+                          type="tel"
+                          placeholder="(00) 00000-0000"
+                          required={field.required === 1}
+                        />
+                      )}
+                    </InputMask>
+                  )}
+
+                  {field.fieldType === "cpf" && (
+                    <InputMask
+                      mask="999.999.999-99"
+                      value={formData[field.label] || ""}
+                      onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                    >
+                      {/* @ts-ignore */}
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          id={`field-${field.id}`}
+                          placeholder="000.000.000-00"
+                          required={field.required === 1}
+                        />
+                      )}
+                    </InputMask>
+                  )}
+
+                  {field.fieldType === "cnpj" && (
+                    <InputMask
+                      mask="99.999.999/9999-99"
+                      value={formData[field.label] || ""}
+                      onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                    >
+                      {/* @ts-ignore */}
+                      {(inputProps: any) => (
+                        <Input
+                          {...inputProps}
+                          id={`field-${field.id}`}
+                          placeholder="00.000.000/0000-00"
+                          required={field.required === 1}
+                        />
+                      )}
+                    </InputMask>
+                  )}
+
+                  {field.fieldType === "cep" && (
+                    <div className="space-y-2">
+                      <InputMask
+                        mask="99999-999"
+                        value={formData[field.label] || ""}
+                        onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                        onBlur={(e) => handleCepBlur(e.target.value, field.label)}
+                      >
+                        {/* @ts-ignore */}
+                        {(inputProps: any) => (
+                          <Input
+                            {...inputProps}
+                            id={`field-${field.id}`}
+                            placeholder="00000-000"
+                            required={field.required === 1}
+                          />
+                        )}
+                      </InputMask>
+                      {formData[`${field.label}_endereco`] && (
+                        <p className="text-sm text-muted-foreground">
+                          {formData[`${field.label}_endereco`]}
+                        </p>
+                      )}
+                    </div>
                   )}
 
                   {field.fieldType === "textarea" && (

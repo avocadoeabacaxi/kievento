@@ -52,7 +52,7 @@ export const formFields = mysqlTable("formFields", {
   id: int("id").autoincrement().primaryKey(),
   eventId: int("eventId").notNull().references(() => events.id, { onDelete: "cascade" }),
   label: varchar("label", { length: 255 }).notNull(),
-  fieldType: mysqlEnum("fieldType", ["text", "email", "phone", "textarea", "select", "checkbox"]).notNull(),
+  fieldType: mysqlEnum("fieldType", ["text", "email", "phone", "textarea", "select", "checkbox", "cpf", "cnpj", "cep"]).notNull(),
   options: text("options"), // JSON array para select/checkbox
   required: int("required").default(1).notNull(), // 1 = true, 0 = false
   order: int("order").notNull(),

@@ -39,7 +39,7 @@ export const appRouter = router({
         bannerBase64: z.string().optional(),
         formFields: z.array(z.object({
           label: z.string(),
-          fieldType: z.enum(['text', 'email', 'phone', 'textarea', 'select', 'checkbox']),
+          fieldType: z.enum(['text', 'email', 'phone', 'textarea', 'select', 'checkbox', 'cpf', 'cnpj', 'cep']),
           options: z.string().optional(),
           required: z.boolean(),
           order: z.number(),
@@ -180,18 +180,23 @@ export const appRouter = router({
       }),
 
     // Obter estatísticas do evento
-    getStats: protectedProcedure
+     getStats: protectedProcedure
       .input(z.object({ eventId: z.number() }))
-      .query(async ({ ctx, input }) => {
+      .query(async ({ input }) => {
+        return await db.getEventStats(input.eventId);
+      }),
+
+    deleteEvent: protectedProcedure
+      .input(z.object({ eventId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Verificar se o evento pertence ao usuário
         const event = await db.getEventById(input.eventId);
-        if (!event) {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
-        }
-        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
-          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        if (!event || (event.userId !== ctx.user.id && ctx.user.role !== 'admin')) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Você não tem permissão para excluir este evento' });
         }
 
-        return db.getEventStats(input.eventId);
+        await db.deleteEvent(input.eventId);
+        return { success: true };
       }),
   }),
 

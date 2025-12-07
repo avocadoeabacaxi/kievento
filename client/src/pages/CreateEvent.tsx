@@ -5,15 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ArrowLeft, Plus, Trash2, Upload } from "lucide-react";
+import { Calendar, ArrowLeft, Plus, Trash2, Upload, Info } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import RichTextEditor from "@/components/RichTextEditor";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+type FormFieldType = "text" | "email" | "phone" | "textarea" | "select" | "checkbox" | "cpf" | "cnpj" | "cep";
 
 type FormField = {
   label: string;
-  fieldType: "text" | "email" | "phone" | "textarea" | "select" | "checkbox";
+  fieldType: FormFieldType;
   options?: string;
   required: boolean;
   order: number;
@@ -25,6 +28,7 @@ export default function CreateEvent() {
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [address, setAddress] = useState("");
+  const [addressLink, setAddressLink] = useState("");
   const [registrationType, setRegistrationType] = useState<"open" | "approval">("open");
   const [bannerBase64, setBannerBase64] = useState<string>("");
   const [bannerPreview, setBannerPreview] = useState<string>("");
@@ -96,7 +100,7 @@ export default function CreateEvent() {
       title,
       description,
       eventDate,
-      address,
+      address: addressLink ? `${address}|${addressLink}` : address,
       registrationType,
       bannerBase64: bannerBase64 || undefined,
       formFields: formFields.map((f) => ({
@@ -147,13 +151,11 @@ export default function CreateEvent() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Descrição (HTML permitido)</Label>
-                <Textarea
-                  id="description"
+                <Label htmlFor="description">Descrição do Evento</Label>
+                <RichTextEditor
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="<p>Descrição do evento...</p>"
-                  rows={6}
+                  onChange={setDescription}
+                  placeholder="Descreva seu evento com formatação rica..."
                 />
               </div>
 
@@ -184,7 +186,7 @@ export default function CreateEvent() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address">Endereço</Label>
+                <Label htmlFor="address">Endereço do Evento</Label>
                 <Input
                   id="address"
                   value={address}
@@ -194,8 +196,25 @@ export default function CreateEvent() {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="addressLink">Link do Endereço (Google Maps, Waze, etc.)</Label>
+                <Input
+                  id="addressLink"
+                  type="url"
+                  value={addressLink}
+                  onChange={(e) => setAddressLink(e.target.value)}
+                  placeholder="https://maps.google.com/..."
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="banner">Banner do Evento</Label>
-                <div className="flex items-center gap-4">
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Tamanho recomendado: <strong>1920x1080 pixels</strong> (proporção 16:9). Máximo: 5MB
+                  </AlertDescription>
+                </Alert>
+                <div className="flex items-center gap-4 mt-2">
                   <Input
                     id="banner"
                     type="file"
@@ -259,6 +278,9 @@ export default function CreateEvent() {
                             <SelectItem value="text">Texto</SelectItem>
                             <SelectItem value="email">E-mail</SelectItem>
                             <SelectItem value="phone">Telefone</SelectItem>
+                            <SelectItem value="cpf">CPF</SelectItem>
+                            <SelectItem value="cnpj">CNPJ</SelectItem>
+                            <SelectItem value="cep">CEP</SelectItem>
                             <SelectItem value="textarea">Texto Longo</SelectItem>
                             <SelectItem value="select">Seleção</SelectItem>
                             <SelectItem value="checkbox">Checkbox</SelectItem>

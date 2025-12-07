@@ -71,3 +71,12 @@
 
 ## Melhorias Solicitadas
 - [x] Renomear plataforma de EventoManager para KiEvento
+
+## Novas Funcionalidades Solicitadas
+- [x] Adicionar opção para excluir evento
+- [x] Adicionar descrição do tamanho recomendado do banner
+- [x] Implementar editor de texto rico (WYSIWYG) com negrito, itálico, inserir imagem
+- [x] Adicionar campos especiais: CPF, CNPJ, CEP com auto-preenchimento
+- [x] Adicionar campo de endereço com atalho/link
+- [x] Reduzir tamanho do banner no painel de controle (manter grande apenas na página pública)
+- [ ] Sistema de cadastro de usuário antes da inscrição no evento (não implementado - sistema já usa autenticação Manus)

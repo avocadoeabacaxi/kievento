@@ -1,0 +1,1 @@
+ALTER TABLE `formFields` MODIFY COLUMN `fieldType` enum('text','email','phone','textarea','select','checkbox','cpf','cnpj','cep') NOT NULL;

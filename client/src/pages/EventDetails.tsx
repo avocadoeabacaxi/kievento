@@ -6,7 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useLocation } from "wouter";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -14,6 +26,7 @@ import parse from "html-react-parser";
 
 export default function EventDetails() {
   const [, params] = useRoute("/events/:id");
+  const [, setLocation] = useLocation();
   const eventId = params?.id ? parseInt(params.id) : 0;
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -38,6 +51,16 @@ export default function EventDetails() {
     },
     onError: (error) => {
       toast.error(`Erro: ${error.message}`);
+    },
+  });
+
+  const deleteEventMutation = trpc.events.deleteEvent.useMutation({
+    onSuccess: () => {
+      toast.success("Evento excluído com sucesso!");
+      setLocation("/dashboard");
+    },
+    onError: (error) => {
+      toast.error(`Erro ao excluir evento: ${error.message}`);
     },
   });
 
@@ -77,13 +100,38 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center gap-4">
+        <div className="container flex h-16 items-center justify-between">
           <Link href="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
           </Link>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Excluir Evento
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. O evento e todas as inscrições associadas serão permanentemente excluídos.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteEventMutation.mutate({ eventId })}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </header>
 
@@ -91,7 +139,7 @@ export default function EventDetails() {
         {/* Event Header */}
         <div className="space-y-4">
           {event.bannerUrl && (
-            <div className="aspect-video w-full max-w-4xl overflow-hidden rounded-lg border">
+            <div className="h-32 w-full max-w-md overflow-hidden rounded-lg border">
               <img src={event.bannerUrl} alt={event.title} className="w-full h-full object-cover" />
             </div>
           )}
