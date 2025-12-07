@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, and, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, events, formFields, registrations, eventValidators, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,166 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// ============ EVENTS ============
+
+export async function createEvent(event: InsertEvent) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(events).values(event);
+  return result[0].insertId;
+}
+
+export async function getEventById(eventId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
+  return result[0];
+}
+
+export async function getEventsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(events).where(eq(events.userId, userId)).orderBy(desc(events.createdAt));
+}
+
+export async function getAllEvents() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(events).orderBy(desc(events.createdAt));
+}
+
+export async function updateEvent(eventId: number, data: Partial<InsertEvent>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(events).set(data).where(eq(events.id, eventId));
+}
+
+export async function deleteEvent(eventId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(events).where(eq(events.id, eventId));
+}
+
+// ============ FORM FIELDS ============
+
+export async function createFormField(field: InsertFormField) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(formFields).values(field);
+  return result[0].insertId;
+}
+
+export async function getFormFieldsByEventId(eventId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(formFields).where(eq(formFields.eventId, eventId)).orderBy(formFields.order);
+}
+
+export async function deleteFormFieldsByEventId(eventId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(formFields).where(eq(formFields.eventId, eventId));
+}
+
+// ============ REGISTRATIONS ============
+
+export async function createRegistration(registration: InsertRegistration) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(registrations).values(registration);
+  return result[0].insertId;
+}
+
+export async function getRegistrationById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(registrations).where(eq(registrations.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getRegistrationByQrCode(qrCode: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(registrations).where(eq(registrations.qrCode, qrCode)).limit(1);
+  return result[0];
+}
+
+export async function getRegistrationsByEventId(eventId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(registrations).where(eq(registrations.eventId, eventId)).orderBy(desc(registrations.createdAt));
+}
+
+export async function getAllRegistrations() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(registrations).orderBy(desc(registrations.createdAt));
+}
+
+export async function searchRegistrationsByName(eventId: number, searchTerm: string) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(registrations)
+    .where(
+      and(
+        eq(registrations.eventId, eventId),
+        or(
+          like(registrations.name, `%${searchTerm}%`),
+          like(registrations.email, `%${searchTerm}%`)
+        )
+      )
+    )
+    .orderBy(registrations.name);
+}
+
+export async function updateRegistration(id: number, data: Partial<InsertRegistration>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(registrations).set(data).where(eq(registrations.id, id));
+}
+
+export async function checkInRegistration(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(registrations).set({
+    checkedIn: 1,
+    checkedInAt: new Date(),
+    checkedInBy: userId,
+  }).where(eq(registrations.id, id));
+}
+
+export async function getEventStats(eventId: number) {
+  const db = await getDb();
+  if (!db) return { total: 0, pending: 0, approved: 0, rejected: 0, checkedIn: 0 };
+  
+  const result = await db.select({
+    total: sql<number>`COUNT(*)`,
+    pending: sql<number>`SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END)`,
+    approved: sql<number>`SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END)`,
+    rejected: sql<number>`SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END)`,
+    checkedIn: sql<number>`SUM(CASE WHEN checkedIn = 1 THEN 1 ELSE 0 END)`,
+  }).from(registrations).where(eq(registrations.eventId, eventId));
+  
+  return result[0] || { total: 0, pending: 0, approved: 0, rejected: 0, checkedIn: 0 };
+}
+
+// ============ EVENT VALIDATORS ============
+
+export async function addEventValidator(validator: InsertEventValidator) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(eventValidators).values(validator);
+  return result[0].insertId;
+}
+
+export async function getEventValidators(eventId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(eventValidators).where(eq(eventValidators.eventId, eventId));
+}
+
+export async function removeEventValidator(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(eventValidators).where(eq(eventValidators.id, id));
+}

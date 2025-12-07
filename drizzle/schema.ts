@@ -25,4 +25,76 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Eventos criados pelos organizadores
+ */
+export const events = mysqlTable("events", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  eventDate: timestamp("eventDate").notNull(),
+  address: text("address"),
+  bannerUrl: text("bannerUrl"),
+  bannerKey: text("bannerKey"),
+  registrationType: mysqlEnum("registrationType", ["open", "approval"]).default("open").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Event = typeof events.$inferSelect;
+export type InsertEvent = typeof events.$inferInsert;
+
+/**
+ * Perguntas personalizadas do formulário de inscrição
+ */
+export const formFields = mysqlTable("formFields", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: int("eventId").notNull().references(() => events.id, { onDelete: "cascade" }),
+  label: varchar("label", { length: 255 }).notNull(),
+  fieldType: mysqlEnum("fieldType", ["text", "email", "phone", "textarea", "select", "checkbox"]).notNull(),
+  options: text("options"), // JSON array para select/checkbox
+  required: int("required").default(1).notNull(), // 1 = true, 0 = false
+  order: int("order").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type FormField = typeof formFields.$inferSelect;
+export type InsertFormField = typeof formFields.$inferInsert;
+
+/**
+ * Inscrições dos participantes
+ */
+export const registrations = mysqlTable("registrations", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: int("eventId").notNull().references(() => events.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  formData: text("formData"), // JSON com respostas do formulário
+  status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  qrCode: varchar("qrCode", { length: 255 }).unique(),
+  checkedIn: int("checkedIn").default(0).notNull(), // 1 = presente, 0 = ausente
+  checkedInAt: timestamp("checkedInAt"),
+  checkedInBy: int("checkedInBy").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Registration = typeof registrations.$inferSelect;
+export type InsertRegistration = typeof registrations.$inferInsert;
+
+/**
+ * Permissões de validadores para eventos
+ */
+export const eventValidators = mysqlTable("eventValidators", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: int("eventId").notNull().references(() => events.id, { onDelete: "cascade" }),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  canScanQr: int("canScanQr").default(1).notNull(), // 1 = true, 0 = false
+  canSearchName: int("canSearchName").default(1).notNull(), // 1 = true, 0 = false
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EventValidator = typeof eventValidators.$inferSelect;
+export type InsertEventValidator = typeof eventValidators.$inferInsert;
