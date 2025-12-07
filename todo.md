@@ -68,3 +68,6 @@
 - [x] Filtros e busca avançada
 - [ ] Gestão de usuários (promover/rebaixar admins)
 - [ ] Exportação de relatórios
+
+## Melhorias Solicitadas
+- [x] Renomear plataforma de EventoManager para KiEvento

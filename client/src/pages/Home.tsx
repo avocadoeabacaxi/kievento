@@ -14,7 +14,7 @@ export default function Home() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <Calendar className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">EventoManager</span>
+            <span className="text-xl font-bold">KiEvento</span>
           </div>
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
@@ -145,11 +145,10 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
-              <span className="font-semibold">EventoManager</span>
+              <span className="font-semibold">KiEvento</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2024 EventoManager. Sistema de gestão de eventos.
-            </p>
+              © 2024 KiEvento. Plataforma de gestão de eventos.        </p>
           </div>
         </div>
       </footer>

@@ -28,7 +28,7 @@ export default function Dashboard() {
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
               <Calendar className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">EventoManager</span>
+              <span className="text-xl font-bold">KiEvento</span>
             </div>
           </Link>
           <Link href="/events/new">
