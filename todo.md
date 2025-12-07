@@ -104,3 +104,18 @@
 
 ## Bugs Corrigidos
 - [x] React Quill incompatível com React 19 - substituído por editor HTML customizado
+
+
+## Sistema de Notificações por E-mail
+- [x] Criar serviço de envio de e-mails
+- [x] Template HTML para aprovação de inscrição (com link para convite QR Code)
+- [x] Template HTML para rejeição de inscrição
+- [x] Template HTML para confirmação de inscrição (eventos abertos)
+- [x] Integrar envio automático na aprovação de inscrições
+- [x] Integrar envio automático na rejeição de inscrições
+- [x] Integrar envio automático na criação de inscrição (eventos abertos)
+- [ ] Integrar com serviço real de e-mail (SendGrid, AWS SES, Resend)
+
+## Bugs Encontrados
+- [x] react-input-mask incompatível com React 19 - substituído por máscaras customizadas
+- [x] Erro TypeScript: frontendUrl não existe em ENV - corrigido

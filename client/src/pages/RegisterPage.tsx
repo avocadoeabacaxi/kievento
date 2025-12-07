@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import parse from "html-react-parser";
-import InputMask from "react-input-mask";
+import { MaskedInput } from "@/components/MaskedInput";
 
 export default function RegisterPage() {
   const [, params] = useRoute("/register/:id");
@@ -243,78 +243,55 @@ export default function RegisterPage() {
                   )}
 
                   {field.fieldType === "phone" && (
-                    <InputMask
-                      mask="(99) 99999-9999"
+                    <MaskedInput
+                      mask="phone"
                       value={formData[field.label] || ""}
-                      onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
-                    >
-                      {/* @ts-ignore */}
-                      {(inputProps: any) => (
-                        <Input
-                          {...inputProps}
-                          id={`field-${field.id}`}
-                          type="tel"
-                          placeholder="(00) 00000-0000"
-                          required={field.required === 1}
-                        />
-                      )}
-                    </InputMask>
+                      onChange={(e) =>
+                        setFormData({ ...formData, [field.label]: e.target.value })
+                      }
+                      placeholder="(00) 00000-0000"
+                      required={field.required === 1}
+                    />
                   )}
 
                   {field.fieldType === "cpf" && (
-                    <InputMask
-                      mask="999.999.999-99"
+                    <MaskedInput
+                      mask="cpf"
                       value={formData[field.label] || ""}
-                      onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
-                    >
-                      {/* @ts-ignore */}
-                      {(inputProps: any) => (
-                        <Input
-                          {...inputProps}
-                          id={`field-${field.id}`}
-                          placeholder="000.000.000-00"
-                          required={field.required === 1}
-                        />
-                      )}
-                    </InputMask>
+                      onChange={(e) =>
+                        setFormData({ ...formData, [field.label]: e.target.value })
+                      }
+                      placeholder="000.000.000-00"
+                      required={field.required === 1}
+                    />
                   )}
 
                   {field.fieldType === "cnpj" && (
-                    <InputMask
-                      mask="99.999.999/9999-99"
+                    <MaskedInput
+                      mask="cnpj"
                       value={formData[field.label] || ""}
-                      onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
-                    >
-                      {/* @ts-ignore */}
-                      {(inputProps: any) => (
-                        <Input
-                          {...inputProps}
-                          id={`field-${field.id}`}
-                          placeholder="00.000.000/0000-00"
-                          required={field.required === 1}
-                        />
-                      )}
-                    </InputMask>
+                      onChange={(e) =>
+                        setFormData({ ...formData, [field.label]: e.target.value })
+                      }
+                      placeholder="00.000.000/0000-00"
+                      required={field.required === 1}
+                    />
                   )}
 
                   {field.fieldType === "cep" && (
                     <div className="space-y-2">
-                      <InputMask
-                        mask="99999-999"
+                      <MaskedInput
+                        mask="cep"
                         value={formData[field.label] || ""}
-                        onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
-                        onBlur={(e) => handleCepBlur(e.target.value, field.label)}
-                      >
-                        {/* @ts-ignore */}
-                        {(inputProps: any) => (
-                          <Input
-                            {...inputProps}
-                            id={`field-${field.id}`}
-                            placeholder="00000-000"
-                            required={field.required === 1}
-                          />
-                        )}
-                      </InputMask>
+                        onChange={(e) =>
+                          setFormData({ ...formData, [field.label]: e.target.value })
+                        }
+                        onBlur={(e) =>
+                          handleCepBlur(e.target.value, field.label)
+                        }
+                        placeholder="00000-000"
+                        required={field.required === 1}
+                      />
                       {formData[`${field.label}_endereco`] && (
                         <p className="text-sm text-muted-foreground">
                           {formData[`${field.label}_endereco`]}

@@ -4,7 +4,11 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { nanoid } from "nanoid";
+import { nanoid } from 'nanoid';
+import { sendEmail, getApprovalEmailTemplate, getRejectionEmailTemplate, getConfirmationEmailTemplate } from './emailService';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { ENV } from './_core/env';
 import { storagePut } from "./storage";
 import * as db from "./db";
 
@@ -235,6 +239,26 @@ export const appRouter = router({
           qrCode,
         });
 
+        // Enviar e-mail de confirmação para eventos abertos
+        if (status === 'approved') {
+          const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
+          const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
+          const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+          const [address] = event.address?.split('|') || [];
+
+          await sendEmail({
+            to: input.email,
+            subject: `✅ Inscrição confirmada - ${event.title}`,
+            html: getConfirmationEmailTemplate({
+              participantName: input.name,
+              eventTitle: event.title,
+              eventDate,
+              eventAddress: address,
+              ticketUrl,
+            }),
+          });
+        }
+
         return { registrationId, qrCode, status };
       }),
 
@@ -280,6 +304,36 @@ export const appRouter = router({
         }
 
         await db.updateRegistration(input.registrationId, { status: input.status });
+
+        // Enviar e-mail de notificação
+        const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
+        const ticketUrl = `${baseUrl}/ticket/${registration.qrCode}`;
+        const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+        const [address] = event.address?.split('|') || [];
+
+        if (input.status === 'approved') {
+          await sendEmail({
+            to: registration.email,
+            subject: `🎉 Inscrição aprovada - ${event.title}`,
+            html: getApprovalEmailTemplate({
+              participantName: registration.name,
+              eventTitle: event.title,
+              eventDate,
+              eventAddress: address,
+              ticketUrl,
+            }),
+          });
+        } else if (input.status === 'rejected') {
+          await sendEmail({
+            to: registration.email,
+            subject: `Atualização sobre sua inscrição - ${event.title}`,
+            html: getRejectionEmailTemplate({
+              participantName: registration.name,
+              eventTitle: event.title,
+            }),
+          });
+        }
+
         return { success: true };
       }),
 
