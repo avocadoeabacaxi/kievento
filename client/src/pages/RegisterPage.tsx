@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, CheckCircle, Clock } from "lucide-react";
+import { Calendar, MapPin, CheckCircle, Clock, HelpCircle } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -363,6 +364,42 @@ export default function RegisterPage() {
             </form>
           </CardContent>
         </Card>
+
+        {/* FAQ Section */}
+        {eventData.faq && (() => {
+          try {
+            const faqItems = JSON.parse(eventData.faq);
+            if (faqItems && faqItems.length > 0) {
+              return (
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <HelpCircle className="h-5 w-5 text-primary" />
+                      <CardTitle>Perguntas Frequentes</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <Accordion type="single" collapsible className="w-full">
+                      {faqItems.map((item: {question: string; answer: string}, index: number) => (
+                        <AccordionItem key={index} value={`item-${index}`}>
+                          <AccordionTrigger className="text-left">
+                            {item.question}
+                          </AccordionTrigger>
+                          <AccordionContent className="text-muted-foreground">
+                            {item.answer}
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </CardContent>
+                </Card>
+              );
+            }
+          } catch (e) {
+            console.error("Error parsing FAQ:", e);
+          }
+          return null;
+        })()}
       </div>
     </div>
   );

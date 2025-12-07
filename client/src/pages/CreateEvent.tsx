@@ -11,6 +11,7 @@ import { Link } from "wouter";
 import { toast } from "sonner";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import Header from "@/components/Header";
 
 type FormFieldType = "text" | "email" | "phone" | "textarea" | "select" | "checkbox" | "cpf" | "cnpj" | "cep";
 
@@ -40,6 +41,7 @@ export default function CreateEvent() {
     { label: "E-mail", fieldType: "email", required: true, order: 1 },
     { label: "Telefone", fieldType: "phone", required: false, order: 2 },
   ]);
+  const [faqItems, setFaqItems] = useState<{question: string; answer: string}[]>([]);
 
   const createEventMutation = trpc.events.create.useMutation({
     onSuccess: () => {
@@ -91,6 +93,20 @@ export default function CreateEvent() {
     );
   };
 
+  const addFaqItem = () => {
+    setFaqItems([...faqItems, { question: "", answer: "" }]);
+  };
+
+  const removeFaqItem = (index: number) => {
+    setFaqItems(faqItems.filter((_, i) => i !== index));
+  };
+
+  const updateFaqItem = (index: number, field: 'question' | 'answer', value: string) => {
+    setFaqItems(faqItems.map((item, i) => 
+      i === index ? { ...item, [field]: value } : item
+    ));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -109,6 +125,7 @@ export default function CreateEvent() {
       city: city || undefined,
       visibility,
       bannerBase64: bannerBase64 || undefined,
+      faq: faqItems.length > 0 ? JSON.stringify(faqItems.filter(item => item.question && item.answer)) : undefined,
       formFields: formFields.map((f) => ({
         ...f,
         options: f.options || undefined,
@@ -118,23 +135,18 @@ export default function CreateEvent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
+      <Header />
+      <main className="container py-8">
+        <div className="mb-6">
           <Link href="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
           </Link>
-          <div className="flex items-center gap-2">
-            <Calendar className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Novo Evento</span>
-          </div>
-          <div className="w-24" />
         </div>
-      </header>
 
-      <main className="container py-8 max-w-4xl">
+        <div className="max-w-4xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Informações Básicas */}
           <Card>
@@ -384,6 +396,53 @@ export default function CreateEvent() {
             </CardContent>
           </Card>
 
+          {/* Perguntas Frequentes (FAQ) */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Perguntas Frequentes (FAQ)</CardTitle>
+              <CardDescription>
+                Adicione perguntas e respostas que serão exibidas na página pública do evento
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {faqItems.map((item, index) => (
+                <div key={index} className="flex gap-4 items-start">
+                  <div className="flex-1 space-y-3">
+                    <div className="space-y-2">
+                      <Label>Pergunta {index + 1}</Label>
+                      <Input
+                        value={item.question}
+                        onChange={(e) => updateFaqItem(index, 'question', e.target.value)}
+                        placeholder="Ex: Qual o horário do evento?"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Resposta</Label>
+                      <Input
+                        value={item.answer}
+                        onChange={(e) => updateFaqItem(index, 'answer', e.target.value)}
+                        placeholder="Ex: O evento começa às 19h"
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => removeFaqItem(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+
+              <Button type="button" variant="outline" onClick={addFaqItem} className="w-full">
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Pergunta
+              </Button>
+            </CardContent>
+          </Card>
+
           <div className="flex gap-4">
             <Button type="submit" size="lg" disabled={createEventMutation.isPending} className="flex-1">
               {createEventMutation.isPending ? "Criando..." : "Criar Evento"}
@@ -395,6 +454,7 @@ export default function CreateEvent() {
             </Link>
           </div>
         </form>
+        </div>
       </main>
     </div>
   );

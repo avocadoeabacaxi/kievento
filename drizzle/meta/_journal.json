@@ -29,6 +29,13 @@
       "when": 1765147756220,
       "tag": "0003_aspiring_klaw",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1765149273511,
+      "tag": "0004_mature_starhawk",
+      "breakpoints": true
     }
   ]
 }

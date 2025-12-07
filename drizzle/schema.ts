@@ -65,7 +65,7 @@ export const events = mysqlTable("events", {
   category: varchar("category", { length: 50 }),
   city: varchar("city", { length: 100 }),
   visibility: mysqlEnum("visibility", ["public", "private"]).default("private").notNull(),
-  
+  faq: text("faq"), // JSON string: [{question: string, answer: string}]
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

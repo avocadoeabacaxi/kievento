@@ -42,8 +42,9 @@ export const appRouter = router({
         registrationType: z.enum(['open', 'approval']),
         category: z.string().optional(),
         city: z.string().optional(),
-        visibility: z.enum(['public', 'private']).default('private'),
+        visibility: z.enum(["public", "private"]).optional(),
         bannerBase64: z.string().optional(),
+        faq: z.string().optional(), // JSON string
         formFields: z.array(z.object({
           label: z.string(),
           fieldType: z.enum(['text', 'email', 'phone', 'textarea', 'select', 'checkbox', 'cpf', 'cnpj', 'cep']),
@@ -78,6 +79,7 @@ export const appRouter = router({
           category: input.category,
           city: input.city,
           visibility: input.visibility,
+          faq: input.faq,
         });
 
         // Criar campos do formulário

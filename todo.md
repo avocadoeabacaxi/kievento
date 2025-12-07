@@ -119,3 +119,12 @@
 ## Bugs Encontrados
 - [x] react-input-mask incompatível com React 19 - substituído por máscaras customizadas
 - [x] Erro TypeScript: frontendUrl não existe em ENV - corrigido
+
+## Melhorias de Navegação
+- [ ] Adicionar Header com menu do usuário em todas as páginas
+- [ ] Garantir navegação consistente em todo o sistema
+
+## FAQ (Perguntas Frequentes)
+- [x] Adicionar campo de FAQ no formulário de criação de evento
+- [x] Interface para adicionar/remover perguntas e respostas
+- [x] Exibir FAQs na página pública de inscrição do evento
