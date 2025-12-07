@@ -131,3 +131,9 @@
 
 ## Bugs a Corrigir
 - [x] Erro de `<a>` aninhado no Dashboard - removido Link wrapper, usando onClick no Card
+
+## Novas Funcionalidades e Melhorias
+- [x] Implementar edição de eventos
+- [x] Atualizar Header: remover texto, usar logo centralizada
+- [x] Adicionar logo KiEvento ao projeto
+- [x] Logo centralizada no topo da página pública de eventos

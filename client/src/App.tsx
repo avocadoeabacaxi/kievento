@@ -16,10 +16,13 @@ import NotFound from "./pages/NotFound";
 
 function Router() {
   return (
-    <Switch>      <Route path={"/"} component={PublicHome} />
-      <Route path="/profile" component={ProfilePage} />      <Route path="/dashboard" component={Dashboard} />
+    <Switch>
+      <Route path={"/"} component={PublicHome} />
+      <Route path="/profile" component={ProfilePage} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={AdminDashboard} />
-      <Route path="/events/new" component={CreateEvent} />
+      <Route path={"/events/new"} component={CreateEvent} />
+      <Route path={"/events/edit/:id"} component={CreateEvent} />
       <Route path="/events/:id" component={EventDetails} />
       <Route path="/events/:id/scan" component={ScannerPage} />
       <Route path="/register/:id" component={RegisterPage} />

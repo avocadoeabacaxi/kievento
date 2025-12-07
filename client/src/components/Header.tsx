@@ -36,12 +36,12 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link href="/">
-          <a className="flex items-center gap-2 font-bold text-xl hover:opacity-80 transition-opacity">
-            <Calendar className="h-6 w-6 text-primary" />
-            <span>KiEvento</span>
-          </a>
+        {/* Spacer */}
+        <div className="w-10" />
+        
+        {/* Logo Centralizada */}
+        <Link href="/" className="absolute left-1/2 transform -translate-x-1/2">
+          <img src="/logo.png" alt="KiEvento" className="h-10 hover:opacity-80 transition-opacity" />
         </Link>
 
         {/* Navigation */}

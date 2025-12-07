@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { useLocation, useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +24,17 @@ type FormField = {
 };
 
 export default function CreateEvent() {
+  const params = useParams<{ id?: string }>();
+  const eventId = params.id ? parseInt(params.id) : undefined;
+  const isEditing = !!eventId;
+  
   const [, setLocation] = useLocation();
+  
+  // Query para carregar dados do evento se estiver editando
+  const { data: existingEvent } = trpc.events.getById.useQuery(
+    { eventId: eventId! },
+    { enabled: isEditing }
+  );
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
@@ -52,6 +62,56 @@ export default function CreateEvent() {
       toast.error(`Erro ao criar evento: ${error.message}`);
     },
   });
+
+  const updateEventMutation = trpc.events.update.useMutation({
+    onSuccess: () => {
+      toast.success("Evento atualizado com sucesso!");
+      setLocation("/dashboard");
+    },
+    onError: (error) => {
+      toast.error(`Erro ao atualizar evento: ${error.message}`);
+    },
+  });
+
+  // Carregar dados do evento existente
+  useEffect(() => {
+    if (existingEvent) {
+      setTitle(existingEvent.title);
+      setDescription(existingEvent.description || "");
+      setEventDate(new Date(existingEvent.eventDate).toISOString().slice(0, 16));
+      setAddress(existingEvent.address || "");
+      if (existingEvent.address) {
+        // Extrair link se existir no formato do address
+        const linkMatch = existingEvent.address.match(/https?:\/\/[^\s]+/);
+        if (linkMatch) {
+          setAddressLink(linkMatch[0]);
+        }
+      }
+      setCategory(existingEvent.category || "");
+      setCity(existingEvent.city || "");
+      setRegistrationType(existingEvent.registrationType);
+      setVisibility(existingEvent.visibility);
+      if (existingEvent.bannerUrl) {
+        setBannerPreview(existingEvent.bannerUrl);
+      }
+      if (existingEvent.formFields) {
+        setFormFields(existingEvent.formFields.map(f => ({
+          label: f.label,
+          fieldType: f.fieldType,
+          options: f.options || undefined,
+          required: f.required === 1,
+          order: f.order
+        })));
+      }
+      if (existingEvent.faq) {
+        try {
+          setFaqItems(JSON.parse(existingEvent.faq));
+        } catch (e) {
+          console.error("Error parsing FAQ:", e);
+        }
+      }
+    }
+  }, [existingEvent]);
 
   const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -115,7 +175,7 @@ export default function CreateEvent() {
       return;
     }
 
-    createEventMutation.mutate({
+    const eventData = {
       title,
       description,
       eventDate,
@@ -130,7 +190,16 @@ export default function CreateEvent() {
         ...f,
         options: f.options || undefined,
       })),
-    });
+    };
+
+    if (isEditing) {
+      updateEventMutation.mutate({
+        eventId: eventId!,
+        ...eventData,
+      });
+    } else {
+      createEventMutation.mutate(eventData);
+    }
   };
 
   return (
@@ -444,8 +513,15 @@ export default function CreateEvent() {
           </Card>
 
           <div className="flex gap-4">
-            <Button type="submit" size="lg" disabled={createEventMutation.isPending} className="flex-1">
-              {createEventMutation.isPending ? "Criando..." : "Criar Evento"}
+            <Button 
+              type="submit" 
+              size="lg" 
+              disabled={createEventMutation.isPending || updateEventMutation.isPending} 
+              className="flex-1"
+            >
+              {isEditing 
+                ? (updateEventMutation.isPending ? "Atualizando..." : "Atualizar Evento")
+                : (createEventMutation.isPending ? "Criando..." : "Criar Evento")}
             </Button>
             <Link href="/dashboard">
               <Button type="button" variant="outline" size="lg">

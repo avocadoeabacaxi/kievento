@@ -164,6 +164,13 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Logo Centralizada */}
+      <div className="w-full bg-white border-b py-4">
+        <div className="container flex justify-center">
+          <img src="/logo.png" alt="KiEvento" className="h-12" />
+        </div>
+      </div>
+
       {/* Event Header */}
       <div className="bg-gradient-to-b from-primary/10 to-background pb-8">
         <div className="container max-w-2xl pt-8 space-y-4">
