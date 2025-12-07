@@ -3,7 +3,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import PublicHome from "./pages/PublicHome";
+import ProfilePage from "./pages/ProfilePage";
 import Dashboard from "./pages/Dashboard";
 import CreateEvent from "./pages/CreateEvent";
 import EventDetails from "./pages/EventDetails";
@@ -15,9 +16,8 @@ import NotFound from "./pages/NotFound";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/dashboard" component={Dashboard} />
+    <Switch>      <Route path={"/"} component={PublicHome} />
+      <Route path="/profile" component={ProfilePage} />      <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/events/new" component={CreateEvent} />
       <Route path="/events/:id" component={EventDetails} />

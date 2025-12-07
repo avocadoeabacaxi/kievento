@@ -36,6 +36,9 @@ export const appRouter = router({
         eventDate: z.string(),
         address: z.string().optional(),
         registrationType: z.enum(['open', 'approval']),
+        category: z.string().optional(),
+        city: z.string().optional(),
+        visibility: z.enum(['public', 'private']).default('private'),
         bannerBase64: z.string().optional(),
         formFields: z.array(z.object({
           label: z.string(),
@@ -68,6 +71,9 @@ export const appRouter = router({
           bannerUrl,
           bannerKey,
           registrationType: input.registrationType,
+          category: input.category,
+          city: input.city,
+          visibility: input.visibility,
         });
 
         // Criar campos do formulário
@@ -371,6 +377,83 @@ export const appRouter = router({
 
         return { registration, event };
       }),
+  }),
+
+  // Perfil de usuário
+  profile: router({
+    // Obter perfil do usuário
+    get: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getUserById(ctx.user.id);
+    }),
+
+    // Atualizar perfil
+    update: protectedProcedure
+      .input(z.object({
+        name: z.string().optional(),
+        phone: z.string().optional(),
+        userType: z.enum(['individual', 'company']).optional(),
+        cpf: z.string().optional(),
+        birthDate: z.string().optional(),
+        cnpj: z.string().optional(),
+        companyName: z.string().optional(),
+        tradeName: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        state: z.string().optional(),
+        zipCode: z.string().optional(),
+        profilePhotoBase64: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        let profilePhoto: string | undefined;
+        let profilePhotoKey: string | undefined;
+
+        // Upload da foto de perfil se fornecida
+        if (input.profilePhotoBase64) {
+          const base64Data = input.profilePhotoBase64.replace(/^data:image\/\w+;base64,/, '');
+          const buffer = Buffer.from(base64Data, 'base64');
+          const key = `profiles/${ctx.user.id}/${nanoid()}.jpg`;
+          const result = await storagePut(key, buffer, 'image/jpeg');
+          profilePhoto = result.url;
+          profilePhotoKey = key;
+        }
+
+        const updateData: any = { ...input };
+        delete updateData.profilePhotoBase64;
+        
+        if (profilePhoto) {
+          updateData.profilePhoto = profilePhoto;
+          updateData.profilePhotoKey = profilePhotoKey;
+        }
+
+        if (input.birthDate) {
+          updateData.birthDate = new Date(input.birthDate);
+        }
+
+        return await db.updateUserProfile(ctx.user.id, updateData);
+      }),
+  }),
+
+  // Eventos públicos
+  public: router({
+    // Listar eventos públicos
+    listEvents: publicProcedure
+      .input(z.object({
+        category: z.string().optional(),
+        city: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await db.getPublicEvents(input);
+      }),
+
+    // Obter cidades disponíveis
+    getCities: publicProcedure.query(async () => {
+      return await db.getAllCities();
+    }),
+
+    // Obter categorias disponíveis
+    getCategories: publicProcedure.query(async () => {
+      return await db.getAllCategories();
+    }),
   }),
 });
 

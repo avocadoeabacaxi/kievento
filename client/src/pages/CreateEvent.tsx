@@ -30,6 +30,9 @@ export default function CreateEvent() {
   const [address, setAddress] = useState("");
   const [addressLink, setAddressLink] = useState("");
   const [registrationType, setRegistrationType] = useState<"open" | "approval">("open");
+  const [category, setCategory] = useState("");
+  const [city, setCity] = useState("");
+  const [visibility, setVisibility] = useState<"public" | "private">("private");
   const [bannerBase64, setBannerBase64] = useState<string>("");
   const [bannerPreview, setBannerPreview] = useState<string>("");
   const [formFields, setFormFields] = useState<FormField[]>([
@@ -102,6 +105,9 @@ export default function CreateEvent() {
       eventDate,
       address: addressLink ? `${address}|${addressLink}` : address,
       registrationType,
+      category: category || undefined,
+      city: city || undefined,
+      visibility,
       bannerBase64: bannerBase64 || undefined,
       formFields: formFields.map((f) => ({
         ...f,
@@ -204,6 +210,47 @@ export default function CreateEvent() {
                   onChange={(e) => setAddressLink(e.target.value)}
                   placeholder="https://maps.google.com/..."
                 />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Categoria</Label>
+                  <Input
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="Ex: Música, Teatro, Gastronomia..."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Ajuda os participantes a encontrar seu evento
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="city">Cidade</Label>
+                  <Input
+                    id="city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Ex: São Paulo, Rio de Janeiro..."
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Visibilidade do Evento</Label>
+                <Select value={visibility} onValueChange={(v) => setVisibility(v as "public" | "private")}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="private">Privado (apenas com link)</SelectItem>
+                    <SelectItem value="public">Público (aparece no site)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Eventos públicos aparecem na página inicial do KiEvento
+                </p>
               </div>
 
               <div className="space-y-2">

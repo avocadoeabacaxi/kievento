@@ -17,6 +17,28 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  
+  // Novos campos de perfil
+  userType: mysqlEnum("userType", ["individual", "company"]).default("individual"),
+  profilePhoto: text("profilePhoto"),
+  profilePhotoKey: text("profilePhotoKey"),
+  phone: varchar("phone", { length: 20 }),
+  
+  // Campos para Pessoa Física
+  cpf: varchar("cpf", { length: 14 }),
+  birthDate: timestamp("birthDate"),
+  
+  // Campos para Empresa
+  cnpj: varchar("cnpj", { length: 18 }),
+  companyName: text("companyName"),
+  tradeName: text("tradeName"),
+  
+  // Endereço
+  address: text("address"),
+  city: varchar("city", { length: 100 }),
+  state: varchar("state", { length: 2 }),
+  zipCode: varchar("zipCode", { length: 9 }),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -30,14 +52,20 @@ export type InsertUser = typeof users.$inferInsert;
  */
 export const events = mysqlTable("events", {
   id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: int("userId").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   eventDate: timestamp("eventDate").notNull(),
   address: text("address"),
   bannerUrl: text("bannerUrl"),
   bannerKey: text("bannerKey"),
-  registrationType: mysqlEnum("registrationType", ["open", "approval"]).default("open").notNull(),
+  registrationType: mysqlEnum("registrationType", ["open", "approval"]).notNull(),
+  
+  // Novos campos
+  category: varchar("category", { length: 50 }),
+  city: varchar("city", { length: 100 }),
+  visibility: mysqlEnum("visibility", ["public", "private"]).default("private").notNull(),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -80,3 +80,27 @@
 - [x] Adicionar campo de endereço com atalho/link
 - [x] Reduzir tamanho do banner no painel de controle (manter grande apenas na página pública)
 - [ ] Sistema de cadastro de usuário antes da inscrição no evento (não implementado - sistema já usa autenticação Manus)
+
+## Redesign e Novas Funcionalidades (Inspirado no Fever)
+- [ ] Analisar design do Fever (cores, tipografia, estrutura)
+- [ ] Sistema - [x] Sistema de perfil de usuário
+  - [x] Upload de foto de perfil
+  - [x] Tipo de cadastro (Pessoa Física / Empresa)
+  - [x] Campos para CPF, CNPJ, data de nascimento, etc.
+  - [x] Endereço completo
+  - [x] Editar informações pessoais/empresariais
+- [x] Adicionar campos ao evento
+  - [x] Categoria (Música, Teatro, Gastronomia, Esportes, etc.)
+  - [x] Cidade
+  - [x] Visibilidade (Público no site / Privado)
+- [x] Redesign da home page
+  - [x] Hero section atraente
+  - [x] Cards de eventos públicos
+  - [x] Filtros por categoria e cidade
+  - [x] Layout moderno inspirado no Fever
+- [x] Página de listagem de eventos públicos
+- [x] Atualizar paleta de cores seguindo Fever (verde)
+- [x] Melhorar navegação e estrutura geral (Header moderno com dropdown)geral
+
+## Bugs Corrigidos
+- [x] React Quill incompatível com React 19 - substituído por editor HTML customizado

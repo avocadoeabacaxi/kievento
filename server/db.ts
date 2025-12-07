@@ -252,3 +252,77 @@ export async function removeEventValidator(id: number) {
   if (!db) throw new Error("Database not available");
   await db.delete(eventValidators).where(eq(eventValidators.id, id));
 }
+
+// ============ USER PROFILE ============
+
+export async function updateUserProfile(userId: number, data: Partial<InsertUser>) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update user profile: database not available");
+    return undefined;
+  }
+
+  await db.update(users).set(data).where(eq(users.id, userId));
+  return await getUserById(userId);
+}
+
+export async function getUserById(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+// ============ PUBLIC EVENTS ============
+
+export async function getPublicEvents(filters?: { category?: string; city?: string }) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get public events: database not available");
+    return [];
+  }
+
+  let query = db.select().from(events).where(eq(events.visibility, "public"));
+  
+  const allEvents = await query;
+  
+  let filtered = allEvents;
+  if (filters?.category) {
+    filtered = filtered.filter(e => e.category === filters.category);
+  }
+  if (filters?.city) {
+    filtered = filtered.filter(e => e.city === filters.city);
+  }
+  
+  return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function getAllCities() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get cities: database not available");
+    return [];
+  }
+
+  const allEvents = await db.select({ city: events.city }).from(events).where(eq(events.visibility, "public"));
+  const cities = allEvents.map(e => e.city).filter(Boolean) as string[];
+  const uniqueCities = Array.from(new Set(cities));
+  return uniqueCities;
+}
+
+export async function getAllCategories() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get categories: database not available");
+    return [];
+  }
+
+  const allEvents = await db.select({ category: events.category }).from(events).where(eq(events.visibility, "public"));
+  const categories = allEvents.map(e => e.category).filter(Boolean) as string[];
+  const uniqueCategories = Array.from(new Set(categories));
+  return uniqueCategories;
+}
