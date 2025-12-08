@@ -297,3 +297,8 @@
 - [x] Corrigir renderização do QR Code no canvas (adicionar delay e dependência de data)
 - [x] Transformar link longo do Google Maps em botão elegante "Ir"
 - [x] Remover console.logs de debug do código de produção
+
+## Melhorias na Página de Detalhes do Evento (EventDetails)
+- [x] Adicionar barras de destaque para cada informação do evento
+- [x] Aumentar tamanho das letras das informações
+- [x] Melhorar hierarquia visual e organização das informações

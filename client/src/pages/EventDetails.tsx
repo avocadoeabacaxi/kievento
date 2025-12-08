@@ -150,14 +150,33 @@ export default function EventDetails() {
             </div>
           )}
 
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <span>{format(new Date(event.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
-              {event.address && <span>📍 {event.address}</span>}
-              <Badge variant={event.registrationType === "open" ? "default" : "secondary"}>
-                {event.registrationType === "open" ? "Inscrição Aberta" : "Com Aprovação"}
-              </Badge>
+          <div className="space-y-4">
+            <h1 className="text-3xl font-bold mb-4">{event.title}</h1>
+            
+            {/* Data e Hora */}
+            <div className="border-l-4 border-primary pl-4 py-2">
+              <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
+              <div className="text-lg font-medium">
+                {format(new Date(event.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
+              </div>
+            </div>
+
+            {/* Endereço */}
+            {event.address && (
+              <div className="border-l-4 border-primary pl-4 py-2">
+                <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Local</div>
+                <div className="text-lg font-medium">📍 {event.address}</div>
+              </div>
+            )}
+
+            {/* Tipo de Inscrição */}
+            <div className="border-l-4 border-primary pl-4 py-2">
+              <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Tipo de Inscrição</div>
+              <div className="text-lg font-medium">
+                <Badge variant={event.registrationType === "open" ? "default" : "secondary"} className="text-sm">
+                  {event.registrationType === "open" ? "Inscrição Aberta" : "Com Aprovação"}
+                </Badge>
+              </div>
             </div>
           </div>
 
