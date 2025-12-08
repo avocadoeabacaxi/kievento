@@ -17,6 +17,7 @@ import TicketTypesManager from "@/components/TicketTypesManager";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import EventCreationSidebar, { Step } from "@/components/EventCreationSidebar";
+import ReviewStep from "@/components/event-steps/ReviewStep";
 
 type FormFieldType = "text" | "email" | "phone" | "textarea" | "select" | "checkbox" | "cpf" | "cnpj" | "cep";
 
@@ -323,6 +324,7 @@ export default function CreateEvent() {
     { id: "form", title: "Formulário de Inscrição", completed: formFields.length >= 2 },
     { id: "tickets", title: "Sistema de Ingressos", completed: true },
     { id: "faq", title: "Perguntas Frequentes", completed: true },
+    { id: "review", title: "Publicar", completed: false },
   ];
 
   const scrollToSection = (sectionId: string) => {
@@ -333,7 +335,9 @@ export default function CreateEvent() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <>
+      <Header />
+      <div className="flex h-screen bg-gray-50">
         <EventCreationSidebar
           steps={steps}
           currentStepId={currentStepId}
@@ -341,7 +345,7 @@ export default function CreateEvent() {
           completedSteps={completedSteps}
         />
       
-      <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
         <div className="max-w-5xl mx-auto p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Bloco 1: Informações do Evento */}
@@ -741,6 +745,36 @@ export default function CreateEvent() {
           </Card>
           )}
 
+          {/* Etapa 6: Revisão Final */}
+          {currentStepId === "review" && (
+            <ReviewStep
+              title={title}
+              description={description}
+              eventDate={eventDate}
+              registrationDeadline={registrationDeadline}
+              registrationType={registrationType}
+              address={address}
+              addressLink={addressLink}
+              category={category}
+              city={city}
+              visibility={visibility}
+              bannerUrl={bannerPreview}
+              cardImageUrl={cardImagePreview}
+              formFields={formFields.map(f => ({ label: f.label, type: f.fieldType, required: f.required }))}
+              hasTicketTypes={hasTicketTypes}
+              ticketTypes={ticketTypes.map(tt => ({
+                name: tt.name,
+                description: tt.description,
+                price: parseFloat(tt.price) || 0,
+                quantity: parseInt(tt.quantity) || 0,
+                validUntil: tt.validUntil,
+                color: tt.color,
+              }))}
+              faqItems={faqItems}
+              onEditStep={setCurrentStepId}
+            />
+          )}
+
           {/* Botões de Navegação */}
           <div className="flex justify-between mt-8">
             <Button 
@@ -753,7 +787,7 @@ export default function CreateEvent() {
               Anterior
             </Button>
             
-            {currentStepId === "faq" ? (
+            {currentStepId === "review" ? (
               <div className="flex gap-4">
                 <Link href="/dashboard">
                   <Button type="button" variant="outline" size="lg">
@@ -782,7 +816,8 @@ export default function CreateEvent() {
           </div>
         </form>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

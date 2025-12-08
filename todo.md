@@ -379,3 +379,18 @@
 - [ ] Atualizar percentual de progresso dinamicamente
 - [ ] Adicionar etapa 6 "Publicar" com revisão final
 - [ ] Substituir botão "Criar Evento" por "Publicar Evento" na última etapa
+
+## Etapa Final "Publicar" com Revisão
+- [ ] Adicionar 6ª etapa "Publicar" no CreateEvent
+- [ ] Criar componente ReviewStep com revisão completa de todas as informações
+- [ ] Mostrar resumo de: Informações Básicas, Banner/Imagens, Formulário, Ingressos, FAQ
+- [ ] Adicionar botões "Editar" em cada seção para voltar à etapa específica
+- [ ] Mover botão "Criar Evento" para a etapa de Publicar
+- [ ] Atualizar validação para permitir avançar até a etapa final
+
+## Etapa Final de Revisão (Publicar)
+- [x] Adicionar 6ª etapa "Publicar" na sidebar de criação de eventos
+- [x] Criar componente ReviewStep com revisão completa de todas informações
+- [x] Adicionar botões "Editar" em cada seção para voltar às etapas específicas
+- [x] Adicionar Header padrão (logo + menu) na página de criação de eventos
+- [x] Melhorar apresentação visual da etapa Publicar mostrando como ficará para o cliente
