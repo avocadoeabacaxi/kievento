@@ -145,3 +145,8 @@
 
 ## Bugs a Corrigir
 - [x] Erro de `<a>` aninhado no menu dropdown do Header - removidas tags `<a>` desnecessárias
+
+## Tarefas Pendentes
+- [ ] Gestão de permissões de validadores
+- [ ] Analisar design do Fever (cores, tipografia, estrutura)
+- [x] Atualizar paleta de cores de verde para vermelho RGB(199, 34, 39)
