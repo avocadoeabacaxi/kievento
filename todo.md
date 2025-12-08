@@ -403,3 +403,12 @@
 - [x] Filtrar eventos no Dashboard (separar rascunhos de publicados)
 - [x] Adicionar badge visual para identificar rascunhos
 - [x] Permitir editar e publicar rascunhos posteriormente
+
+## URLs Amigáveis (Slugs)
+- [x] Adicionar campo `slug` ao schema de eventos (único, indexado)
+- [x] Criar função para gerar slug a partir do título (remover espaços, acentos, caracteres especiais)
+- [x] Garantir slugs únicos (adicionar sufixo numérico se necessário)
+- [x] Atualizar procedure de criação para gerar slug automaticamente
+- [x] Criar rota pública `/e/:slug` para acessar eventos
+- [x] Exibir URL amigável na página de detalhes do evento
+- [x] Permitir copiar URL amigável com botão

@@ -16,6 +16,7 @@ import SiteSettings from "./pages/SiteSettings";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import MyTickets from "./pages/MyTickets";
+import PublicEvent from "./pages/PublicEvent";
 import NotFound from "./pages/NotFound";
 
 function Router() {
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/privacidade" component={PrivacyPage} />
       <Route path={"/events/new"} component={CreateEvent} />
       <Route path={"/events/edit/:id"} component={CreateEvent} />
+      <Route path="/e/:slug" component={PublicEvent} />
       <Route path="/events/:id" component={EventDetails} />
       <Route path="/events/:id/scan" component={ScannerPage} />
       <Route path="/register/:id" component={RegisterPage} />

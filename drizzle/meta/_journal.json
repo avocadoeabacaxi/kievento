@@ -71,6 +71,27 @@
       "when": 1765225742983,
       "tag": "0009_glossy_outlaw_kid",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1765226359097,
+      "tag": "0010_busy_reavers",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1765226390608,
+      "tag": "0011_typical_young_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1765226463860,
+      "tag": "0012_clever_spyke",
+      "breakpoints": true
     }
   ]
 }

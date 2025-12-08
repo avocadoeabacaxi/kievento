@@ -2,8 +2,9 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, CheckCircle, Clock, Plus, Edit } from "lucide-react";
+import { Calendar, Users, CheckCircle, Clock, Plus, Edit, Link as LinkIcon, Copy } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Header from "@/components/Header";
@@ -137,6 +138,32 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
+                      
+                      {/* URL Amigável */}
+                      {event.slug && (
+                        <div className="mt-3 p-2 bg-gray-50 rounded-md flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <LinkIcon className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                            <span className="text-xs text-gray-600 truncate">
+                              /e/{event.slug}
+                            </span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 flex-shrink-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const url = `${window.location.origin}/e/${event.slug}`;
+                              navigator.clipboard.writeText(url);
+                              toast.success("URL copiada!");
+                            }}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
+                      
                       <div className="mt-4 grid grid-cols-3 gap-2">
                         <Button
                           variant="outline"

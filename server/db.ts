@@ -105,6 +105,13 @@ export async function getEventById(eventId: number) {
   return result[0];
 }
 
+export async function getEventBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(events).where(eq(events.slug, slug)).limit(1);
+  return result[0];
+}
+
 export async function getEventsByUserId(userId: number) {
   const db = await getDb();
   if (!db) return [];

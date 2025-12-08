@@ -11,6 +11,7 @@ import { ptBR } from 'date-fns/locale';
 import { ENV } from './_core/env';
 import { storagePut } from "./storage";
 import * as db from "./db";
+import { generateUniqueSlug } from "./slugUtils";
 
 // Middleware para verificar se o usuário é admin
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -83,6 +84,9 @@ export const appRouter = router({
           cardImageKey = key;
         }
 
+        // Gerar slug único a partir do título
+        const slug = await generateUniqueSlug(input.title);
+
         const eventId = await db.createEvent({
           userId: ctx.user.id,
           title: input.title,
@@ -99,6 +103,7 @@ export const appRouter = router({
           city: input.city,
           visibility: input.visibility,
           status: input.status || 'draft',
+          slug,
           faq: input.faq,
         });
 
@@ -152,6 +157,18 @@ export const appRouter = router({
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
         }
         const formFields = await db.getFormFieldsByEventId(input.eventId);
+        return { ...event, formFields };
+      }),
+
+    // Obter detalhes do evento por slug (público)
+    getBySlug: publicProcedure
+      .input(z.object({ slug: z.string() }))
+      .query(async ({ input }) => {
+        const event = await db.getEventBySlug(input.slug);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+        const formFields = await db.getFormFieldsByEventId(event.id);
         return { ...event, formFields };
       }),
 
