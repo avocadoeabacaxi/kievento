@@ -259,3 +259,9 @@
 - [x] Ajustar QR Code para não ficar achatado em mobile (aspect-square)
 - [x] Garantir aspect-ratio correto do QR Code (max-w-[300px] aspect-square)
 - [x] Layout flex-col em mobile, flex-row em desktop
+
+## Rodapé Fixo com Botão Imprimir
+- [x] Mover botão "Imprimir Ingresso" para rodapé fixo na parte inferior
+- [x] Rodapé fica visível sempre (fixed bottom-0 left-0 right-0)
+- [x] Ocultar rodapé fixo na impressão (print:hidden)
+- [x] Adicionar padding-bottom no conteúdo (pb-24 print:pb-0)

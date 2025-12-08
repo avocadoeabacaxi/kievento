@@ -211,6 +211,16 @@ export default function TicketPage() {
         </div>
       </div>
 
+      {/* Rodapé fixo com botão Imprimir - oculto na impressão */}
+      <div className="print:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50">
+        <div className="container py-4 flex justify-center">
+          <Button onClick={handlePrint} size="lg" className="shadow-md">
+            <Printer className="h-5 w-5 mr-2" />
+            Imprimir Ingresso
+          </Button>
+        </div>
+      </div>
+
       {/* Estilos de impressão */}
       <style>{`
         @media print {
