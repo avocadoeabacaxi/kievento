@@ -278,3 +278,10 @@
 
 ## Remover Botão Duplicado
 - [x] Remover botão "Imprimir Ingresso" do topo da TicketPage (já existe no rodapé fixo)
+
+## Correção do QR Code no Ingresso
+- [x] Investigar por que QR Code não está sendo gerado (problema no useEffect)
+- [x] Corrigir geração do QR Code no useEffect (simplificado, removido toDataURL)
+- [x] Ajustar layout do código abaixo do QR Code (adicionado mb-4 e break-all)
+- [x] Adicionar espaçamento adequado entre QR Code e código de texto
+- [x] Ajustar tamanho do canvas (300x300px com maxWidth/maxHeight)

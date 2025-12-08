@@ -16,26 +16,18 @@ export default function TicketPage() {
   const { data, isLoading } = trpc.registrations.getByQrCode.useQuery({ qrCode });
 
   useEffect(() => {
-    if (qrCode) {
-      // Gerar QR Code
-      QRCode.toDataURL(qrCode, {
-        width: 400,
+    if (qrCode && qrCanvasRef.current) {
+      // Gerar QR Code no canvas
+      QRCode.toCanvas(qrCanvasRef.current, qrCode, {
+        width: 300,
         margin: 2,
         color: {
           dark: "#000000",
           light: "#FFFFFF",
         },
-      }).then(url => {
-        setQrDataUrl(url);
-        if (qrCanvasRef.current) {
-          QRCode.toCanvas(qrCanvasRef.current, qrCode, {
-            width: 400,
-            margin: 2,
-          });
-        }
+      }).catch(err => {
+        console.error("Erro ao gerar QR Code:", err);
       });
-
-
     }
   }, [qrCode]);
 
@@ -141,11 +133,15 @@ export default function TicketPage() {
 
               {/* Coluna direita - QR Code */}
               <div className="flex flex-col items-center justify-center bg-gray-50 p-6 rounded-lg">
-                <div className="w-full max-w-[300px] aspect-square flex items-center justify-center">
-                  <canvas ref={qrCanvasRef} className="w-full h-full" style={{ imageRendering: 'pixelated' }} />
+                <div className="w-full max-w-[300px] flex items-center justify-center mb-4">
+                  <canvas 
+                    ref={qrCanvasRef} 
+                    className="w-full h-auto"
+                    style={{ maxWidth: '300px', maxHeight: '300px' }}
+                  />
                 </div>
-                <div className="mt-3 text-center">
-                  <div className="text-sm font-mono font-bold text-gray-900 tracking-wider">
+                <div className="text-center w-full">
+                  <div className="text-sm font-mono font-bold text-gray-900 tracking-wider break-all px-2">
                     {qrCode}
                   </div>
                 </div>
