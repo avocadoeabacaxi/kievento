@@ -302,3 +302,8 @@
 - [x] Adicionar barras de destaque para cada informação do evento
 - [x] Aumentar tamanho das letras das informações
 - [x] Melhorar hierarquia visual e organização das informações
+
+## Melhorias no Endereço do Google Maps (EventDetails)
+- [x] Ocultar URL longa do Google Maps na página de detalhes do evento
+- [x] Substituir por botão elegante "Ver no Mapa" ou "Abrir Mapa"
+- [x] Mostrar apenas o nome do endereço + botão (não a URL completa)
