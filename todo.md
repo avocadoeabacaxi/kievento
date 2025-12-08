@@ -307,3 +307,9 @@
 - [x] Ocultar URL longa do Google Maps na página de detalhes do evento
 - [x] Substituir por botão elegante "Ver no Mapa" ou "Abrir Mapa"
 - [x] Mostrar apenas o nome do endereço + botão (não a URL completa)
+
+## Melhorias na Página Pública de Inscrição (RegisterPage)
+- [x] Adicionar barras de destaque para cada seção de informação
+- [x] Adicionar labels bonitas (Data e Horário, Local, Tipo do Evento, Sobre o Evento)
+- [x] Melhorar hierarquia visual e organização das informações
+- [x] Manter consistência com o design da página EventDetails

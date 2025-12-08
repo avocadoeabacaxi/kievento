@@ -183,29 +183,39 @@ export default function RegisterPage() {
           )}
 
           <div className="space-y-4">
-            <h1 className="text-3xl md:text-4xl font-bold">{eventData.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-6">{eventData.title}</h1>
             
-            <div className="space-y-1.5">
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Data e Horário</h2>
-              <div className="flex flex-col gap-1.5 text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>{format(new Date(eventData.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
-                </div>
+            {/* Data e Horário */}
+            <div className="border-l-4 border-primary pl-4 py-2">
+              <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
+              <div className="flex items-center gap-2 text-lg font-medium">
+                <Calendar className="h-5 w-5" />
+                <span>{format(new Date(eventData.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
               </div>
             </div>
 
+            {/* Local */}
             {displayAddress && (
-              <div className="space-y-1.5">
-                <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Local</h2>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  {addressLink ? (
-                    <a href={addressLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                      {displayAddress}
-                    </a>
-                  ) : (
+              <div className="border-l-4 border-primary pl-4 py-2">
+                <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Local</div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-2 text-lg font-medium">
+                    <MapPin className="h-5 w-5" />
                     <span>{displayAddress}</span>
+                  </div>
+                  {addressLink && addressLink.startsWith('http') && (
+                    <a 
+                      href={addressLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm font-semibold transition-colors"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      Ver no Mapa
+                    </a>
                   )}
                 </div>
               </div>
@@ -213,8 +223,8 @@ export default function RegisterPage() {
           </div>
 
           {eventData.description && (
-            <div className="space-y-2">
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Sobre o Evento</h2>
+            <div className="border-l-4 border-primary pl-4 py-2">
+              <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-2">Sobre o Evento</div>
               <Card>
                 <CardContent className="pt-4 prose prose-sm max-w-none dark:prose-invert">
                   {parse(eventData.description)}
@@ -227,8 +237,8 @@ export default function RegisterPage() {
 
       {/* Registration Form */}
       <div className="container max-w-2xl py-6 space-y-6">
-        <div>
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Inscreva-se</h2>
+        <div className="border-l-4 border-primary pl-4 py-2">
+          <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-3">Formulário de Inscrição</div>
           <Card>
             <CardHeader>
               <CardTitle>Formulário de Inscrição</CardTitle>
