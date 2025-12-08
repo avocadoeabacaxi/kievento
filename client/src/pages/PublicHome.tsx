@@ -32,13 +32,13 @@ export default function PublicHome() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 via-accent/5 to-background py-20 md:py-32">
+      <section className="relative bg-gradient-to-br from-primary/10 via-accent/5 to-background py-24 md:py-40">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <h1>
               Descubra eventos incríveis
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl md:text-2xl text-muted-foreground">
               Encontre experiências únicas, conecte-se com pessoas e crie memórias inesquecíveis
             </p>
             <div className="flex flex-wrap gap-4 justify-center pt-4">
@@ -128,13 +128,13 @@ export default function PublicHome() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
               {events.map((event) => (
                 <Link key={event.id} href={`/register/${event.id}`}>
-                  <a className="group">
-                    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full">
+                  <a className="group block">
+                    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 h-full border-0 shadow-md rounded-2xl">
                       {/* Banner */}
-                      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                      <div className="relative aspect-[3/4] overflow-hidden bg-muted rounded-t-2xl">
                         {event.bannerUrl ? (
                           <img
                             src={event.bannerUrl}
@@ -147,13 +147,13 @@ export default function PublicHome() {
                           </div>
                         )}
                         {event.category && (
-                          <Badge className="absolute top-3 right-3 bg-background/90 text-foreground hover:bg-background">
+                          <Badge className="absolute top-4 right-4 bg-background/95 text-foreground hover:bg-background shadow-md">
                             {event.category}
                           </Badge>
                         )}
                       </div>
 
-                      <CardContent className="p-4 space-y-3">
+                      <CardContent className="p-5 space-y-3">
                         <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
                           {event.title}
                         </h3>
