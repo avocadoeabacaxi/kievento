@@ -62,34 +62,11 @@ export default function RegisterPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Carregando evento...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!eventData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
-            <p className="text-xl font-semibold">Evento não encontrado</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validar campos obrigatórios
-    const requiredFields = eventData.formFields.filter((f) => f.required);
+    const requiredFields = eventData!.formFields.filter((f) => f.required);
     for (const field of requiredFields) {
       if (!formData[field.label]) {
         toast.error(`O campo "${field.label}" é obrigatório`);
@@ -115,6 +92,29 @@ export default function RegisterPage() {
       formData: JSON.stringify(formData),
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+          <p className="text-muted-foreground">Carregando evento...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!eventData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="max-w-md">
+          <CardContent className="pt-6 text-center">
+            <p className="text-xl font-semibold">Evento não encontrado</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (submitted && registrationResult) {
     return (
@@ -165,30 +165,38 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Logo Centralizada */}
-      <div className="w-full bg-white border-b py-4">
+      <div className="w-full bg-white border-b py-3">
         <div className="container flex justify-center">
-          <img src="/logo.png" alt="KiEvento" className="h-12" />
+          <img src="/logo.png" alt="KiEvento" className="h-10" />
         </div>
       </div>
 
       {/* Event Header */}
-      <div className="bg-gradient-to-b from-primary/10 to-background pb-8">
-        <div className="container max-w-2xl pt-8 space-y-4">
+      <div className="bg-gradient-to-b from-primary/10 to-background pb-4">
+        <div className="container max-w-2xl pt-4 space-y-4">
           {eventData.bannerUrl && (
             <div className="aspect-video w-full overflow-hidden rounded-lg border shadow-lg">
               <img src={eventData.bannerUrl} alt={eventData.title} className="w-full h-full object-cover" />
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className="space-y-4">
             <h1 className="text-3xl md:text-4xl font-bold">{eventData.title}</h1>
-            <div className="flex flex-col gap-2 text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>{format(new Date(eventData.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
-              </div>
-              {displayAddress && (
+            
+            <div className="space-y-1.5">
+              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Data e Horário</h2>
+              <div className="flex flex-col gap-1.5 text-muted-foreground">
                 <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>{format(new Date(eventData.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
+                </div>
+              </div>
+            </div>
+
+            {displayAddress && (
+              <div className="space-y-1.5">
+                <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Local</h2>
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="h-4 w-4" />
                   {addressLink ? (
                     <a href={addressLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
@@ -198,179 +206,185 @@ export default function RegisterPage() {
                     <span>{displayAddress}</span>
                   )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {eventData.description && (
-            <Card>
-              <CardContent className="pt-6 prose prose-sm max-w-none dark:prose-invert">
-                {parse(eventData.description)}
-              </CardContent>
-            </Card>
+            <div className="space-y-2">
+              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Sobre o Evento</h2>
+              <Card>
+                <CardContent className="pt-4 prose prose-sm max-w-none dark:prose-invert">
+                  {parse(eventData.description)}
+                </CardContent>
+              </Card>
+            </div>
           )}
         </div>
       </div>
 
       {/* Registration Form */}
-      <div className="container max-w-2xl py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Formulário de Inscrição</CardTitle>
-            <CardDescription>
-              Preencha os campos abaixo para se inscrever no evento
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {eventData.formFields.map((field) => (
-                <div key={field.id} className="space-y-2">
-                  <Label htmlFor={`field-${field.id}`}>
-                    {field.label}
-                    {field.required === 1 && <span className="text-destructive ml-1">*</span>}
-                  </Label>
+      <div className="container max-w-2xl py-6 space-y-6">
+        <div>
+          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Inscreva-se</h2>
+          <Card>
+            <CardHeader>
+              <CardTitle>Formulário de Inscrição</CardTitle>
+              <CardDescription>
+                Preencha os campos abaixo para se inscrever no evento
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {eventData.formFields.map((field) => (
+                  <div key={field.id} className="space-y-2">
+                    <Label htmlFor={`field-${field.id}`}>
+                      {field.label}
+                      {field.required === 1 && <span className="text-destructive ml-1">*</span>}
+                    </Label>
 
-                  {field.fieldType === "text" && (
-                    <Input
-                      id={`field-${field.id}`}
-                      type="text"
-                      value={formData[field.label] || ""}
-                      onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
-                      required={field.required === 1}
-                    />
-                  )}
+                    {field.fieldType === "text" && (
+                      <Input
+                        id={`field-${field.id}`}
+                        type="text"
+                        value={formData[field.label] || ""}
+                        onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                        required={field.required === 1}
+                      />
+                    )}
 
-                  {field.fieldType === "email" && (
-                    <Input
-                      id={`field-${field.id}`}
-                      type="email"
-                      value={formData[field.label] || ""}
-                      onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
-                      required={field.required === 1}
-                    />
-                  )}
+                    {field.fieldType === "email" && (
+                      <Input
+                        id={`field-${field.id}`}
+                        type="email"
+                        value={formData[field.label] || ""}
+                        onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                        required={field.required === 1}
+                      />
+                    )}
 
-                  {field.fieldType === "phone" && (
-                    <MaskedInput
-                      mask="phone"
-                      value={formData[field.label] || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, [field.label]: e.target.value })
-                      }
-                      placeholder="(00) 00000-0000"
-                      required={field.required === 1}
-                    />
-                  )}
-
-                  {field.fieldType === "cpf" && (
-                    <MaskedInput
-                      mask="cpf"
-                      value={formData[field.label] || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, [field.label]: e.target.value })
-                      }
-                      placeholder="000.000.000-00"
-                      required={field.required === 1}
-                    />
-                  )}
-
-                  {field.fieldType === "cnpj" && (
-                    <MaskedInput
-                      mask="cnpj"
-                      value={formData[field.label] || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, [field.label]: e.target.value })
-                      }
-                      placeholder="00.000.000/0000-00"
-                      required={field.required === 1}
-                    />
-                  )}
-
-                  {field.fieldType === "cep" && (
-                    <div className="space-y-2">
+                    {field.fieldType === "phone" && (
                       <MaskedInput
-                        mask="cep"
+                        mask="phone"
                         value={formData[field.label] || ""}
                         onChange={(e) =>
                           setFormData({ ...formData, [field.label]: e.target.value })
                         }
-                        onBlur={(e) =>
-                          handleCepBlur(e.target.value, field.label)
-                        }
-                        placeholder="00000-000"
+                        placeholder="(00) 00000-0000"
                         required={field.required === 1}
                       />
-                      {formData[`${field.label}_endereco`] && (
-                        <p className="text-sm text-muted-foreground">
-                          {formData[`${field.label}_endereco`]}
-                        </p>
-                      )}
-                    </div>
-                  )}
+                    )}
 
-                  {field.fieldType === "textarea" && (
-                    <Textarea
-                      id={`field-${field.id}`}
-                      value={formData[field.label] || ""}
-                      onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
-                      required={field.required === 1}
-                      rows={4}
-                    />
-                  )}
+                    {field.fieldType === "cpf" && (
+                      <MaskedInput
+                        mask="cpf"
+                        value={formData[field.label] || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, [field.label]: e.target.value })
+                        }
+                        placeholder="000.000.000-00"
+                        required={field.required === 1}
+                      />
+                    )}
 
-                  {field.fieldType === "select" && field.options && (
-                    <Select
-                      value={formData[field.label] || ""}
-                      onValueChange={(value) => setFormData({ ...formData, [field.label]: value })}
-                      required={field.required === 1}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma opção" />
-                      </SelectTrigger>
-                      <SelectContent>
+                    {field.fieldType === "cnpj" && (
+                      <MaskedInput
+                        mask="cnpj"
+                        value={formData[field.label] || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, [field.label]: e.target.value })
+                        }
+                        placeholder="00.000.000/0000-00"
+                        required={field.required === 1}
+                      />
+                    )}
+
+                    {field.fieldType === "cep" && (
+                      <div className="space-y-2">
+                        <MaskedInput
+                          mask="cep"
+                          value={formData[field.label] || ""}
+                          onChange={(e) =>
+                            setFormData({ ...formData, [field.label]: e.target.value })
+                          }
+                          onBlur={(e) =>
+                            handleCepBlur(e.target.value, field.label)
+                          }
+                          placeholder="00000-000"
+                          required={field.required === 1}
+                        />
+                        {formData[`${field.label}_endereco`] && (
+                          <p className="text-sm text-muted-foreground">
+                            {formData[`${field.label}_endereco`]}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {field.fieldType === "textarea" && (
+                      <Textarea
+                        id={`field-${field.id}`}
+                        value={formData[field.label] || ""}
+                        onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                        required={field.required === 1}
+                        rows={4}
+                      />
+                    )}
+
+                    {field.fieldType === "select" && field.options && (
+                      <Select
+                        value={formData[field.label] || ""}
+                        onValueChange={(value) => setFormData({ ...formData, [field.label]: value })}
+                        required={field.required === 1}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma opção" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {field.options.split(",").map((option, idx) => (
+                            <SelectItem key={idx} value={option.trim()}>
+                              {option.trim()}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+
+                    {field.fieldType === "checkbox" && field.options && (
+                      <div className="space-y-2">
                         {field.options.split(",").map((option, idx) => (
-                          <SelectItem key={idx} value={option.trim()}>
-                            {option.trim()}
-                          </SelectItem>
+                          <div key={idx} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`${field.id}-${idx}`}
+                              checked={formData[field.label]?.includes(option.trim())}
+                              onCheckedChange={(checked) => {
+                                const current = formData[field.label] || [];
+                                const updated = checked
+                                  ? [...current, option.trim()]
+                                  : current.filter((v: string) => v !== option.trim());
+                                setFormData({ ...formData, [field.label]: updated });
+                              }}
+                            />
+                            <label
+                              htmlFor={`${field.id}-${idx}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {option.trim()}
+                            </label>
+                          </div>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  )}
+                      </div>
+                    )}
+                  </div>
+                ))}
 
-                  {field.fieldType === "checkbox" && field.options && (
-                    <div className="space-y-2">
-                      {field.options.split(",").map((option, idx) => (
-                        <div key={idx} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`${field.id}-${idx}`}
-                            checked={formData[field.label]?.includes(option.trim())}
-                            onCheckedChange={(checked) => {
-                              const current = formData[field.label] || [];
-                              const updated = checked
-                                ? [...current, option.trim()]
-                                : current.filter((v: string) => v !== option.trim());
-                              setFormData({ ...formData, [field.label]: updated });
-                            }}
-                          />
-                          <label
-                            htmlFor={`${field.id}-${idx}`}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {option.trim()}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              <Button type="submit" size="lg" className="w-full" disabled={registerMutation.isPending}>
-                {registerMutation.isPending ? "Enviando..." : "Confirmar Inscrição"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <Button type="submit" size="lg" className="w-full" disabled={registerMutation.isPending}>
+                  {registerMutation.isPending ? "Enviando..." : "Confirmar Inscrição"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* FAQ Section */}
         {eventData.faq && (() => {
@@ -378,28 +392,31 @@ export default function RegisterPage() {
             const faqItems = JSON.parse(eventData.faq);
             if (faqItems && faqItems.length > 0) {
               return (
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <HelpCircle className="h-5 w-5 text-primary" />
-                      <CardTitle>Perguntas Frequentes</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <Accordion type="single" collapsible className="w-full">
-                      {faqItems.map((item: {question: string; answer: string}, index: number) => (
-                        <AccordionItem key={index} value={`item-${index}`}>
-                          <AccordionTrigger className="text-left">
-                            {item.question}
-                          </AccordionTrigger>
-                          <AccordionContent className="text-muted-foreground">
-                            {item.answer}
-                          </AccordionContent>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                  </CardContent>
-                </Card>
+                <div>
+                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Perguntas Frequentes</h2>
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <HelpCircle className="h-5 w-5 text-primary" />
+                        <CardTitle>Perguntas Frequentes</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Accordion type="single" collapsible className="w-full">
+                        {faqItems.map((item: {question: string; answer: string}, index: number) => (
+                          <AccordionItem key={index} value={`item-${index}`}>
+                            <AccordionTrigger className="text-left">
+                              {item.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="text-muted-foreground">
+                              {item.answer}
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    </CardContent>
+                  </Card>
+                </div>
               );
             }
           } catch (e) {

@@ -157,3 +157,8 @@
 - [x] Adicionar campo de imagem separada para página principal (aspect ratio 3:4)
 - [x] Adicionar botão "Editar" nos cards de eventos do Dashboard
 - [x] Atualizar PublicHome para usar imagem otimizada 3:4
+
+## Melhorias na Página de Evento (RegisterPage)
+- [x] Reduzir tamanho da logo KiEvento (de h-8 para h-10)
+- [x] Diminuir espaçamentos entre as informações (reduzidos gaps e paddings)
+- [x] Adicionar títulos/labels para cada seção (Data e Hora, Local, Sobre o Evento, FAQ, Formulário de Inscrição)
