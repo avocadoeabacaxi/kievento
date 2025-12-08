@@ -207,3 +207,14 @@
 - [x] Garantir que todos os elementos sejam facilmente clicáveis em telas pequenas (botões h-10/h-12)
 - [x] Breadcrumb oculto em mobile para layout mais limpo
 - [x] Header otimizado com padding responsivo e texto centralizado
+
+## Scanner de QR Code com Câmera
+- [x] Instalar biblioteca @zxing/browser e @zxing/library para leitura de QR Code
+- [x] Criar componente QRCodeScanner com acesso à câmera
+- [x] Implementar seleção de câmera (frontal/traseira) para dispositivos móveis
+- [x] Adicionar controles de iniciar/parar scanner com botões grandes
+- [x] Integrar scanner na ScannerPage com validação automática
+- [x] Adicionar feedback visual quando QR Code é detectado (borda verde pulsante)
+- [x] Tratar permissões de câmera e erros de acesso com mensagens claras
+- [x] Otimizar performance do scanner para dispositivos móveis (aspect-video, controles responsivos)
+- [x] Substituir input manual por scanner de câmera como método principal

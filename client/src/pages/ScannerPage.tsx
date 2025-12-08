@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
+import QRCodeScanner from "@/components/QRCodeScanner";
 
 export default function ScannerPage() {
   const [, params] = useRoute("/events/:id/scan");
@@ -68,6 +69,11 @@ export default function ScannerPage() {
     checkInByIdMutation.mutate({ registrationId });
   };
 
+  const handleQrCodeScan = (qrCode: string) => {
+    console.log("QR Code scanned:", qrCode);
+    checkInByQrCodeMutation.mutate({ qrCode });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -95,79 +101,50 @@ export default function ScannerPage() {
         </div>
 
         <div className="space-y-4 sm:space-y-6">
-          {/* QR Code Scanner - Mobile optimized */}
-          <Card>
-            <CardHeader className="pb-3 sm:pb-6">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
-                Scan QR Code
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                Use um leitor de QR Code ou digite o código manualmente
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <form onSubmit={handleQrCodeSubmit} className="space-y-3 sm:space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="qrcode" className="text-sm sm:text-base">Código QR</Label>
-                  <Input
-                    ref={inputRef}
-                    id="qrcode"
-                    type="text"
-                    value={qrCodeInput}
-                    onChange={(e) => setQrCodeInput(e.target.value)}
-                    placeholder="Escaneie ou digite o código..."
-                    autoComplete="off"
-                    autoFocus
-                    className="text-base h-12 sm:h-10"
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 sm:h-10 text-base sm:text-sm" 
-                  disabled={checkInByQrCodeMutation.isPending}
-                >
-                  {checkInByQrCodeMutation.isPending ? "Validando..." : "Validar Entrada"}
-                </Button>
-              </form>
+          {/* QR Code Scanner com Câmera */}
+          <div>
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2">
+              <Camera className="h-5 w-5 sm:h-6 sm:w-6" />
+              Scanner de QR Code
+            </h2>
+            <QRCodeScanner onScan={handleQrCodeScan} />
+          </div>
 
-              {/* Last Result - Mobile optimized */}
-              {lastResult && (
-                <div className="mt-4">
-                  {lastResult.success ? (
-                    <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3 sm:p-4">
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 dark:text-green-500 mt-0.5 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-green-900 dark:text-green-100 text-sm sm:text-base">
-                            Check-in Realizado!
-                          </p>
-                          <p className="text-xs sm:text-sm text-green-700 dark:text-green-300 mt-1 truncate">
-                            {lastResult.registration.name}
-                          </p>
-                          <p className="text-xs sm:text-sm text-green-600 dark:text-green-400 truncate">
-                            {lastResult.registration.email}
-                          </p>
-                        </div>
-                      </div>
+          {/* Last Result - Mobile optimized */}
+          {lastResult && (
+            <div>
+              {lastResult.success ? (
+                <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3 sm:p-4">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 dark:text-green-500 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-green-900 dark:text-green-100 text-sm sm:text-base">
+                        Check-in Realizado!
+                      </p>
+                      <p className="text-xs sm:text-sm text-green-700 dark:text-green-300 mt-1 truncate">
+                        {lastResult.registration.name}
+                      </p>
+                      <p className="text-xs sm:text-sm text-green-600 dark:text-green-400 truncate">
+                        {lastResult.registration.email}
+                      </p>
                     </div>
-                  ) : (
-                    <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4">
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <XCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 dark:text-red-500 mt-0.5 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-red-900 dark:text-red-100 text-sm sm:text-base">Erro na Validação</p>
-                          <p className="text-xs sm:text-sm text-red-700 dark:text-red-300 mt-1 break-words">
-                            {lastResult.error}
-                          </p>
-                        </div>
-                      </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <XCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 dark:text-red-500 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-red-900 dark:text-red-100 text-sm sm:text-base">Erro na Validação</p>
+                      <p className="text-xs sm:text-sm text-red-700 dark:text-red-300 mt-1 break-words">
+                        {lastResult.error}
+                      </p>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          )}
 
           {/* Search by Name - Mobile optimized */}
           <Card>
