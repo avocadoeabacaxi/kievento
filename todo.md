@@ -342,3 +342,40 @@
 - [x] Lógica automática: quando lote esgota ou expira, passa para próximo
 - [x] Atualizar estatísticas para mostrar vendas por tipo
 - [x] Atualizar exportação CSV com coluna de tipo de ingresso
+
+## Redesign da Página Criar Evento (Layout Desktop com Etapas)
+- [ ] Criar componente de menu lateral fixo com lista de etapas
+- [ ] Implementar indicador visual de progresso (etapas concluídas com ✓)
+- [ ] Dividir formulário em seções navegáveis:
+  - [ ] Informações Básicas
+  - [ ] Banner e Imagens
+  - [ ] Data e Local
+  - [ ] Tipos de Ingressos
+  - [ ] Formulário de Inscrição
+  - [ ] Perguntas Frequentes
+  - [ ] Revisão e Publicar
+- [ ] Layout 2 colunas: Menu lateral (25%) + Conteúdo (75%)
+- [ ] Implementar navegação entre etapas (clique no menu)
+- [ ] Adicionar funcionalidade drag-and-drop para reordenar campos do formulário
+- [ ] Adicionar funcionalidade drag-and-drop para reordenar tipos de ingressos
+- [ ] Adicionar funcionalidade drag-and-drop para reordenar FAQs
+- [ ] Validação de campos obrigatórios por etapa
+- [ ] Botões "Próximo" e "Anterior" para navegação sequencial
+
+## CORREÇÃO URGENTE - Página Criar Evento
+- [ ] Separar conteúdo em etapas distintas (não mostrar tudo de uma vez)
+- [ ] Etapa 1 (basic): Apenas título, descrição, categoria, cidade, visibilidade
+- [ ] Etapa 2 (images): Apenas banner e imagem do card
+- [ ] Etapa 3 (datetime): Apenas data, horário, endereço, tipo de inscrição, data limite
+- [ ] Etapa 4 (tickets): Sistema de ingressos (já existe)
+- [ ] Etapa 5 (form): Formulário de inscrição (já existe)
+- [ ] Etapa 6 (faq): FAQ (já existe)
+- [ ] Etapa 7 (review): Revisão final com resumo de tudo
+
+## Sistema de Validação e Navegação por Etapas
+- [ ] Adicionar botões "Próximo" e "Anterior" em cada etapa
+- [ ] Implementar validação de campos obrigatórios antes de avançar
+- [ ] Marcar etapa como completa (✓ verde) automaticamente ao avançar
+- [ ] Atualizar percentual de progresso dinamicamente
+- [ ] Adicionar etapa 6 "Publicar" com revisão final
+- [ ] Substituir botão "Criar Evento" por "Publicar Evento" na última etapa

@@ -16,7 +16,6 @@ import Header from "@/components/Header";
 import TicketTypesManager from "@/components/TicketTypesManager";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import EventCreationSidebar, { Step } from "@/components/EventCreationSidebar";
 
 type FormFieldType = "text" | "email" | "phone" | "textarea" | "select" | "checkbox" | "cpf" | "cnpj" | "cep";
 
@@ -60,52 +59,7 @@ export default function CreateEvent() {
     { label: "Telefone", fieldType: "phone", required: false, order: 2 },
   ]);
   const [faqItems, setFaqItems] = useState<{question: string; answer: string}[]>([]);
-  const [hasTicketTypes, setHasTicketTypes] = useState(false);  const [currentStepId, setCurrentStepId] = useState<string>("basic");
-  const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
-
-  // Função de validação por etapa
-  const validateStep = (stepId: string): boolean => {
-    switch (stepId) {
-      case "basic":
-        return !!title && !!description && !!eventDate && !!category && !!city;
-      case "images":
-        return true; // Banner é opcional
-      case "form":
-        return formFields.length >= 3; // Mínimo 3 campos (nome, email, telefone)
-      case "tickets":
-        return true; // Sistema de ingressos é opcional
-      case "faq":
-        return true; // FAQ é opcional
-      default:
-        return true;
-    }
-  };
-
-  // Função para avançar para próxima etapa
-  const goToNextStep = () => {
-    if (!validateStep(currentStepId)) {
-      toast.error("Preencha todos os campos obrigatórios antes de continuar");
-      return;
-    }
-    
-    // Marca etapa atual como completa
-    setCompletedSteps(prev => new Set(prev).add(currentStepId));
-    
-    // Avança para próxima etapa
-    const currentIndex = steps.findIndex(s => s.id === currentStepId);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStepId(steps[currentIndex + 1].id);
-    }
-  };
-
-  // Função para voltar para etapa anterior
-  const goToPreviousStep = () => {
-    const currentIndex = steps.findIndex(s => s.id === currentStepId);
-    if (currentIndex > 0) {
-      setCurrentStepId(steps[currentIndex - 1].id);
-    }
-  };
-
+  const [hasTicketTypes, setHasTicketTypes] = useState(false);
   const [ticketTypes, setTicketTypes] = useState<{
     id?: number;
     name: string;
@@ -317,36 +271,22 @@ export default function CreateEvent() {
     }
   };
 
-  const steps: Step[] = [
-    { id: "basic", title: "Informações do Evento", completed: !!title && !!eventDate },
-    { id: "images", title: "Banner e Imagens", completed: !!bannerBase64 },
-    { id: "form", title: "Formulário de Inscrição", completed: formFields.length >= 2 },
-    { id: "tickets", title: "Sistema de Ingressos", completed: true },
-    { id: "faq", title: "Perguntas Frequentes", completed: true },
-  ];
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   return (
-    <div className="flex h-screen bg-gray-50">
-        <EventCreationSidebar
-          steps={steps}
-          currentStepId={currentStepId}
-          onStepClick={setCurrentStepId}
-          completedSteps={completedSteps}
-        />
+    <div className="min-h-screen bg-background">
+      <Header />
       
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-5xl mx-auto p-8">
+      <main className="flex-1 container py-8">
+        <Breadcrumb 
+          items={[
+            { label: "Meus Eventos", href: "/dashboard" },
+            { label: isEditing ? "Editar Evento" : "Criar Evento" }
+          ]} 
+        />
+
+        <div className="max-w-4xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Bloco 1: Informações do Evento */}
-          {currentStepId === "basic" && (
-          <Card id="basic">
+          {/* Informações Básicas */}
+          <Card>
             <CardHeader>
               <CardTitle>Informações do Evento</CardTitle>
               <CardDescription>
@@ -476,21 +416,6 @@ export default function CreateEvent() {
                 </p>
               </div>
 
-
-            </CardContent>
-          </Card>
-          )}
-
-          {/* Bloco 2: Banner e Imagens */}
-          {currentStepId === "images" && (
-          <Card id="images">
-            <CardHeader>
-              <CardTitle>Banner e Imagens</CardTitle>
-              <CardDescription>
-                Adicione imagens atraentes para seu evento
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="banner">Banner do Evento</Label>
                 <Alert>
@@ -520,13 +445,14 @@ export default function CreateEvent() {
                   )}
                 </div>
                 {bannerPreview && (
-                  <div className="mt-4 aspect-video w-full overflow-hidden rounded-lg border">
-                    <img src={bannerPreview} alt="Preview Banner" className="w-full h-full object-cover" />
+                  <div className="mt-4 aspect-video w-full max-w-md overflow-hidden rounded-lg border">
+                    <img src={bannerPreview} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
 
-              <div className="space-y-2">
+              {/* Imagem do Card (Página Principal) */}
+              <div className="space-y-2 mt-6">
                 <Label htmlFor="cardImage">Imagem para Página Principal (Opcional)</Label>
                 <Alert>
                   <Info className="h-4 w-4" />
@@ -562,11 +488,9 @@ export default function CreateEvent() {
               </div>
             </CardContent>
           </Card>
-          )}
 
-          {/* Bloco 3: Formulário de Inscrição */}
-          {currentStepId === "form" && (
-          <Card id="form">
+          {/* Formulário de Inscrição */}
+          <Card>
             <CardHeader>
               <CardTitle>Formulário de Inscrição</CardTitle>
               <CardDescription>
@@ -654,13 +578,13 @@ export default function CreateEvent() {
 
               <Button type="button" variant="outline" onClick={addFormField} className="w-full">
                 <Plus className="h-4 w-4 mr-2" />
-                Adicionar Camp              </Button>
+                Adicionar Campo
+              </Button>
             </CardContent>
           </Card>
-          )}
 
-          {/* Bloco 4: Sistema de Ingressos (Opcional) */}
-          {currentStepId === "tickets" && (      <Card>
+          {/* Tipos de Ingressos/Lotes */}
+          <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -690,11 +614,9 @@ export default function CreateEvent() {
               </CardContent>
             )}
           </Card>
-          )}
 
-          {/* Bloco 5: Perguntas Frequentes (FAQ) */}
-          {currentStepId === "faq" && (
-          <Card id="faq">
+          {/* Perguntas Frequentes (FAQ) */}
+          <Card>
             <CardHeader>
               <CardTitle>Perguntas Frequentes (FAQ)</CardTitle>
               <CardDescription>
@@ -739,50 +661,29 @@ export default function CreateEvent() {
               </Button>
             </CardContent>
           </Card>
-          )}
 
-          {/* Botões de Navegação */}
-          <div className="flex justify-between mt-8">
+          <div className="flex gap-4">
             <Button 
-              type="button" 
-              variant="outline" 
-              size="lg"
-              onClick={goToPreviousStep}
-              disabled={currentStepId === "basic"}
+              type="submit" 
+              size="lg" 
+              disabled={createEventMutation.isPending || updateEventMutation.isPending} 
+              className="flex-1"
             >
-              Anterior
+              {isEditing 
+                ? (updateEventMutation.isPending ? "Atualizando..." : "Atualizar Evento")
+                : (createEventMutation.isPending ? "Criando..." : "Criar Evento")}
             </Button>
-            
-            {currentStepId === "faq" ? (
-              <div className="flex gap-4">
-                <Link href="/dashboard">
-                  <Button type="button" variant="outline" size="lg">
-                    Cancelar
-                  </Button>
-                </Link>
-                <Button 
-                  type="submit" 
-                  size="lg" 
-                  disabled={createEventMutation.isPending || updateEventMutation.isPending}
-                >
-                  {isEditing 
-                    ? (updateEventMutation.isPending ? "Atualizando..." : "Atualizar Evento")
-                    : (createEventMutation.isPending ? "Publicando..." : "Publicar Evento")}
-                </Button>
-              </div>
-            ) : (
-              <Button 
-                type="button" 
-                size="lg"
-                onClick={goToNextStep}
-              >
-                Próximo
+            <Link href="/dashboard">
+              <Button type="button" variant="outline" size="lg">
+                Cancelar
               </Button>
-            )}
+            </Link>
           </div>
         </form>
         </div>
-      </div>
+      </main>
+      
+      <Footer />
     </div>
   );
 }
