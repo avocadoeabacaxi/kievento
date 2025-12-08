@@ -313,3 +313,32 @@
 - [x] Adicionar labels bonitas (Data e Horário, Local, Tipo do Evento, Sobre o Evento)
 - [x] Melhorar hierarquia visual e organização das informações
 - [x] Manter consistência com o design da página EventDetails
+
+## Novas Funcionalidades - Gerenciamento de Inscrições (EventDetails)
+- [ ] Adicionar botão para cadastrar convidado manualmente (sem formulário público)
+- [ ] Criar modal/popup para visualizar todos os dados completos do participante
+- [ ] Implementar botão de exportação para Excel/CSV da lista de participantes
+- [ ] API tRPC para criar participante manualmente (createManual)
+- [ ] API tRPC para exportar participantes em formato CSV
+- [ ] Mostrar todos os campos do formulário no modal de detalhes
+
+## Data Limite de Inscrição
+- [x] Adicionar campo "registrationDeadline" (data/hora) no schema de eventos
+- [x] Adicionar campo no formulário de criação/edição de eventos
+- [x] Validar na API se inscrições estão abertas antes de aceitar
+- [x] Mostrar "Inscrições Encerradas" na página pública quando passar a data
+- [x] Bloquear formulário de inscrição após data limite
+
+## Sistema de Ingressos por Lotes (Opcional)
+- [ ] Adicionar campo booleano "hasTicketTypes" no schema de eventos
+- [ ] Criar tabela "ticketTypes" no banco (eventId, name, description, price, quantity, validUntil, color, order)
+- [ ] API para criar/editar/excluir tipos de ingressos
+- [ ] API para obter tipo de ingresso ativo no momento (por data e disponibilidade)
+- [ ] Toggle no formulário de evento para ativar sistema de ingressos
+- [ ] Interface de gerenciamento de lotes (adicionar/remover/reordenar)
+- [ ] Atualizar página de inscrição para mostrar lote atual disponível
+- [ ] Salvar tipo de ingresso escolhido na inscrição
+- [ ] Mostrar tipo de ingresso no ingresso digital (TicketPage)
+- [ ] Lógica automática: quando lote esgota ou expira, passa para próximo
+- [ ] Atualizar estatísticas para mostrar vendas por tipo
+- [ ] Atualizar exportação CSV com coluna de tipo de ingresso

@@ -118,6 +118,9 @@ export default function RegisterPage() {
     );
   }
 
+  // Verificar se as inscrições estão encerradas
+  const isRegistrationClosed = eventData?.registrationDeadline && new Date(eventData.registrationDeadline) < new Date();
+
   if (submitted && registrationResult) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
@@ -243,10 +246,23 @@ export default function RegisterPage() {
             <CardHeader>
               <CardTitle>Formulário de Inscrição</CardTitle>
               <CardDescription>
-                Preencha os campos abaixo para se inscrever no evento
+                {isRegistrationClosed ? "As inscrições para este evento foram encerradas" : "Preencha os campos abaixo para se inscrever no evento"}
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {isRegistrationClosed ? (
+                <div className="text-center py-8 space-y-4">
+                  <div className="h-16 w-16 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center mx-auto">
+                    <Clock className="h-8 w-8 text-red-600 dark:text-red-500" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-bold">Inscrições Encerradas</h3>
+                    <p className="text-muted-foreground">
+                      O período de inscrições para este evento foi encerrado em {format(new Date(eventData!.registrationDeadline!), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}.
+                    </p>
+                  </div>
+                </div>
+              ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 {eventData.formFields.map((field) => (
                   <div key={field.id} className="space-y-2">
@@ -394,6 +410,7 @@ export default function RegisterPage() {
                   {registerMutation.isPending ? "Enviando..." : "Confirmar Inscrição"}
                 </Button>
               </form>
+              )}
             </CardContent>
           </Card>
         </div>

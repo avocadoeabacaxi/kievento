@@ -40,6 +40,7 @@ export default function CreateEvent() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
+  const [registrationDeadline, setRegistrationDeadline] = useState("");
   const [address, setAddress] = useState("");
   const [addressLink, setAddressLink] = useState("");
   const [registrationType, setRegistrationType] = useState<"open" | "approval">("open");
@@ -83,6 +84,7 @@ export default function CreateEvent() {
       setTitle(existingEvent.title);
       setDescription(existingEvent.description || "");
       setEventDate(new Date(existingEvent.eventDate).toISOString().slice(0, 16));
+      setRegistrationDeadline(existingEvent.registrationDeadline ? new Date(existingEvent.registrationDeadline).toISOString().slice(0, 16) : "");
       setAddress(existingEvent.address || "");
       if (existingEvent.address) {
         // Extrair link se existir no formato do address
@@ -204,6 +206,7 @@ export default function CreateEvent() {
       title,
       description,
       eventDate,
+      registrationDeadline: registrationDeadline || undefined,
       address: addressLink ? `${address}|${addressLink}` : address,
       registrationType,
       category: category || undefined,
@@ -273,7 +276,7 @@ export default function CreateEvent() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="eventDate">Data e Hora *</Label>
+                  <Label htmlFor="eventDate">Data e Hora do Evento *</Label>
                   <Input
                     id="eventDate"
                     type="datetime-local"
@@ -283,6 +286,20 @@ export default function CreateEvent() {
                   />
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="registrationDeadline">Data Limite de Inscrição</Label>
+                  <Input
+                    id="registrationDeadline"
+                    type="datetime-local"
+                    value={registrationDeadline}
+                    onChange={(e) => setRegistrationDeadline(e.target.value)}
+                    placeholder="Deixe vazio para sempre aberto"
+                  />
+                  <p className="text-xs text-muted-foreground">Após essa data, a página mostrará \"Inscrições Encerradas\"</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="registrationType">Tipo de Inscrição</Label>
                   <Select value={registrationType} onValueChange={(v: "open" | "approval") => setRegistrationType(v)}>

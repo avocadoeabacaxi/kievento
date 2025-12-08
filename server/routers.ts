@@ -38,6 +38,7 @@ export const appRouter = router({
         title: z.string().min(1),
         description: z.string().optional(),
         eventDate: z.string(),
+        registrationDeadline: z.string().optional(),
         address: z.string().optional(),
         registrationType: z.enum(['open', 'approval']),
         category: z.string().optional(),
@@ -86,6 +87,7 @@ export const appRouter = router({
           title: input.title,
           description: input.description,
           eventDate: new Date(input.eventDate),
+          registrationDeadline: input.registrationDeadline ? new Date(input.registrationDeadline) : undefined,
           address: input.address,
           bannerUrl,
           bannerKey,
@@ -158,6 +160,7 @@ export const appRouter = router({
         title: z.string().optional(),
         description: z.string().optional(),
         eventDate: z.string().optional(),
+        registrationDeadline: z.string().optional(),
         address: z.string().optional(),
         registrationType: z.enum(['open', 'approval']).optional(),
         bannerBase64: z.string().optional(),
@@ -176,6 +179,9 @@ export const appRouter = router({
         if (input.title) updateData.title = input.title;
         if (input.description !== undefined) updateData.description = input.description;
         if (input.eventDate) updateData.eventDate = new Date(input.eventDate);
+        if (input.registrationDeadline !== undefined) {
+          updateData.registrationDeadline = input.registrationDeadline ? new Date(input.registrationDeadline) : null;
+        }
         if (input.address !== undefined) updateData.address = input.address;
         if (input.registrationType) updateData.registrationType = input.registrationType;
 
@@ -470,6 +476,105 @@ export const appRouter = router({
         }
 
         return { registration, event };
+      }),
+
+    // Cadastrar participante manualmente (organizador)
+    createManual: protectedProcedure
+      .input(z.object({
+        eventId: z.number(),
+        name: z.string().min(1),
+        email: z.string().email(),
+        phone: z.string().optional(),
+        formData: z.string(), // JSON stringified
+        status: z.enum(['approved', 'pending']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const event = await db.getEventById(input.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        const qrCode = nanoid(16);
+        const status = input.status || 'approved';
+
+        const registrationId = await db.createRegistration({
+          eventId: input.eventId,
+          name: input.name,
+          email: input.email,
+          phone: input.phone,
+          formData: input.formData,
+          status,
+          qrCode,
+        });
+
+        // Enviar e-mail de confirmação se aprovado
+        if (status === 'approved') {
+          const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
+          const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
+          const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+          const [address] = event.address?.split('|') || [];
+
+          await sendEmail({
+            to: input.email,
+            subject: `✅ Inscrição confirmada - ${event.title}`,
+            html: getConfirmationEmailTemplate({
+              participantName: input.name,
+              eventTitle: event.title,
+              eventDate,
+              eventAddress: address,
+              ticketUrl,
+            }),
+          });
+        }
+
+        return { registrationId, qrCode, status };
+      }),
+
+    // Exportar participantes para CSV
+    exportToCsv: protectedProcedure
+      .input(z.object({ 
+        eventId: z.number(),
+        status: z.enum(['all', 'approved', 'pending', 'rejected']).optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const event = await db.getEventById(input.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        let registrations = await db.getRegistrationsByEventId(input.eventId);
+        
+        // Filtrar por status se especificado
+        if (input.status && input.status !== 'all') {
+          registrations = registrations.filter((r: any) => r.status === input.status);
+        }
+
+        // Gerar CSV
+        const headers = ['Nome', 'Email', 'Telefone', 'Status', 'Check-in', 'Data de Inscrição'];
+        const rows = registrations.map((r: any) => {
+          const formData = r.formData ? JSON.parse(r.formData) : {};
+          const extraFields = Object.entries(formData).map(([key, value]) => `${key}: ${value}`).join(' | ');
+          return [
+            r.name,
+            r.email,
+            r.phone || '',
+            r.status === 'approved' ? 'Aprovado' : r.status === 'pending' ? 'Pendente' : 'Rejeitado',
+            r.checkedIn ? 'Sim' : 'Não',
+            new Date(r.createdAt).toLocaleString('pt-BR'),
+            extraFields,
+          ];
+        });
+
+        const csv = [headers.join(','), ...rows.map(row => row.map(cell => `"${cell}"`).join(','))].join('\n');
+        return { csv, filename: `participantes-${event.title.replace(/\s+/g, '-')}-${Date.now()}.csv` };
       }),
   }),
 

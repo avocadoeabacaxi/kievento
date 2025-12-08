@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2 } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +19,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useLocation } from "wouter";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -32,6 +35,10 @@ export default function EventDetails() {
   const [, setLocation] = useLocation();
   const eventId = params?.id ? parseInt(params.id) : 0;
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRegistration, setSelectedRegistration] = useState<any>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [manualFormData, setManualFormData] = useState<Record<string, any>>({});
 
   const { data: event, isLoading } = trpc.events.getById.useQuery({ eventId });
   const { data: registrations, refetch: refetchRegistrations } = trpc.registrations.listByEvent.useQuery({ eventId });
@@ -46,6 +53,51 @@ export default function EventDetails() {
       toast.error(`Erro: ${error.message}`);
     },
   });
+
+  const createManualMutation = trpc.registrations.createManual.useMutation({
+    onSuccess: () => {
+      toast.success("Participante cadastrado com sucesso!");
+      refetchRegistrations();
+      setIsAddOpen(false);
+      setManualFormData({});
+    },
+    onError: (error) => {
+      toast.error(`Erro: ${error.message}`);
+    },
+  });
+
+  const { data: csvData, refetch: refetchCsv } = trpc.registrations.exportToCsv.useQuery(
+    { eventId, status: 'all' },
+    { enabled: false }
+  );
+
+  const handleExportCsv = async () => {
+    const result = await refetchCsv();
+    if (result.data) {
+      const blob = new Blob([result.data.csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = result.data.filename;
+      link.click();
+      toast.success("Lista exportada com sucesso!");
+    }
+  };
+
+  const handleManualSubmit = () => {
+    if (!manualFormData['Nome Completo'] || !manualFormData['E-mail']) {
+      toast.error("Nome e e-mail são obrigatórios");
+      return;
+    }
+
+    createManualMutation.mutate({
+      eventId,
+      name: manualFormData['Nome Completo'],
+      email: manualFormData['E-mail'],
+      phone: manualFormData['Telefone'] || '',
+      formData: JSON.stringify(manualFormData),
+      status: 'approved',
+    });
+  };
 
   const checkInMutation = trpc.registrations.checkInById.useMutation({
     onSuccess: () => {
@@ -261,7 +313,15 @@ export default function EventDetails() {
                 <CardTitle>Gerenciar Inscrições</CardTitle>
                 <CardDescription>Aprove, rejeite e faça check-in dos participantes</CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={handleExportCsv}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Exportar Excel
+                </Button>
+                <Button variant="outline" onClick={() => setIsAddOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Participante
+                </Button>
                 <Link href={`/events/${eventId}/scan`}>
                   <Button variant="outline">
                     <QrCodeIcon className="h-4 w-4 mr-2" />
@@ -308,12 +368,23 @@ export default function EventDetails() {
                   ) : (
                     pendingRegistrations.map((reg) => (
                       <div key={reg.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium">{reg.name}</p>
                           <p className="text-sm text-muted-foreground">{reg.email}</p>
                           {reg.phone && <p className="text-sm text-muted-foreground">{reg.phone}</p>}
                         </div>
                         <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setSelectedRegistration(reg);
+                              setIsDetailsOpen(true);
+                            }}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            Ver Detalhes
+                          </Button>
                           <Button
                             size="sm"
                             onClick={() => updateStatusMutation.mutate({ registrationId: reg.id, status: "approved" })}
@@ -348,7 +419,18 @@ export default function EventDetails() {
                           <p className="text-sm text-muted-foreground">{reg.email}</p>
                           {reg.phone && <p className="text-sm text-muted-foreground">{reg.phone}</p>}
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setSelectedRegistration(reg);
+                              setIsDetailsOpen(true);
+                            }}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            Ver Detalhes
+                          </Button>
                           {reg.checkedIn ? (
                             <Badge variant="default" className="bg-green-600">
                               <CheckCircle className="h-3 w-3 mr-1" />
@@ -399,6 +481,107 @@ export default function EventDetails() {
       </main>
       
       <Footer />
+
+      {/* Modal de Detalhes do Participante */}
+      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Participante</DialogTitle>
+            <DialogDescription>Informações completas da inscrição</DialogDescription>
+          </DialogHeader>
+          {selectedRegistration && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Nome</Label>
+                  <p className="font-medium">{selectedRegistration.name}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Email</Label>
+                  <p className="font-medium">{selectedRegistration.email}</p>
+                </div>
+                {selectedRegistration.phone && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Telefone</Label>
+                    <p className="font-medium">{selectedRegistration.phone}</p>
+                  </div>
+                )}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Status</Label>
+                  <p className="font-medium">
+                    {selectedRegistration.status === 'approved' ? 'Aprovado' : 
+                     selectedRegistration.status === 'pending' ? 'Pendente' : 'Rejeitado'}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Check-in</Label>
+                  <p className="font-medium">{selectedRegistration.checkedIn ? 'Sim' : 'Não'}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Data de Inscrição</Label>
+                  <p className="font-medium">
+                    {format(new Date(selectedRegistration.createdAt), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  </p>
+                </div>
+              </div>
+
+              {selectedRegistration.formData && (
+                <div className="border-t pt-4">
+                  <Label className="text-sm font-semibold mb-2 block">Dados do Formulário</Label>
+                  <div className="space-y-3">
+                    {Object.entries(JSON.parse(selectedRegistration.formData)).map(([key, value]) => (
+                      <div key={key} className="grid grid-cols-3 gap-2">
+                        <Label className="text-xs text-muted-foreground col-span-1">{key}</Label>
+                        <p className="text-sm col-span-2">{String(value)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Cadastro Manual */}
+      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Adicionar Participante Manualmente</DialogTitle>
+            <DialogDescription>Cadastre um participante diretamente sem formulário público</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {event?.formFields && event.formFields.map((field: any) => (
+              <div key={field.label}>
+                <Label>
+                  {field.label}
+                  {field.required && <span className="text-destructive ml-1">*</span>}
+                </Label>
+                {field.type === 'textarea' ? (
+                  <Textarea
+                    value={manualFormData[field.label] || ''}
+                    onChange={(e) => setManualFormData({ ...manualFormData, [field.label]: e.target.value })}
+                    placeholder={field.placeholder}
+                  />
+                ) : (
+                  <Input
+                    type={field.type}
+                    value={manualFormData[field.label] || ''}
+                    onChange={(e) => setManualFormData({ ...manualFormData, [field.label]: e.target.value })}
+                    placeholder={field.placeholder}
+                  />
+                )}
+              </div>
+            ))}
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setIsAddOpen(false)}>Cancelar</Button>
+              <Button onClick={handleManualSubmit} disabled={createManualMutation.isPending}>
+                {createManualMutation.isPending ? 'Cadastrando...' : 'Cadastrar Participante'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
