@@ -44,9 +44,14 @@ export default function PublicHome() {
               Encontre experiências únicas, conecte-se com pessoas e crie memórias inesquecíveis
             </p>
             <div className="flex flex-wrap gap-4 justify-center pt-4">
-              <Button size="lg" asChild>
+              <Button size="lg" asChild className="bg-primary hover:bg-primary/90">
                 <Link href="/dashboard">
-                  <a>Criar Meu Evento</a>
+                  Gerenciar Eventos
+                </Link>
+              </Button>
+              <Button size="lg" asChild className="bg-primary hover:bg-primary/90">
+                <Link href="/my-tickets">
+                  Meus Ingressos
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>

@@ -239,3 +239,12 @@
 - [x] Gerar código de barras usando biblioteca jsbarcode
 - [x] Adicionar link "Meus Ingressos" no Header para usuários logados
 - [x] Ingresso é público (acessível via QR Code sem autenticação)
+
+## Atualização do Site Principal e Design do Ingresso
+- [x] Substituir botão "Entrar" por dois botões: "Gerenciar Eventos" e "Meus Ingressos"
+- [x] Fazer upload da logo branca (logo-white.png) para /client/public/
+- [x] Mudar fundo do ingresso de azul (ciano) para preto
+- [x] Substituir logo colorida por logo branca no header do ingresso
+- [x] Ajustar cores do texto no header para branco (text-gray-300 para endereço)
+- [x] Remover seção "Ingresso" com preço (agora mostra apenas Participante com data de inscrição)
+- [x] Testar design do ingresso

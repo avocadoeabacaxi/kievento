@@ -99,15 +99,15 @@ export default function TicketPage() {
       {/* Ingresso */}
       <div className="min-h-screen bg-gray-100 print:bg-white flex items-center justify-center p-4 print:p-0">
         <div className="max-w-3xl w-full bg-white shadow-2xl print:shadow-none rounded-lg print:rounded-none overflow-hidden">
-          {/* Header com fundo colorido */}
-          <div className="bg-gradient-to-r from-cyan-400 to-cyan-500 p-6 sm:p-8 text-white">
+          {/* Header com fundo preto */}
+          <div className="bg-black p-6 sm:p-8 text-white">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <h1 className="text-2xl sm:text-3xl font-bold mb-2 leading-tight">
                   {event.title}
                 </h1>
               </div>
-              <img src="/logo.png" alt="KiEvento" className="h-12 sm:h-16 ml-4" />
+              <img src="/logo-white.png" alt="KiEvento" className="h-12 sm:h-16 ml-4" />
             </div>
             
             {/* Data e Local */}
@@ -127,7 +127,7 @@ export default function TicketPage() {
                 </svg>
                 <div>
                   <div className="font-semibold">{addressName}</div>
-                  <div className="text-cyan-50">{fullAddress}</div>
+                  <div className="text-gray-300">{fullAddress}</div>
                 </div>
               </div>
             </div>
@@ -139,22 +139,6 @@ export default function TicketPage() {
             <div className="grid md:grid-cols-2 gap-6">
               {/* Coluna esquerda - Informações */}
               <div className="space-y-4">
-                {/* Seção Ingresso */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">
-                    Ingresso
-                  </div>
-                  <div className="text-lg font-bold text-gray-900">
-                    Ingresso Padrão
-                  </div>
-                  <div className="text-xl font-bold text-gray-900 mt-1">
-                    R$ 0,00
-                  </div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    Comprado dia {purchaseDate}
-                  </div>
-                </div>
-
                 {/* Seção Participante */}
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">
@@ -162,6 +146,9 @@ export default function TicketPage() {
                   </div>
                   <div className="text-lg font-bold text-gray-900 uppercase">
                     {registration.name}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    Inscrito dia {purchaseDate}
                   </div>
                 </div>
               </div>
