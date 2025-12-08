@@ -5,7 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import RichTextEditor from "@/components/RichTextEditor";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Settings } from "lucide-react";
@@ -14,6 +16,8 @@ export default function SiteSettings() {
   const [cookieBannerText, setCookieBannerText] = useState("Utilizamos cookies para melhorar a sua experiência.");
   const [cookieTermsLink, setCookieTermsLink] = useState("/termos");
   const [privacyPolicyLink, setPrivacyPolicyLink] = useState("/privacidade");
+  const [termsOfService, setTermsOfService] = useState("");
+  const [privacyPolicy, setPrivacyPolicy] = useState("");
 
   const { data: settings, refetch } = trpc.siteSettings.getAll.useQuery();
   const updateMutation = trpc.siteSettings.updateMultiple.useMutation({
@@ -31,20 +35,38 @@ export default function SiteSettings() {
       const textSetting = settings.find(s => s.key === "cookie_banner_text");
       const termsLinkSetting = settings.find(s => s.key === "cookie_terms_link");
       const privacyLinkSetting = settings.find(s => s.key === "privacy_policy_link");
+      const termsSetting = settings.find(s => s.key === "terms_of_service");
+      const privacySetting = settings.find(s => s.key === "privacy_policy");
 
       if (textSetting?.value) setCookieBannerText(textSetting.value);
       if (termsLinkSetting?.value) setCookieTermsLink(termsLinkSetting.value);
       if (privacyLinkSetting?.value) setPrivacyPolicyLink(privacyLinkSetting.value);
+      if (termsSetting?.value) setTermsOfService(termsSetting.value);
+      if (privacySetting?.value) setPrivacyPolicy(privacySetting.value);
     }
   }, [settings]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleCookieSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     updateMutation.mutate([
       { key: "cookie_banner_text", value: cookieBannerText },
       { key: "cookie_terms_link", value: cookieTermsLink },
       { key: "privacy_policy_link", value: privacyPolicyLink },
+    ]);
+  };
+
+  const handleTermsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateMutation.mutate([
+      { key: "terms_of_service", value: termsOfService },
+    ]);
+  };
+
+  const handlePrivacySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateMutation.mutate([
+      { key: "privacy_policy", value: privacyPolicy },
     ]);
   };
 
@@ -64,15 +86,23 @@ export default function SiteSettings() {
             </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Banner de Cookies</CardTitle>
+          <Tabs defaultValue="cookie" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="cookie">Banner de Cookies</TabsTrigger>
+              <TabsTrigger value="terms">Termos de Serviço</TabsTrigger>
+              <TabsTrigger value="privacy">Política de Privacidade</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="cookie" className="space-y-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Banner de Cookies</CardTitle>
               <CardDescription>
                 Configure o texto e os links exibidos no banner de cookies
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleCookieSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="cookieBannerText">Texto do Banner</Label>
                   <Textarea
@@ -178,6 +208,92 @@ export default function SiteSettings() {
               </div>
             </CardContent>
           </Card>
+            </TabsContent>
+
+            <TabsContent value="terms" className="space-y-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Termos de Serviço</CardTitle>
+                  <CardDescription>
+                    Edite o conteúdo da página de Termos de Serviço
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleTermsSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label>Conteúdo dos Termos de Serviço</Label>
+                      <RichTextEditor
+                        value={termsOfService}
+                        onChange={setTermsOfService}
+                        placeholder="Digite o conteúdo dos Termos de Serviço..."
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Este conteúdo será exibido na página /termos
+                      </p>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button 
+                        type="submit" 
+                        disabled={updateMutation.isPending}
+                      >
+                        {updateMutation.isPending ? "Salvando..." : "Salvar Termos de Serviço"}
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        asChild
+                      >
+                        <a href="/termos" target="_blank">Visualizar Página</a>
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="privacy" className="space-y-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Política de Privacidade</CardTitle>
+                  <CardDescription>
+                    Edite o conteúdo da página de Política de Privacidade
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handlePrivacySubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label>Conteúdo da Política de Privacidade</Label>
+                      <RichTextEditor
+                        value={privacyPolicy}
+                        onChange={setPrivacyPolicy}
+                        placeholder="Digite o conteúdo da Política de Privacidade..."
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Este conteúdo será exibido na página /privacidade
+                      </p>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button 
+                        type="submit" 
+                        disabled={updateMutation.isPending}
+                      >
+                        {updateMutation.isPending ? "Salvando..." : "Salvar Política de Privacidade"}
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        asChild
+                      >
+                        <a href="/privacidade" target="_blank">Visualizar Página</a>
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 

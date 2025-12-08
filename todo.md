@@ -172,3 +172,12 @@
 - [x] Integrar banner de cookies em páginas públicas (PublicHome, RegisterPage)
 - [x] Integrar rodapé em todas as páginas do sistema (PublicHome, RegisterPage, TicketPage, Dashboard, CreateEvent, EventDetails, ProfilePage, AdminDashboard, ScannerPage, SiteSettings)
 - [x] Sistema de localStorage para lembrar aceitação de cookies
+
+## Páginas de Termos e Privacidade
+- [x] Criar página pública de Termos de Serviço (/termos)
+- [x] Criar página pública de Política de Privacidade (/privacidade)
+- [x] Adicionar editor de texto rico no painel admin para Termos (RichTextEditor)
+- [x] Adicionar editor de texto rico no painel admin para Política de Privacidade (RichTextEditor)
+- [x] Inserir conteúdo padrão de exemplo no banco de dados (via testes)
+- [x] Adicionar rotas no App.tsx (/termos e /privacidade)
+- [x] Testar funcionalidades de edição e visualização (32 testes passando)

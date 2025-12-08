@@ -13,6 +13,8 @@ import TicketPage from "./pages/TicketPage";
 import ScannerPage from "./pages/ScannerPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import SiteSettings from "./pages/SiteSettings";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
 
 function Router() {
@@ -23,6 +25,8 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/settings" component={SiteSettings} />
+      <Route path="/termos" component={TermsPage} />
+      <Route path="/privacidade" component={PrivacyPage} />
       <Route path={"/events/new"} component={CreateEvent} />
       <Route path={"/events/edit/:id"} component={CreateEvent} />
       <Route path="/events/:id" component={EventDetails} />
