@@ -13,6 +13,7 @@ import RichTextEditor from "@/components/RichTextEditor";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 
 type FormFieldType = "text" | "email" | "phone" | "textarea" | "select" | "checkbox" | "cpf" | "cnpj" | "cep";
 
@@ -230,7 +231,15 @@ export default function CreateEvent() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-8">
+      
+      <main className="flex-1 container py-8">
+        <Breadcrumb 
+          items={[
+            { label: "Meus Eventos", href: "/dashboard" },
+            { label: isEditing ? "Editar Evento" : "Criar Evento" }
+          ]} 
+        />
+        
         <div className="mb-6">
           <Link href="/dashboard">
             <Button variant="ghost" size="sm">

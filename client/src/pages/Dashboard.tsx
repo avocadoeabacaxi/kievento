@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -29,6 +30,7 @@ export default function Dashboard() {
       <Header />
       
       <main className="container py-8">
+        <Breadcrumb items={[{ label: "Meus Eventos" }]} />
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold">Meus Eventos</h1>

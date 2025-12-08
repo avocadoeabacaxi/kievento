@@ -23,7 +23,9 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import parse from "html-react-parser";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 
 export default function EventDetails() {
   const [, params] = useRoute("/events/:id");
@@ -100,6 +102,7 @@ export default function EventDetails() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/dashboard">
@@ -136,7 +139,15 @@ export default function EventDetails() {
         </div>
       </header>
 
-      <main className="container py-8 space-y-6">
+      <main className="container py-8">
+        <Breadcrumb 
+          items={[
+            { label: "Meus Eventos", href: "/dashboard" },
+            { label: event?.title || "Detalhes do Evento" }
+          ]} 
+        />
+        
+        <div className="space-y-6">
         {/* Event Header */}
         <div className="space-y-4">
           {event.bannerUrl && (
@@ -352,6 +363,7 @@ export default function EventDetails() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </main>
       
       <Footer />

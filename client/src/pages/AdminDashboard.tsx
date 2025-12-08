@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Calendar, Users, Search, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 
 export default function AdminDashboard() {
   const [eventSearch, setEventSearch] = useState("");
@@ -37,6 +39,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/dashboard">
@@ -52,8 +55,10 @@ export default function AdminDashboard() {
           <div className="w-24" />
         </div>
       </header>
-
-      <main className="container py-8 space-y-6">
+      <main className="container py-8">
+        <Breadcrumb items={[{ label: "Painel Administrativo" }]} />
+        
+        <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold mb-2">Painel Administrativo</h1>
           <p className="text-muted-foreground">
@@ -256,6 +261,7 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
       </main>
       
       <Footer />

@@ -181,3 +181,13 @@
 - [x] Inserir conteúdo padrão de exemplo no banco de dados (via testes)
 - [x] Adicionar rotas no App.tsx (/termos e /privacidade)
 - [x] Testar funcionalidades de edição e visualização (32 testes passando)
+
+## Sistema de Breadcrumb para Admin
+- [x] Criar componente Breadcrumb reutilizável com design elegante (com ícone Home e navegação)
+- [x] Adicionar breadcrumb no Dashboard (Meus Eventos)
+- [x] Adicionar breadcrumb no CreateEvent (Meus Eventos > Criar/Editar Evento)
+- [x] Adicionar breadcrumb no EventDetails (Meus Eventos > Nome do Evento)
+- [x] Adicionar breadcrumb no AdminDashboard (Painel Administrativo)
+- [x] Adicionar breadcrumb no SiteSettings (Configurações do Site)
+- [x] Adicionar breadcrumb no ScannerPage (Meus Eventos > Evento > Validação)
+- [x] Garantir consistência visual em todas as páginas admin

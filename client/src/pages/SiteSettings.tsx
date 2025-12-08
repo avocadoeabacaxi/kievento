@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import RichTextEditor from "@/components/RichTextEditor";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 import { Settings } from "lucide-react";
 
 export default function SiteSettings() {
@@ -76,6 +77,7 @@ export default function SiteSettings() {
       
       <div className="flex-1">
         <div className="container max-w-4xl py-8">
+          <Breadcrumb items={[{ label: "Configurações do Site" }]} />
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-2">
               <Settings className="h-8 w-8 text-primary" />

@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Camera, CheckCircle, XCircle, Search } from "lucide-react";
 import { toast } from "sonner";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 
 export default function ScannerPage() {
   const [, params] = useRoute("/events/:id/scan");
@@ -67,6 +69,7 @@ export default function ScannerPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center gap-4">
           <Link href={`/events/${eventId}`}>
@@ -84,6 +87,13 @@ export default function ScannerPage() {
       </header>
 
       <main className="container py-8 max-w-4xl space-y-6">
+        <Breadcrumb 
+          items={[
+            { label: "Meus Eventos", href: "/dashboard" },
+            { label: event?.title || "Evento", href: `/events/${eventId}` },
+            { label: "Validação de Entrada" }
+          ]} 
+        />
         {/* QR Code Scanner */}
         <Card>
           <CardHeader>
