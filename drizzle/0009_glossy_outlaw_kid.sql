@@ -1,0 +1,1 @@
+ALTER TABLE `events` ADD `status` enum('draft','published') DEFAULT 'draft' NOT NULL;

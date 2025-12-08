@@ -394,3 +394,12 @@
 - [x] Adicionar botões "Editar" em cada seção para voltar às etapas específicas
 - [x] Adicionar Header padrão (logo + menu) na página de criação de eventos
 - [x] Melhorar apresentação visual da etapa Publicar mostrando como ficará para o cliente
+
+## Sistema de Rascunhos (Drafts)
+- [x] Adicionar campo `status` ao schema de eventos (enum: 'draft', 'published')
+- [x] Atualizar procedure de criação de eventos para aceitar status
+- [x] Adicionar botão "Salvar Rascunho" na página de criação
+- [x] Adicionar botão "Publicar" para converter rascunho em publicado
+- [x] Filtrar eventos no Dashboard (separar rascunhos de publicados)
+- [x] Adicionar badge visual para identificar rascunhos
+- [x] Permitir editar e publicar rascunhos posteriormente

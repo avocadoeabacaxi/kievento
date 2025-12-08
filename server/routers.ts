@@ -44,6 +44,7 @@ export const appRouter = router({
         category: z.string().optional(),
         city: z.string().optional(),
         visibility: z.enum(["public", "private"]).optional(),
+        status: z.enum(["draft", "published"]).optional(),
         bannerBase64: z.string().optional(),
         cardImageBase64: z.string().optional(),
         faq: z.string().optional(), // JSON string
@@ -97,6 +98,7 @@ export const appRouter = router({
           category: input.category,
           city: input.city,
           visibility: input.visibility,
+          status: input.status || 'draft',
           faq: input.faq,
         });
 
@@ -163,6 +165,7 @@ export const appRouter = router({
         registrationDeadline: z.string().optional(),
         address: z.string().optional(),
         registrationType: z.enum(['open', 'approval']).optional(),
+        status: z.enum(['draft', 'published']).optional(),
         bannerBase64: z.string().optional(),
         cardImageBase64: z.string().optional(),
       }))
@@ -184,6 +187,7 @@ export const appRouter = router({
         }
         if (input.address !== undefined) updateData.address = input.address;
         if (input.registrationType) updateData.registrationType = input.registrationType;
+        if (input.status) updateData.status = input.status;
 
         if (input.bannerBase64) {
           const base64Data = input.bannerBase64.replace(/^data:image\/\w+;base64,/, '');

@@ -281,7 +281,7 @@ export default function CreateEvent() {
     ));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent, status: 'draft' | 'published' = 'published') => {
     e.preventDefault();
 
     if (!title || !eventDate) {
@@ -299,6 +299,7 @@ export default function CreateEvent() {
       category: category || undefined,
       city: city || undefined,
       visibility,
+      status,
       bannerBase64: bannerBase64 || undefined,
       cardImageBase64: cardImageBase64 || undefined,
       faq: faqItems.length > 0 ? JSON.stringify(faqItems.filter(item => item.question && item.answer)) : undefined,
@@ -794,10 +795,22 @@ export default function CreateEvent() {
                     Cancelar
                   </Button>
                 </Link>
+                {!isEditing && (
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    size="lg" 
+                    disabled={createEventMutation.isPending || updateEventMutation.isPending}
+                    onClick={(e) => handleSubmit(e, 'draft')}
+                  >
+                    {createEventMutation.isPending ? "Salvando..." : "Salvar Rascunho"}
+                  </Button>
+                )}
                 <Button 
                   type="submit" 
                   size="lg" 
                   disabled={createEventMutation.isPending || updateEventMutation.isPending}
+                  onClick={(e) => handleSubmit(e, 'published')}
                 >
                   {isEditing 
                     ? (updateEventMutation.isPending ? "Atualizando..." : "Atualizar Evento")

@@ -67,6 +67,7 @@ export const events = mysqlTable("events", {
   category: varchar("category", { length: 50 }),
   city: varchar("city", { length: 100 }),
   visibility: mysqlEnum("visibility", ["public", "private"]).default("private").notNull(),
+  status: mysqlEnum("status", ["draft", "published"]).default("draft").notNull(), // Status do evento (rascunho ou publicado)
   faq: text("faq"), // JSON string: [{question: string, answer: string}]
   registrationDeadline: timestamp("registrationDeadline"), // Data limite para inscrições
   hasTicketTypes: tinyint("hasTicketTypes").default(0).notNull(), // Sistema de ingressos ativado? (0=false, 1=true)
