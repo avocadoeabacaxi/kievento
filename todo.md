@@ -412,3 +412,13 @@
 - [x] Criar rota pública `/e/:slug` para acessar eventos
 - [x] Exibir URL amigável na página de detalhes do evento
 - [x] Permitir copiar URL amigável com botão
+
+## Correção de Redirecionamento de URL Amigável
+- [ ] Modificar rota /e/:slug para redirecionar para a página de detalhes existente (/events/:id)
+- [ ] Remover página PublicEvent.tsx (não será mais necessária)
+- [ ] Testar redirecionamento funcionando corretamente
+
+## Correção de Redirecionamento de URL Amigável
+- [x] Modificar rota /e/:slug para redirecionar para a página de detalhes existente (/events/:id)
+- [x] Remover página PublicEvent.tsx (não será mais necessária)
+- [x] Testar redirecionamento funcionando corretamente para todos os eventos
