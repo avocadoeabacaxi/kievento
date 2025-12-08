@@ -12,6 +12,7 @@ import RegisterPage from "./pages/RegisterPage";
 import TicketPage from "./pages/TicketPage";
 import ScannerPage from "./pages/ScannerPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import SiteSettings from "./pages/SiteSettings";
 import NotFound from "./pages/NotFound";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/profile" component={ProfilePage} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/settings" component={SiteSettings} />
       <Route path={"/events/new"} component={CreateEvent} />
       <Route path={"/events/edit/:id"} component={CreateEvent} />
       <Route path="/events/:id" component={EventDetails} />

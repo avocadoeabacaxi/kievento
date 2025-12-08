@@ -23,6 +23,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import parse from "html-react-parser";
+import Footer from "@/components/Footer";
 
 export default function EventDetails() {
   const [, params] = useRoute("/events/:id");
@@ -352,6 +353,8 @@ export default function EventDetails() {
           </CardContent>
         </Card>
       </main>
+      
+      <Footer />
     </div>
   );
 }

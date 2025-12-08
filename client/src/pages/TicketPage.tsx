@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent } from "@/components/ui/card";
+import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, User, Mail, CheckCircle, XCircle, Clock } from "lucide-react";
 import { format } from "date-fns";
@@ -213,6 +214,8 @@ export default function TicketPage() {
           </CardContent>
         </Card>
       </div>
+      
+      <Footer />
     </div>
   );
 }

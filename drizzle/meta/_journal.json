@@ -43,6 +43,13 @@
       "when": 1765153320666,
       "tag": "0005_confused_nebula",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1765154618992,
+      "tag": "0006_stiff_quicksilver",
+      "breakpoints": true
     }
   ]
 }

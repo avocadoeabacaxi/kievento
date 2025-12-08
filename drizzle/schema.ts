@@ -128,3 +128,15 @@ export const eventValidators = mysqlTable("eventValidators", {
 
 export type EventValidator = typeof eventValidators.$inferSelect;
 export type InsertEventValidator = typeof eventValidators.$inferInsert;
+/**
+ * Configurações globais do site (banner de cookies, políticas, etc.)
+ */
+export const siteSettings = mysqlTable("siteSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  key: varchar("key", { length: 100 }).notNull().unique(),
+  value: text("value"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SiteSetting = typeof siteSettings.$inferSelect;
+export type InsertSiteSetting = typeof siteSettings.$inferInsert;

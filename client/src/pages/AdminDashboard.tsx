@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar, Users, Search, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import Footer from "@/components/Footer";
 
 export default function AdminDashboard() {
   const [eventSearch, setEventSearch] = useState("");
@@ -256,6 +257,8 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </main>
+      
+      <Footer />
     </div>
   );
 }

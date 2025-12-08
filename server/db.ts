@@ -1,6 +1,6 @@
 import { eq, desc, and, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, events, formFields, registrations, eventValidators, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator } from "../drizzle/schema";
+import { InsertUser, users, events, formFields, registrations, eventValidators, siteSettings, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator, InsertSiteSetting } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -325,4 +325,50 @@ export async function getAllCategories() {
   const categories = allEvents.map(e => e.category).filter(Boolean) as string[];
   const uniqueCategories = Array.from(new Set(categories));
   return uniqueCategories;
+}
+
+// ============ SITE SETTINGS ============
+
+export async function getSiteSetting(key: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get site setting: database not available");
+    return null;
+  }
+
+  const results = await db.select().from(siteSettings).where(eq(siteSettings.key, key));
+  return results[0] || null;
+}
+
+export async function getAllSiteSettings() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get site settings: database not available");
+    return [];
+  }
+
+  return await db.select().from(siteSettings);
+}
+
+export async function updateSiteSetting(key: string, value: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update site setting: database not available");
+    return null;
+  }
+
+  // Verificar se a configuração já existe
+  const existing = await getSiteSetting(key);
+  
+  if (existing) {
+    // Atualizar
+    await db.update(siteSettings)
+      .set({ value, updatedAt: new Date() })
+      .where(eq(siteSettings.key, key));
+  } else {
+    // Inserir
+    await db.insert(siteSettings).values({ key, value });
+  }
+
+  return await getSiteSetting(key);
 }

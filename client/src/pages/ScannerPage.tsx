@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Camera, CheckCircle, XCircle, Search } from "lucide-react";
 import { toast } from "sonner";
+import Footer from "@/components/Footer";
 
 export default function ScannerPage() {
   const [, params] = useRoute("/events/:id/scan");
@@ -235,6 +236,8 @@ export default function ScannerPage() {
           </CardContent>
         </Card>
       </main>
+      
+      <Footer />
     </div>
   );
 }

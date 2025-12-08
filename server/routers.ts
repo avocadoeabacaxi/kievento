@@ -506,6 +506,44 @@ export const appRouter = router({
       }),
   }),
 
+  // Configurações do site
+  siteSettings: router({
+    // Obter configuração por chave
+    get: publicProcedure
+      .input(z.object({ key: z.string() }))
+      .query(async ({ input }) => {
+        return await db.getSiteSetting(input.key);
+      }),
+
+    // Obter todas as configurações
+    getAll: publicProcedure.query(async () => {
+      return await db.getAllSiteSettings();
+    }),
+
+    // Atualizar configuração (apenas admin)
+    update: adminProcedure
+      .input(z.object({
+        key: z.string(),
+        value: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.updateSiteSetting(input.key, input.value);
+      }),
+
+    // Atualizar múltiplas configurações (apenas admin)
+    updateMultiple: adminProcedure
+      .input(z.array(z.object({
+        key: z.string(),
+        value: z.string(),
+      })))
+      .mutation(async ({ input }) => {
+        for (const setting of input) {
+          await db.updateSiteSetting(setting.key, setting.value);
+        }
+        return { success: true };
+      }),
+  }),
+
   // Eventos públicos
   public: router({
     // Listar eventos públicos

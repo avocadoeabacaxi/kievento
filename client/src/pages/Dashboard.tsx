@@ -7,6 +7,7 @@ import { Link, useLocation } from "wouter";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -158,6 +159,8 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+      
+      <Footer />
     </div>
   );
 }

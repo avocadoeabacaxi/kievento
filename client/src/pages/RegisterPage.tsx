@@ -15,6 +15,8 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import parse from "html-react-parser";
 import { MaskedInput } from "@/components/MaskedInput";
+import CookieBanner from "@/components/CookieBanner";
+import Footer from "@/components/Footer";
 
 export default function RegisterPage() {
   const [, params] = useRoute("/register/:id");
@@ -425,6 +427,9 @@ export default function RegisterPage() {
           return null;
         })()}
       </div>
+      
+      <Footer />
+      <CookieBanner />
     </div>
   );
 }

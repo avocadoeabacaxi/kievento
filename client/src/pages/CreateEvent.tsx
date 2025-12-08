@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 type FormFieldType = "text" | "email" | "phone" | "textarea" | "select" | "checkbox" | "cpf" | "cnpj" | "cep";
 
@@ -592,6 +593,8 @@ export default function CreateEvent() {
         </form>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 }

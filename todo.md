@@ -162,3 +162,13 @@
 - [x] Reduzir tamanho da logo KiEvento (de h-8 para h-10)
 - [x] Diminuir espaçamentos entre as informações (reduzidos gaps e paddings)
 - [x] Adicionar títulos/labels para cada seção (Data e Hora, Local, Sobre o Evento, FAQ, Formulário de Inscrição)
+
+## Banner de Cookies e Rodapé
+- [x] Criar tabela de configurações do site no banco de dados (siteSettings)
+- [x] API tRPC para gerenciar configurações (get, getAll, update, updateMultiple)
+- [x] Componente de banner de cookies (com botões Definições e Aceitar, emojis 🍪🥑)
+- [x] Componente de rodapé padronizado (© 2025 KiEvento By Lab485/Avocado - ano dinâmico)
+- [x] Painel Admin para editar textos do banner e links de políticas (/admin/settings)
+- [x] Integrar banner de cookies em páginas públicas (PublicHome, RegisterPage)
+- [x] Integrar rodapé em todas as páginas do sistema (PublicHome, RegisterPage, TicketPage, Dashboard, CreateEvent, EventDetails, ProfilePage, AdminDashboard, ScannerPage, SiteSettings)
+- [x] Sistema de localStorage para lembrar aceitação de cookies
