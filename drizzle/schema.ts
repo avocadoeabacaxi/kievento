@@ -59,6 +59,8 @@ export const events = mysqlTable("events", {
   address: text("address"),
   bannerUrl: text("bannerUrl"),
   bannerKey: text("bannerKey"),
+  cardImageUrl: text("cardImageUrl"), // Imagem otimizada 3:4 para página principal
+  cardImageKey: text("cardImageKey"),
   registrationType: mysqlEnum("registrationType", ["open", "approval"]).notNull(),
   
   // Novos campos

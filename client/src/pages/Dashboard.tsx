@@ -2,7 +2,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, CheckCircle, Clock, Plus } from "lucide-react";
+import { Calendar, Users, CheckCircle, Clock, Plus, Edit } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -126,6 +126,30 @@ export default function Dashboard() {
                             Pendentes
                           </div>
                         </div>
+                      </div>
+                      <div className="mt-4 flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLocation(`/events/edit/${event.id}`);
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Editar
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="flex-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLocation(`/events/${event.id}`);
+                          }}
+                        >
+                          Gerenciar
+                        </Button>
                       </div>
                     </CardContent>
                 </Card>

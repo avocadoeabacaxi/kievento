@@ -135,9 +135,9 @@ export default function PublicHome() {
                     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 h-full border-0 shadow-md rounded-2xl">
                       {/* Banner */}
                       <div className="relative aspect-[3/4] overflow-hidden bg-muted rounded-t-2xl">
-                        {event.bannerUrl ? (
+                        {(event.cardImageUrl || event.bannerUrl) ? (
                           <img
-                            src={event.bannerUrl}
+                            src={event.cardImageUrl || event.bannerUrl || ""}
                             alt={event.title}
                             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                           />

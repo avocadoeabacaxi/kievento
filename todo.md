@@ -152,3 +152,8 @@
 - [x] Aplicar melhorias de tipografia no KiEvento (h1-h4 com tamanhos maiores)
 - [x] Melhorar estrutura e layout das páginas (hero maior, grid 4 colunas, cards 3:4, border-radius 2xl, espaçamentos maiores)
 - [x] Atualizar paleta de cores de verde para vermelho RGB(199, 34, 39)
+
+## Novas Funcionalidades Solicitadas
+- [x] Adicionar campo de imagem separada para página principal (aspect ratio 3:4)
+- [x] Adicionar botão "Editar" nos cards de eventos do Dashboard
+- [x] Atualizar PublicHome para usar imagem otimizada 3:4

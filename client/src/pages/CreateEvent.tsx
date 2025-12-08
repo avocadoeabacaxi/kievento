@@ -46,6 +46,8 @@ export default function CreateEvent() {
   const [visibility, setVisibility] = useState<"public" | "private">("private");
   const [bannerBase64, setBannerBase64] = useState<string>("");
   const [bannerPreview, setBannerPreview] = useState<string>("");
+  const [cardImageBase64, setCardImageBase64] = useState<string>("");
+  const [cardImagePreview, setCardImagePreview] = useState<string>("");
   const [formFields, setFormFields] = useState<FormField[]>([
     { label: "Nome Completo", fieldType: "text", required: true, order: 0 },
     { label: "E-mail", fieldType: "email", required: true, order: 1 },
@@ -94,6 +96,9 @@ export default function CreateEvent() {
       if (existingEvent.bannerUrl) {
         setBannerPreview(existingEvent.bannerUrl);
       }
+      if (existingEvent.cardImageUrl) {
+        setCardImagePreview(existingEvent.cardImageUrl);
+      }
       if (existingEvent.formFields) {
         setFormFields(existingEvent.formFields.map(f => ({
           label: f.label,
@@ -114,6 +119,24 @@ export default function CreateEvent() {
   }, [existingEvent]);
 
   const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setBannerBase64(result);
+      setBannerPreview(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCardImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -185,6 +208,7 @@ export default function CreateEvent() {
       city: city || undefined,
       visibility,
       bannerBase64: bannerBase64 || undefined,
+      cardImageBase64: cardImageBase64 || undefined,
       faq: faqItems.length > 0 ? JSON.stringify(faqItems.filter(item => item.question && item.answer)) : undefined,
       formFields: formFields.map((f) => ({
         ...f,
@@ -365,6 +389,42 @@ export default function CreateEvent() {
                 {bannerPreview && (
                   <div className="mt-4 aspect-video w-full max-w-md overflow-hidden rounded-lg border">
                     <img src={bannerPreview} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+
+              {/* Imagem do Card (Página Principal) */}
+              <div className="space-y-2 mt-6">
+                <Label htmlFor="cardImage">Imagem para Página Principal (Opcional)</Label>
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Tamanho recomendado: <strong>1200x1600 pixels</strong> (proporção 3:4 vertical). Máximo: 5MB. Se não enviar, o banner será usado.
+                  </AlertDescription>
+                </Alert>
+                <div className="flex items-center gap-4 mt-2">
+                  <Input
+                    id="cardImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCardImageUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById("cardImage")?.click()}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Escolher Imagem do Card
+                  </Button>
+                  {cardImagePreview && (
+                    <span className="text-sm text-muted-foreground">Imagem carregada</span>
+                  )}
+                </div>
+                {cardImagePreview && (
+                  <div className="mt-4 aspect-[3/4] w-full max-w-xs overflow-hidden rounded-lg border">
+                    <img src={cardImagePreview} alt="Preview Card" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>

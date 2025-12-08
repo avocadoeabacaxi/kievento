@@ -44,6 +44,7 @@ export const appRouter = router({
         city: z.string().optional(),
         visibility: z.enum(["public", "private"]).optional(),
         bannerBase64: z.string().optional(),
+        cardImageBase64: z.string().optional(),
         faq: z.string().optional(), // JSON string
         formFields: z.array(z.object({
           label: z.string(),
@@ -67,6 +68,19 @@ export const appRouter = router({
           bannerKey = key;
         }
 
+        let cardImageUrl: string | undefined;
+        let cardImageKey: string | undefined;
+
+        // Upload da imagem do card se fornecida
+        if (input.cardImageBase64) {
+          const base64Data = input.cardImageBase64.replace(/^data:image\/\w+;base64,/, '');
+          const buffer = Buffer.from(base64Data, 'base64');
+          const key = `events/${ctx.user.id}/${nanoid()}-card.jpg`;
+          const result = await storagePut(key, buffer, 'image/jpeg');
+          cardImageUrl = result.url;
+          cardImageKey = key;
+        }
+
         const eventId = await db.createEvent({
           userId: ctx.user.id,
           title: input.title,
@@ -75,6 +89,8 @@ export const appRouter = router({
           address: input.address,
           bannerUrl,
           bannerKey,
+          cardImageUrl,
+          cardImageKey,
           registrationType: input.registrationType,
           category: input.category,
           city: input.city,
@@ -145,6 +161,7 @@ export const appRouter = router({
         address: z.string().optional(),
         registrationType: z.enum(['open', 'approval']).optional(),
         bannerBase64: z.string().optional(),
+        cardImageBase64: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const event = await db.getEventById(input.eventId);
