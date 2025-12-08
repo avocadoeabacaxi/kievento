@@ -218,3 +218,24 @@
 - [x] Tratar permissões de câmera e erros de acesso com mensagens claras
 - [x] Otimizar performance do scanner para dispositivos móveis (aspect-video, controles responsivos)
 - [x] Substituir input manual por scanner de câmera como método principal
+
+## Página de Histórico de Ingressos (Meus Ingressos)
+- [x] Criar API tRPC para listar inscrições do usuário logado (myRegistrations)
+- [x] Separar eventos ativos (futuros) e passados
+- [x] Criar página MyTickets com lista de eventos
+- [x] Mostrar informações: nome evento, data, local, status da inscrição
+- [x] Criar página de visualização do ingresso (/ticket/:qrCode)
+- [x] Design do ingresso baseado no modelo fornecido:
+  - [x] Header com nome do evento e datas (fundo ciano com gradiente)
+  - [x] Local completo com endereço (com ícones)
+  - [x] Seção "Ingresso" com tipo e preço (fundo cinza claro)
+  - [x] QR Code grande centralizado (400x400px)
+  - [x] Código do ingresso abaixo do QR Code (fonte mono)
+  - [x] Seção "Participante" com nome completo (maiúsculas)
+  - [x] Código de barras na parte inferior (CODE128)
+  - [x] Data/hora da compra
+- [x] Adicionar botão "Imprimir Ingresso" com CSS otimizado para impressão
+- [x] Gerar QR Code usando biblioteca qrcode
+- [x] Gerar código de barras usando biblioteca jsbarcode
+- [x] Adicionar link "Meus Ingressos" no Header para usuários logados
+- [x] Ingresso é público (acessível via QR Code sem autenticação)

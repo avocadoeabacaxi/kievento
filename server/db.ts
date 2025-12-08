@@ -185,6 +185,19 @@ export async function getAllRegistrations() {
   return db.select().from(registrations).orderBy(desc(registrations.createdAt));
 }
 
+export async function getRegistrationsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Buscar inscrições pelo e-mail do usuário
+  const user = await getUserById(userId);
+  if (!user || !user.email) return [];
+  
+  return db.select().from(registrations)
+    .where(eq(registrations.email, user.email))
+    .orderBy(desc(registrations.createdAt));
+}
+
 export async function searchRegistrationsByName(eventId: number, searchTerm: string) {
   const db = await getDb();
   if (!db) return [];

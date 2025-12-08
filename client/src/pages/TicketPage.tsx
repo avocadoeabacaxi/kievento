@@ -1,40 +1,65 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { Card, CardContent } from "@/components/ui/card";
-import Footer from "@/components/Footer";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, User, Mail, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { XCircle, Printer } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import QRCode from "qrcode";
+import JsBarcode from "jsbarcode";
 
 export default function TicketPage() {
   const [, params] = useRoute("/ticket/:qrCode");
   const qrCode = params?.qrCode || "";
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  const barcodeCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [qrDataUrl, setQrDataUrl] = useState("");
 
   const { data, isLoading } = trpc.registrations.getByQrCode.useQuery({ qrCode });
 
   useEffect(() => {
-    if (canvasRef.current && qrCode) {
-      QRCode.toCanvas(canvasRef.current, qrCode, {
-        width: 300,
+    if (qrCode) {
+      // Gerar QR Code
+      QRCode.toDataURL(qrCode, {
+        width: 400,
         margin: 2,
         color: {
           dark: "#000000",
           light: "#FFFFFF",
         },
+      }).then(url => {
+        setQrDataUrl(url);
+        if (qrCanvasRef.current) {
+          QRCode.toCanvas(qrCanvasRef.current, qrCode, {
+            width: 400,
+            margin: 2,
+          });
+        }
       });
+
+      // Gerar código de barras
+      if (barcodeCanvasRef.current) {
+        JsBarcode(barcodeCanvasRef.current, qrCode, {
+          format: "CODE128",
+          width: 2,
+          height: 80,
+          displayValue: false,
+          margin: 0,
+        });
+      }
     }
   }, [qrCode]);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-background">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Carregando convite...</p>
+          <p className="text-muted-foreground">Carregando ingresso...</p>
         </div>
       </div>
     );
@@ -42,180 +67,173 @@ export default function TicketPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
-        <Card className="max-w-md w-full">
-          <CardContent className="pt-6 text-center space-y-4">
-            <XCircle className="h-16 w-16 text-destructive mx-auto" />
-            <div>
-              <h2 className="text-2xl font-bold">Convite não encontrado</h2>
-              <p className="text-muted-foreground mt-2">
-                Verifique se o link está correto ou entre em contato com o organizador.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="max-w-md w-full text-center space-y-4">
+          <XCircle className="h-16 w-16 text-destructive mx-auto" />
+          <div>
+            <h2 className="text-2xl font-bold">Ingresso não encontrado</h2>
+            <p className="text-muted-foreground mt-2">
+              O código do ingresso não é válido ou foi removido.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
   const { registration, event } = data;
-
-  const getStatusBadge = () => {
-    switch (registration.status) {
-      case "approved":
-        return (
-          <Badge className="bg-green-600">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Aprovado
-          </Badge>
-        );
-      case "pending":
-        return (
-          <Badge variant="secondary">
-            <Clock className="h-3 w-3 mr-1" />
-            Pendente
-          </Badge>
-        );
-      case "rejected":
-        return (
-          <Badge variant="destructive">
-            <XCircle className="h-3 w-3 mr-1" />
-            Rejeitado
-          </Badge>
-        );
-    }
-  };
+  const [addressName, fullAddress] = event.address?.split('|') || ['', ''];
+  const eventDate = format(new Date(event.eventDate), "dd 'set.' yyyy, HH'h'", { locale: ptBR });
+  const purchaseDate = format(new Date(registration.createdAt), "dd 'set.' yyyy '-' HH'h'mm", { locale: ptBR });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background py-8 px-4">
-      <div className="container max-w-2xl">
-        <Card className="overflow-hidden shadow-xl">
-          {/* Event Banner */}
-          {event.bannerUrl && (
-            <div className="aspect-video w-full overflow-hidden">
-              <img src={event.bannerUrl} alt={event.title} className="w-full h-full object-cover" />
-            </div>
-          )}
-
-          <CardContent className="p-6 md:p-8 space-y-6">
-            {/* Header */}
-            <div className="text-center space-y-2">
-              <h1 className="text-2xl md:text-3xl font-bold">{event.title}</h1>
-              <div className="flex items-center justify-center gap-2">
-                {getStatusBadge()}
-              </div>
-            </div>
-
-            {/* Event Details */}
-            <div className="space-y-3 border-t border-b py-4">
-              <div className="flex items-start gap-3">
-                <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="font-medium">Data e Hora</p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(event.eventDate), "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(event.eventDate), "HH:mm", { locale: ptBR })}
-                  </p>
-                </div>
-              </div>
-
-              {event.address && (
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="font-medium">Local</p>
-                    <p className="text-sm text-muted-foreground">{event.address}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Participant Info */}
-            <div className="space-y-3 border-b pb-4">
-              <div className="flex items-center gap-3">
-                <User className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">Participante</p>
-                  <p className="text-sm text-muted-foreground">{registration.name}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">E-mail</p>
-                  <p className="text-sm text-muted-foreground">{registration.email}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* QR Code */}
-            {registration.status === "approved" && (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <h3 className="font-semibold text-lg mb-2">Seu QR Code</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Apresente este código na entrada do evento
-                  </p>
-                </div>
-
-                <div className="flex justify-center">
-                  <div className="bg-white p-4 rounded-lg shadow-inner">
-                    <canvas ref={canvasRef} />
-                  </div>
-                </div>
-
-                {registration.checkedIn ? (
-                  <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4 text-center">
-                    <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-500 mx-auto mb-2" />
-                    <p className="font-medium text-green-900 dark:text-green-100">
-                      Check-in realizado!
-                    </p>
-                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                      {registration.checkedInAt &&
-                        format(new Date(registration.checkedInAt), "d/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center">
-                    <p className="text-sm text-blue-900 dark:text-blue-100">
-                      💡 Salve esta página ou tire um print do QR Code para facilitar na entrada
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {registration.status === "pending" && (
-              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4 text-center">
-                <Clock className="h-8 w-8 text-amber-600 dark:text-amber-500 mx-auto mb-2" />
-                <p className="font-medium text-amber-900 dark:text-amber-100">
-                  Aguardando Aprovação
-                </p>
-                <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                  Seu convite com QR Code será liberado após a aprovação do organizador
-                </p>
-              </div>
-            )}
-
-            {registration.status === "rejected" && (
-              <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 text-center">
-                <XCircle className="h-8 w-8 text-red-600 dark:text-red-500 mx-auto mb-2" />
-                <p className="font-medium text-red-900 dark:text-red-100">
-                  Inscrição Não Aprovada
-                </p>
-                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                  Entre em contato com o organizador para mais informações
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+    <>
+      {/* Botão de impressão - oculto na impressão */}
+      <div className="print:hidden fixed top-4 right-4 z-50">
+        <Button onClick={handlePrint} size="lg" className="shadow-lg">
+          <Printer className="h-5 w-5 mr-2" />
+          Imprimir Ingresso
+        </Button>
       </div>
-      
-      <Footer />
-    </div>
+
+      {/* Ingresso */}
+      <div className="min-h-screen bg-gray-100 print:bg-white flex items-center justify-center p-4 print:p-0">
+        <div className="max-w-3xl w-full bg-white shadow-2xl print:shadow-none rounded-lg print:rounded-none overflow-hidden">
+          {/* Header com fundo colorido */}
+          <div className="bg-gradient-to-r from-cyan-400 to-cyan-500 p-6 sm:p-8 text-white">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2 leading-tight">
+                  {event.title}
+                </h1>
+              </div>
+              <img src="/logo.png" alt="KiEvento" className="h-12 sm:h-16 ml-4" />
+            </div>
+            
+            {/* Data e Local */}
+            <div className="space-y-2 text-sm sm:text-base">
+              <div className="flex items-start gap-2">
+                <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  {eventDate}
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <div className="font-semibold">{addressName}</div>
+                  <div className="text-cyan-50">{fullAddress}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Corpo do ingresso */}
+          <div className="p-6 sm:p-8 space-y-6">
+            {/* Grid com informações e QR Code */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Coluna esquerda - Informações */}
+              <div className="space-y-4">
+                {/* Seção Ingresso */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">
+                    Ingresso
+                  </div>
+                  <div className="text-lg font-bold text-gray-900">
+                    Ingresso Padrão
+                  </div>
+                  <div className="text-xl font-bold text-gray-900 mt-1">
+                    R$ 0,00
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    Comprado dia {purchaseDate}
+                  </div>
+                </div>
+
+                {/* Seção Participante */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-2">
+                    Participante
+                  </div>
+                  <div className="text-lg font-bold text-gray-900 uppercase">
+                    {registration.name}
+                  </div>
+                </div>
+              </div>
+
+              {/* Coluna direita - QR Code */}
+              <div className="flex flex-col items-center justify-center bg-gray-50 p-6 rounded-lg">
+                <canvas ref={qrCanvasRef} className="max-w-full h-auto" />
+                <div className="mt-3 text-center">
+                  <div className="text-sm font-mono font-bold text-gray-900 tracking-wider">
+                    {qrCode}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Código de barras */}
+            <div className="border-t pt-6">
+              <div className="flex justify-center">
+                <canvas ref={barcodeCanvasRef} className="max-w-full h-auto" />
+              </div>
+            </div>
+
+            {/* Status da inscrição */}
+            {registration.status === 'pending' && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+                <p className="text-yellow-800 font-medium">
+                  ⏳ Aguardando aprovação do organizador
+                </p>
+              </div>
+            )}
+
+            {registration.status === 'rejected' && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                <p className="text-red-800 font-medium">
+                  ❌ Inscrição não aprovada
+                </p>
+              </div>
+            )}
+
+            {registration.checkedIn && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                <p className="text-green-800 font-medium">
+                  ✅ Check-in realizado em {format(new Date(registration.checkedInAt!), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 px-6 sm:px-8 py-4 text-center text-xs text-gray-500 border-t print:border-gray-300">
+            © {new Date().getFullYear()} KiEvento By Lab485/Avocado. Todos os direitos reservados.
+          </div>
+        </div>
+      </div>
+
+      {/* Estilos de impressão */}
+      <style>{`
+        @media print {
+          @page {
+            size: A4;
+            margin: 0;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+          }
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+        }
+      `}</style>
+    </>
   );
 }

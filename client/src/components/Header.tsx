@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, User, LogOut, Settings, LayoutDashboard, Cog } from "lucide-react";
+import { Calendar, User, LogOut, Settings, LayoutDashboard, Cog, Ticket } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
@@ -75,6 +75,12 @@ export default function Header() {
                   <Link href="/dashboard" className="flex items-center w-full">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     <span>Meus Eventos</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/my-tickets" className="flex items-center w-full">
+                    <Ticket className="mr-2 h-4 w-4" />
+                    <span>Meus Ingressos</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

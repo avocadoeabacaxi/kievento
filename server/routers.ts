@@ -435,6 +435,26 @@ export const appRouter = router({
         return { success: true, registration: updatedRegistration };
       }),
 
+    // Listar inscrições do usuário logado
+    myRegistrations: protectedProcedure.query(async ({ ctx }) => {
+      const registrations = await db.getRegistrationsByUserId(ctx.user.id);
+      
+      // Buscar informações dos eventos
+      const registrationsWithEvents = await Promise.all(
+        registrations.map(async (reg: any) => {
+          const event = await db.getEventById(reg.eventId);
+          return { ...reg, event };
+        })
+      );
+      
+      // Separar eventos ativos (futuros) e passados
+      const now = new Date();
+      const active = registrationsWithEvents.filter((r: any) => r.event && new Date(r.event.eventDate) >= now);
+      const past = registrationsWithEvents.filter((r: any) => r.event && new Date(r.event.eventDate) < now);
+      
+      return { active, past };
+    }),
+
     // Obter detalhes da inscrição por QR Code (público para visualizar convite)
     getByQrCode: publicProcedure
       .input(z.object({ qrCode: z.string() }))

@@ -15,6 +15,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import SiteSettings from "./pages/SiteSettings";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import MyTickets from "./pages/MyTickets";
 import NotFound from "./pages/NotFound";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path={"/"} component={PublicHome} />
       <Route path="/profile" component={ProfilePage} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/my-tickets" component={MyTickets} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/settings" component={SiteSettings} />
       <Route path="/termos" component={TermsPage} />
