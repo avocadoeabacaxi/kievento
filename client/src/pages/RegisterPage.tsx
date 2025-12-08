@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +22,8 @@ import Footer from "@/components/Footer";
 
 export default function RegisterPage() {
   const [, params] = useRoute("/register/:id");
+  const [, setLocation] = useLocation();
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
   const eventId = params?.id ? parseInt(params.id) : 0;
 
   const { data: eventData, isLoading } = trpc.events.getById.useQuery({ eventId });
@@ -35,7 +39,11 @@ export default function RegisterPage() {
     onSuccess: (data) => {
       setRegistrationResult(data);
       setSubmitted(true);
-      toast.success("Inscrição realizada com sucesso!");
+      toast.success("Cadastro realizado com sucesso! Você será redirecionado para seus ingressos...");
+      // Redirecionar após 2 segundos
+      setTimeout(() => {
+        setLocation("/my-tickets");
+      }, 2000);
     },
     onError: (error) => {
       toast.error(`Erro ao realizar inscrição: ${error.message}`);
@@ -71,6 +79,15 @@ export default function RegisterPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Verificar se o usuário está logado
+    if (!isAuthenticated) {
+      toast.error("Você precisa fazer login para se inscrever neste evento");
+      setTimeout(() => {
+        window.location.href = getLoginUrl();
+      }, 1500);
+      return;
+    }
+
     // Validar campos obrigatórios
     const requiredFields = eventData!.formFields.filter((f) => f.required);
     for (const field of requiredFields) {
@@ -100,12 +117,12 @@ export default function RegisterPage() {
     });
   };
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Carregando evento...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">{authLoading ? "Verificando autenticação..." : "Carregando evento..."}</p>
         </div>
       </div>
     );

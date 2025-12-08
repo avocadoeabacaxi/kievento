@@ -426,3 +426,10 @@
 ## Correção: Redirecionar para Página Pública
 - [x] Modificar redirecionamento de /e/:slug para /register/:id (página pública de inscrição)
 - [x] Testar que usuários não logados veem a página de inscrição corretamente
+
+## Novo Fluxo de Inscrição com Autenticação
+- [ ] Modificar página de inscrição para mostrar conteúdo mas bloquear formulário até login
+- [ ] Adicionar botão "Fazer Login para se Inscrever" quando usuário não estiver logado
+- [ ] Após login, mostrar formulário de inscrição + seleção de ingressos
+- [ ] Após submeter inscrição, mostrar mensagem de confirmação
+- [ ] Redirecionar automaticamente para /my-tickets após confirmação
