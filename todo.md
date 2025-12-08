@@ -285,3 +285,15 @@
 - [x] Ajustar layout do código abaixo do QR Code (adicionado mb-4 e break-all)
 - [x] Adicionar espaçamento adequado entre QR Code e código de texto
 - [x] Ajustar tamanho do canvas (300x300px com maxWidth/maxHeight)
+
+## Correções no Ingresso
+- [ ] Adicionar logo branca no header do ingresso (logo sumiu)
+- [ ] Transformar link longo do Google Maps em botão "Ver no Mapa"
+- [ ] Corrigir renderização do QR Code (canvas aparecendo como "0")
+- [ ] Testar QR Code em diferentes navegadores
+
+## Correções Urgentes na Página do Ingresso (TicketPage)
+- [x] Corrigir imports faltantes (useRef, useState, useEffect) no TicketPage.tsx
+- [x] Corrigir renderização do QR Code no canvas (adicionar delay e dependência de data)
+- [x] Transformar link longo do Google Maps em botão elegante "Ir"
+- [x] Remover console.logs de debug do código de produção

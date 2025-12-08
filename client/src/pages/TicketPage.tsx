@@ -16,20 +16,24 @@ export default function TicketPage() {
   const { data, isLoading } = trpc.registrations.getByQrCode.useQuery({ qrCode });
 
   useEffect(() => {
-    if (qrCode && qrCanvasRef.current) {
-      // Gerar QR Code no canvas
-      QRCode.toCanvas(qrCanvasRef.current, qrCode, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: "#000000",
-          light: "#FFFFFF",
-        },
-      }).catch(err => {
-        console.error("Erro ao gerar QR Code:", err);
-      });
+    if (qrCode && qrCanvasRef.current && data) {
+      // Pequeno delay para garantir que o canvas está montado no DOM
+      setTimeout(() => {
+        if (qrCanvasRef.current) {
+          QRCode.toCanvas(qrCanvasRef.current, qrCode, {
+            width: 300,
+            margin: 2,
+            color: {
+              dark: "#000000",
+              light: "#FFFFFF",
+            },
+          }).catch(err => {
+            console.error("Erro ao gerar QR Code:", err);
+          });
+        }
+      }, 100);
     }
-  }, [qrCode]);
+  }, [qrCode, data]);
 
   const handlePrint = () => {
     window.print();
@@ -78,7 +82,15 @@ export default function TicketPage() {
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               {/* Logo - centralizada em mobile, à direita em desktop */}
               <div className="flex justify-center sm:order-2 sm:justify-end">
-                <img src="/logo-white.png" alt="KiEvento" className="h-12 sm:h-16" />
+                <img 
+                  src="/logo-white.png" 
+                  alt="KiEvento" 
+                  className="h-12 sm:h-16"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/logo.png';
+                  }}
+                />
               </div>
               
               {/* Conteúdo - abaixo da logo em mobile, à esquerda em desktop */}
@@ -102,9 +114,23 @@ export default function TicketPage() {
                   <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
-                  <div className="text-sm sm:text-base text-center sm:text-left">
-                    <div className="font-semibold">{addressName}</div>
-                    <div className="text-gray-300">{fullAddress}</div>
+                  <div className="text-sm sm:text-base text-center sm:text-left flex-1">
+                    <div className="flex items-center gap-2 justify-center sm:justify-start">
+                      <div className="font-semibold">{addressName}</div>
+                      {fullAddress && fullAddress.startsWith('http') && (
+                        <a 
+                          href={fullAddress} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded transition-colors"
+                        >
+                          Ir
+                        </a>
+                      )}
+                    </div>
+                    {fullAddress && !fullAddress.startsWith('http') && (
+                      <div className="text-gray-300 mt-1">{fullAddress}</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -135,9 +161,10 @@ export default function TicketPage() {
               <div className="flex flex-col items-center justify-center bg-gray-50 p-6 rounded-lg">
                 <div className="w-full max-w-[300px] flex items-center justify-center mb-4">
                   <canvas 
-                    ref={qrCanvasRef} 
-                    className="w-full h-auto"
-                    style={{ maxWidth: '300px', maxHeight: '300px' }}
+                    ref={qrCanvasRef}
+                    width={300}
+                    height={300}
+                    className="w-full h-auto border border-gray-200 rounded"
                   />
                 </div>
                 <div className="text-center w-full">
