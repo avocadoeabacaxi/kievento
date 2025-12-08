@@ -142,3 +142,6 @@
 - [x] Remover links de navegação (Eventos, Meus Eventos, Admin) do header
 - [x] Manter apenas logo centralizada e menu dropdown do usuário
 - [x] Adicionar opções de navegação dentro do menu dropdown
+
+## Bugs a Corrigir
+- [x] Erro de `<a>` aninhado no menu dropdown do Header - removidas tags `<a>` desnecessárias

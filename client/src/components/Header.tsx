@@ -66,36 +66,28 @@ export default function Header() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/">
-                    <a className="flex items-center w-full">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      <span>Eventos</span>
-                    </a>
+                  <Link href="/" className="flex items-center w-full">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>Eventos</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard">
-                    <a className="flex items-center w-full">
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
-                      <span>Meus Eventos</span>
-                    </a>
+                  <Link href="/dashboard" className="flex items-center w-full">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <span>Meus Eventos</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <a className="flex items-center w-full">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Meu Perfil</span>
-                    </a>
+                  <Link href="/profile" className="flex items-center w-full">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Meu Perfil</span>
                   </Link>
                 </DropdownMenuItem>
                 {user.role === "admin" && (
                   <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <a className="flex items-center w-full">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Admin</span>
-                      </a>
+                    <Link href="/admin" className="flex items-center w-full">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Admin</span>
                     </Link>
                   </DropdownMenuItem>
                 )}
