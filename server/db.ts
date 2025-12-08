@@ -173,6 +173,26 @@ export async function getRegistrationByQrCode(qrCode: string) {
   return result[0];
 }
 
+export async function getRegistrationWithEventByQrCode(qrCode: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select({
+      registration: registrations,
+      event: events,
+    })
+    .from(registrations)
+    .leftJoin(events, eq(registrations.eventId, events.id))
+    .where(eq(registrations.qrCode, qrCode))
+    .limit(1);
+  
+  if (!result[0] || !result[0].event) return undefined;
+  return {
+    ...result[0].registration,
+    event: result[0].event,
+  };
+}
+
 export async function getRegistrationsByEventId(eventId: number) {
   const db = await getDb();
   if (!db) return [];

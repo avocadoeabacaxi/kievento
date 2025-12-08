@@ -265,3 +265,13 @@
 - [x] Rodapé fica visível sempre (fixed bottom-0 left-0 right-0)
 - [x] Ocultar rodapé fixo na impressão (print:hidden)
 - [x] Adicionar padding-bottom no conteúdo (pb-24 print:pb-0)
+
+## Melhorias no Ingresso e Validação
+- [x] Remover código de barras do ingresso (removido import JsBarcode e canvas)
+- [x] Adicionar botão "Adicionar à Carteira" no rodapé fixo (com ícone Wallet)
+- [x] Implementar endpoint /api/wallet/pass/:qrCode para geração de PKPass
+- [x] Criar função getRegistrationWithEventByQrCode no db.ts
+- [x] Criar sons de feedback usando Web Audio API (beep sucesso 800Hz sine, erro 200Hz sawtooth)
+- [x] Adicionar reprodução de som na validação de QR Code (ScannerPage)
+- [x] Som de sucesso (verde, 800Hz, 0.2s) quando check-in bem-sucedido
+- [x] Som de erro (vermelho, 200Hz, 0.3s) quando QR Code inválido ou já usado

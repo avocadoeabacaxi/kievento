@@ -2,17 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { XCircle, Printer } from "lucide-react";
+import { XCircle, Printer, Wallet } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import QRCode from "qrcode";
-import JsBarcode from "jsbarcode";
 
 export default function TicketPage() {
   const [, params] = useRoute("/ticket/:qrCode");
   const qrCode = params?.qrCode || "";
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-  const barcodeCanvasRef = useRef<HTMLCanvasElement>(null);
   const [qrDataUrl, setQrDataUrl] = useState("");
 
   const { data, isLoading } = trpc.registrations.getByQrCode.useQuery({ qrCode });
@@ -37,16 +35,7 @@ export default function TicketPage() {
         }
       });
 
-      // Gerar código de barras
-      if (barcodeCanvasRef.current) {
-        JsBarcode(barcodeCanvasRef.current, qrCode, {
-          format: "CODE128",
-          width: 2,
-          height: 80,
-          displayValue: false,
-          margin: 0,
-        });
-      }
+
     }
   }, [qrCode]);
 
@@ -171,13 +160,6 @@ export default function TicketPage() {
               </div>
             </div>
 
-            {/* Código de barras */}
-            <div className="border-t pt-6">
-              <div className="flex justify-center">
-                <canvas ref={barcodeCanvasRef} className="max-w-full h-auto" />
-              </div>
-            </div>
-
             {/* Status da inscrição */}
             {registration.status === 'pending' && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
@@ -211,12 +193,21 @@ export default function TicketPage() {
         </div>
       </div>
 
-      {/* Rodapé fixo com botão Imprimir - oculto na impressão */}
+      {/* Rodapé fixo com botões - oculto na impressão */}
       <div className="print:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50">
-        <div className="container py-4 flex justify-center">
+        <div className="container py-4 flex flex-wrap justify-center gap-3">
           <Button onClick={handlePrint} size="lg" className="shadow-md">
             <Printer className="h-5 w-5 mr-2" />
             Imprimir Ingresso
+          </Button>
+          <Button 
+            onClick={() => window.open(`/api/wallet/pass/${qrCode}`, '_blank')} 
+            size="lg" 
+            variant="outline" 
+            className="shadow-md"
+          >
+            <Wallet className="h-5 w-5 mr-2" />
+            Adicionar à Carteira
           </Button>
         </div>
       </div>

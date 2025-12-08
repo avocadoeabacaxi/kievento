@@ -18,6 +18,46 @@ export default function ScannerPage() {
   const [qrCodeInput, setQrCodeInput] = useState("");
   const [searchName, setSearchName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Sons de feedback
+  const successSound = useRef<HTMLAudioElement | null>(null);
+  const errorSound = useRef<HTMLAudioElement | null>(null);
+  
+  useEffect(() => {
+    // Criar sons usando Web Audio API
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    // Som de sucesso (beep verde - tom mais alto e agradável)
+    const createSuccessSound = () => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.value = 800; // Frequência mais alta
+      oscillator.type = 'sine';
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+    };
+    
+    // Som de erro (beep vermelho - tom mais baixo e grave)
+    const createErrorSound = () => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.value = 200; // Frequência mais baixa
+      oscillator.type = 'sawtooth';
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    };
+    
+    successSound.current = { play: createSuccessSound } as any;
+    errorSound.current = { play: createErrorSound } as any;
+  }, []);
 
   const { data: event } = trpc.events.getById.useQuery({ eventId });
   const { data: searchResults } = trpc.registrations.searchByName.useQuery(
@@ -36,12 +76,16 @@ export default function ScannerPage() {
       setLastResult({ success: true, registration: data.registration });
       setQrCodeInput("");
       toast.success(`Check-in realizado: ${data.registration.name}`);
+      // Tocar som de sucesso
+      successSound.current?.play();
       setTimeout(() => inputRef.current?.focus(), 100);
     },
     onError: (error) => {
       setLastResult({ success: false, error: error.message });
       setQrCodeInput("");
       toast.error(error.message);
+      // Tocar som de erro
+      errorSound.current?.play();
       setTimeout(() => inputRef.current?.focus(), 100);
     },
   });
