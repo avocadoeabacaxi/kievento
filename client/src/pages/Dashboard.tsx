@@ -130,22 +130,30 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-4 flex gap-2">
+                      <div className="mt-4 grid grid-cols-3 gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1"
                           onClick={(e) => {
                             e.stopPropagation();
                             setLocation(`/events/edit/${event.id}`);
                           }}
                         >
-                          <Edit className="h-4 w-4 mr-2" />
+                          <Edit className="h-4 w-4 mr-1" />
                           Editar
                         </Button>
                         <Button
+                          variant="outline"
                           size="sm"
-                          className="flex-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLocation(`/events/${event.id}/scan`);
+                          }}
+                        >
+                          Evento
+                        </Button>
+                        <Button
+                          size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             setLocation(`/events/${event.id}`);

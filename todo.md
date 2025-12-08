@@ -197,3 +197,13 @@
 - [x] Remover botão "Voltar" do EventDetails (mantido botão Excluir)
 - [x] Remover botão "Voltar" do AdminDashboard (já tem breadcrumb)
 - [x] Remover botão "Voltar" do ScannerPage (já tem breadcrumb)
+
+## Botão "Evento" e Otimização Mobile da Validação
+- [x] Adicionar botão "Evento" no card de eventos do Dashboard (grid 3 colunas: Editar, Evento, Gerenciar)
+- [x] Botão direciona para /events/:id/scan (página de Validação de Entrada)
+- [x] Otimizar ScannerPage para responsividade mobile (100% mobile-friendly)
+- [x] Melhorar layout do scanner QR para dispositivos móveis (inputs maiores h-12, texto maior)
+- [x] Melhorar layout da busca por nome para dispositivos móveis (cards flex-col em mobile)
+- [x] Garantir que todos os elementos sejam facilmente clicáveis em telas pequenas (botões h-10/h-12)
+- [x] Breadcrumb oculto em mobile para layout mais limpo
+- [x] Header otimizado com padding responsivo e texto centralizado

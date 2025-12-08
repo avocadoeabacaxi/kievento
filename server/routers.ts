@@ -431,7 +431,8 @@ export const appRouter = router({
         }
 
         await db.checkInRegistration(registration.id, ctx.user.id);
-        return { success: true };
+        const updatedRegistration = await db.getRegistrationById(registration.id);
+        return { success: true, registration: updatedRegistration };
       }),
 
     // Obter detalhes da inscrição por QR Code (público para visualizar convite)
