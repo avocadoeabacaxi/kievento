@@ -191,3 +191,9 @@
 - [x] Adicionar breadcrumb no SiteSettings (Configurações do Site)
 - [x] Adicionar breadcrumb no ScannerPage (Meus Eventos > Evento > Validação)
 - [x] Garantir consistência visual em todas as páginas admin
+
+## Remover Botões "Voltar" Redundantes
+- [x] Remover botão "Voltar" do CreateEvent (já tem breadcrumb)
+- [x] Remover botão "Voltar" do EventDetails (mantido botão Excluir)
+- [x] Remover botão "Voltar" do AdminDashboard (já tem breadcrumb)
+- [x] Remover botão "Voltar" do ScannerPage (já tem breadcrumb)

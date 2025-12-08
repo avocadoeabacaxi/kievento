@@ -71,18 +71,11 @@ export default function ScannerPage() {
     <div className="min-h-screen bg-background">
       <Header />
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center gap-4">
-          <Link href={`/events/${eventId}`}>
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-          </Link>
-          <div className="flex-1 text-center">
+        <div className="container flex h-16 items-center justify-center">
+          <div className="text-center">
             <h1 className="font-semibold">Validação de Entrada</h1>
             {event && <p className="text-sm text-muted-foreground">{event.title}</p>}
           </div>
-          <div className="w-20" />
         </div>
       </header>
 

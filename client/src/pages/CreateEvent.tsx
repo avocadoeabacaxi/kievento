@@ -239,15 +239,6 @@ export default function CreateEvent() {
             { label: isEditing ? "Editar Evento" : "Criar Evento" }
           ]} 
         />
-        
-        <div className="mb-6">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-          </Link>
-        </div>
 
         <div className="max-w-4xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
