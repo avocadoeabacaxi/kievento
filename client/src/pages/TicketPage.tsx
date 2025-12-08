@@ -101,33 +101,38 @@ export default function TicketPage() {
         <div className="max-w-3xl w-full bg-white shadow-2xl print:shadow-none rounded-lg print:rounded-none overflow-hidden">
           {/* Header com fundo preto */}
           <div className="bg-black p-6 sm:p-8 text-white">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold mb-2 leading-tight">
-                  {event.title}
-                </h1>
-              </div>
-              <img src="/logo-white.png" alt="KiEvento" className="h-12 sm:h-16 ml-4" />
-            </div>
-            
-            {/* Data e Local */}
-            <div className="space-y-2 text-sm sm:text-base">
-              <div className="flex items-start gap-2">
-                <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                </svg>
-                <div>
-                  {eventDate}
-                </div>
+            {/* Layout Mobile: Logo primeiro, depois conteúdo */}
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+              {/* Logo - centralizada em mobile, à direita em desktop */}
+              <div className="flex justify-center sm:order-2 sm:justify-end">
+                <img src="/logo-white.png" alt="KiEvento" className="h-12 sm:h-16" />
               </div>
               
-              <div className="flex items-start gap-2">
-                <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                <div>
-                  <div className="font-semibold">{addressName}</div>
-                  <div className="text-gray-300">{fullAddress}</div>
+              {/* Conteúdo - abaixo da logo em mobile, à esquerda em desktop */}
+              <div className="flex-1 sm:order-1 space-y-3">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight text-center sm:text-left">
+                  {event.title}
+                </h1>
+                
+                {/* Data */}
+                <div className="flex items-start gap-2 justify-center sm:justify-start">
+                  <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    </svg>
+                  <div className="text-sm sm:text-base">
+                    {eventDate}
+                  </div>
+                </div>
+                
+                {/* Local */}
+                <div className="flex items-start gap-2 justify-center sm:justify-start">
+                  <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  <div className="text-sm sm:text-base text-center sm:text-left">
+                    <div className="font-semibold">{addressName}</div>
+                    <div className="text-gray-300">{fullAddress}</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -155,7 +160,9 @@ export default function TicketPage() {
 
               {/* Coluna direita - QR Code */}
               <div className="flex flex-col items-center justify-center bg-gray-50 p-6 rounded-lg">
-                <canvas ref={qrCanvasRef} className="max-w-full h-auto" />
+                <div className="w-full max-w-[300px] aspect-square flex items-center justify-center">
+                  <canvas ref={qrCanvasRef} className="w-full h-full" style={{ imageRendering: 'pixelated' }} />
+                </div>
                 <div className="mt-3 text-center">
                   <div className="text-sm font-mono font-bold text-gray-900 tracking-wider">
                     {qrCode}

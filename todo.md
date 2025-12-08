@@ -248,3 +248,14 @@
 - [x] Ajustar cores do texto no header para branco (text-gray-300 para endereço)
 - [x] Remover seção "Ingresso" com preço (agora mostra apenas Participante com data de inscrição)
 - [x] Testar design do ingresso
+
+## Correção do Layout Responsivo do Ingresso e Favicon
+- [x] Adicionar favicon (favi.png) ao site
+- [x] Reorganizar header do ingresso em mobile:
+  - [x] Logo centralizada no topo
+  - [x] Nome do evento abaixo da logo (centralizado em mobile)
+  - [x] Data do evento (centralizada em mobile)
+  - [x] Endereço completo (centralizado em mobile)
+- [x] Ajustar QR Code para não ficar achatado em mobile (aspect-square)
+- [x] Garantir aspect-ratio correto do QR Code (max-w-[300px] aspect-square)
+- [x] Layout flex-col em mobile, flex-row em desktop
