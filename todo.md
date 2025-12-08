@@ -422,3 +422,7 @@
 - [x] Modificar rota /e/:slug para redirecionar para a página de detalhes existente (/events/:id)
 - [x] Remover página PublicEvent.tsx (não será mais necessária)
 - [x] Testar redirecionamento funcionando corretamente para todos os eventos
+
+## Correção: Redirecionar para Página Pública
+- [x] Modificar redirecionamento de /e/:slug para /register/:id (página pública de inscrição)
+- [x] Testar que usuários não logados veem a página de inscrição corretamente

@@ -11,10 +11,10 @@ export default function PublicEvent() {
     { enabled: !!slug }
   );
 
-  // Redirecionar para a página de detalhes do evento assim que carregar
+  // Redirecionar para a página pública de inscrição assim que carregar
   useEffect(() => {
     if (event?.id) {
-      setLocation(`/events/${event.id}`);
+      setLocation(`/register/${event.id}`);
     }
   }, [event, setLocation]);
 
