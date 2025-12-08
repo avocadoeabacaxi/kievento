@@ -11,7 +11,9 @@ import { Link } from "wouter";
 import { toast } from "sonner";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
 import Header from "@/components/Header";
+import TicketTypesManager from "@/components/TicketTypesManager";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 
@@ -57,9 +59,47 @@ export default function CreateEvent() {
     { label: "Telefone", fieldType: "phone", required: false, order: 2 },
   ]);
   const [faqItems, setFaqItems] = useState<{question: string; answer: string}[]>([]);
+  const [hasTicketTypes, setHasTicketTypes] = useState(false);
+  const [ticketTypes, setTicketTypes] = useState<{
+    id?: number;
+    name: string;
+    description: string;
+    price: string;
+    quantity: string;
+    validFrom: string;
+    validUntil: string;
+    color: string;
+    order: number;
+  }[]>([]);
+
+  const createTicketTypeMutation = trpc.ticketTypes.create.useMutation();
 
   const createEventMutation = trpc.events.create.useMutation({
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      const eventId = data.eventId;
+      
+      // Salvar tipos de ingressos se habilitado
+      if (hasTicketTypes && ticketTypes.length > 0) {
+        try {
+          for (const tt of ticketTypes) {
+            if (!tt.name) continue; // Pular lotes sem nome
+            await createTicketTypeMutation.mutateAsync({
+              eventId,
+              name: tt.name,
+              description: tt.description || undefined,
+              price: tt.price || undefined,
+              quantity: tt.quantity ? parseInt(tt.quantity) : undefined,
+              validFrom: tt.validFrom || undefined,
+              validUntil: tt.validUntil || undefined,
+              color: tt.color || undefined,
+              order: tt.order,
+            });
+          }
+        } catch (error) {
+          console.error("Erro ao salvar tipos de ingressos:", error);
+        }
+      }
+      
       toast.success("Evento criado com sucesso!");
       setLocation("/dashboard");
     },
@@ -541,6 +581,38 @@ export default function CreateEvent() {
                 Adicionar Campo
               </Button>
             </CardContent>
+          </Card>
+
+          {/* Tipos de Ingressos/Lotes */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Sistema de Ingressos (Opcional)</CardTitle>
+                  <CardDescription>
+                    Ative para criar diferentes tipos de ingressos com preços e datas de validade
+                  </CardDescription>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="hasTicketTypes"
+                    checked={hasTicketTypes}
+                    onCheckedChange={(checked) => setHasTicketTypes(checked as boolean)}
+                  />
+                  <Label htmlFor="hasTicketTypes" className="cursor-pointer">
+                    Habilitar
+                  </Label>
+                </div>
+              </div>
+            </CardHeader>
+            {hasTicketTypes && (
+              <CardContent>
+                <TicketTypesManager
+                  ticketTypes={ticketTypes}
+                  onChange={setTicketTypes}
+                />
+              </CardContent>
+            )}
           </Card>
 
           {/* Perguntas Frequentes (FAQ) */}

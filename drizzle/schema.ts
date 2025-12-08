@@ -104,6 +104,7 @@ export const registrations = mysqlTable("registrations", {
   email: varchar("email", { length: 320 }).notNull(),
   phone: varchar("phone", { length: 50 }),
   formData: text("formData"), // JSON com respostas do formulário
+  ticketTypeId: int("ticketTypeId"), // Tipo de ingresso escolhido (null se evento não usa lotes)
   status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
   qrCode: varchar("qrCode", { length: 255 }).unique(),
   checkedIn: int("checkedIn").default(0).notNull(), // 1 = presente, 0 = ausente
@@ -142,3 +143,26 @@ export const siteSettings = mysqlTable("siteSettings", {
 
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type InsertSiteSetting = typeof siteSettings.$inferInsert;
+
+/**
+ * Tipos de ingressos/lotes para eventos (sistema opcional)
+ */
+export const ticketTypes = mysqlTable("ticketTypes", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: int("eventId").notNull().references(() => events.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 100 }).notNull(), // Ex: "1º Lote - Early Bird", "VIP", "Estudante"
+  description: text("description"), // Descrição dos benefícios
+  price: varchar("price", { length: 50 }), // Preço como string (ex: "R$ 100,00" ou "Gratuito")
+  quantity: int("quantity"), // Quantidade disponível (null = ilimitado)
+  quantitySold: int("quantitySold").default(0).notNull(), // Quantidade já vendida/aprovada
+  validFrom: timestamp("validFrom"), // Data de início da venda deste lote
+  validUntil: timestamp("validUntil"), // Data limite deste lote
+  color: varchar("color", { length: 20 }).default("#ef4444"), // Cor do badge (hex)
+  order: int("order").default(0).notNull(), // Ordem de exibição/prioridade
+  isActive: tinyint("isActive").default(1).notNull(), // 1 = ativo, 0 = inativo
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TicketType = typeof ticketTypes.$inferSelect;
+export type InsertTicketType = typeof ticketTypes.$inferInsert;

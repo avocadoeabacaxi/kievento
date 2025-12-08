@@ -244,6 +244,7 @@ export const appRouter = router({
         email: z.string().email(),
         phone: z.string().optional(),
         formData: z.string(), // JSON stringified
+        ticketTypeId: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
         const event = await db.getEventById(input.eventId);
@@ -260,9 +261,15 @@ export const appRouter = router({
           email: input.email,
           phone: input.phone,
           formData: input.formData,
+          ticketTypeId: input.ticketTypeId,
           status,
           qrCode,
         });
+
+        // Incrementar contador de vendas do lote
+        if (input.ticketTypeId && status === 'approved') {
+          await db.incrementTicketTypeSold(input.ticketTypeId);
+        }
 
         // Enviar e-mail de confirmação para eventos abertos
         if (status === 'approved') {
@@ -486,6 +493,7 @@ export const appRouter = router({
         email: z.string().email(),
         phone: z.string().optional(),
         formData: z.string(), // JSON stringified
+        ticketTypeId: z.number().optional(),
         status: z.enum(['approved', 'pending']).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -507,9 +515,15 @@ export const appRouter = router({
           email: input.email,
           phone: input.phone,
           formData: input.formData,
+          ticketTypeId: input.ticketTypeId,
           status,
           qrCode,
         });
+
+        // Incrementar contador de vendas do lote
+        if (input.ticketTypeId && status === 'approved') {
+          await db.incrementTicketTypeSold(input.ticketTypeId);
+        }
 
         // Enviar e-mail de confirmação se aprovado
         if (status === 'approved') {
@@ -558,20 +572,29 @@ export const appRouter = router({
         }
 
         // Gerar CSV
-        const headers = ['Nome', 'Email', 'Telefone', 'Status', 'Check-in', 'Data de Inscrição'];
-        const rows = registrations.map((r: any) => {
+        const headers = ['Nome', 'Email', 'Telefone', 'Tipo de Ingresso', 'Status', 'Check-in', 'Data de Inscrição'];
+        const rows = await Promise.all(registrations.map(async (r: any) => {
           const formData = r.formData ? JSON.parse(r.formData) : {};
           const extraFields = Object.entries(formData).map(([key, value]) => `${key}: ${value}`).join(' | ');
+          
+          // Buscar tipo de ingresso se houver
+          let ticketTypeName = '';
+          if (r.ticketTypeId) {
+            const ticketType = await db.getTicketTypeById(r.ticketTypeId);
+            ticketTypeName = ticketType?.name || '';
+          }
+          
           return [
             r.name,
             r.email,
             r.phone || '',
+            ticketTypeName,
             r.status === 'approved' ? 'Aprovado' : r.status === 'pending' ? 'Pendente' : 'Rejeitado',
             r.checkedIn ? 'Sim' : 'Não',
             new Date(r.createdAt).toLocaleString('pt-BR'),
             extraFields,
           ];
-        });
+        }));
 
         const csv = [headers.join(','), ...rows.map(row => row.map(cell => `"${cell}"`).join(','))].join('\n');
         return { csv, filename: `participantes-${event.title.replace(/\s+/g, '-')}-${Date.now()}.csv` };
@@ -666,6 +689,128 @@ export const appRouter = router({
         for (const setting of input) {
           await db.updateSiteSetting(setting.key, setting.value);
         }
+        return { success: true };
+      }),
+  }),
+
+  // Tipos de Ingressos/Lotes
+  ticketTypes: router({
+    // Criar tipo de ingresso
+    create: protectedProcedure
+      .input(z.object({
+        eventId: z.number(),
+        name: z.string().min(1),
+        description: z.string().optional(),
+        price: z.string().optional(),
+        quantity: z.number().optional(),
+        validFrom: z.string().optional(),
+        validUntil: z.string().optional(),
+        color: z.string().optional(),
+        order: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verificar se o usuário é dono do evento
+        const event = await db.getEventById(input.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        const ticketTypeId = await db.createTicketType({
+          eventId: input.eventId,
+          name: input.name,
+          description: input.description,
+          price: input.price,
+          quantity: input.quantity,
+          quantitySold: 0,
+          validFrom: input.validFrom ? new Date(input.validFrom) : undefined,
+          validUntil: input.validUntil ? new Date(input.validUntil) : undefined,
+          color: input.color || '#ef4444',
+          order: input.order || 0,
+          isActive: 1,
+        });
+
+        return { ticketTypeId };
+      }),
+
+    // Listar tipos de ingresso de um evento
+    listByEvent: publicProcedure
+      .input(z.object({ eventId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getTicketTypesByEventId(input.eventId);
+      }),
+
+    // Obter lote ativo no momento (considerando datas e quantidades)
+    getActive: publicProcedure
+      .input(z.object({ eventId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getActiveTicketType(input.eventId);
+      }),
+
+    // Obter tipo de ingresso por ID
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getTicketTypeById(input.id);
+      }),
+
+    // Atualizar tipo de ingresso
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        description: z.string().optional(),
+        price: z.string().optional(),
+        quantity: z.number().optional(),
+        validFrom: z.string().optional(),
+        validUntil: z.string().optional(),
+        color: z.string().optional(),
+        order: z.number().optional(),
+        isActive: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const ticketType = await db.getTicketTypeById(input.id);
+        if (!ticketType) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket type not found' });
+        }
+
+        const event = await db.getEventById(ticketType.eventId);
+        if (!event || (event.userId !== ctx.user.id && ctx.user.role !== 'admin')) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        const updateData: any = {};
+        if (input.name) updateData.name = input.name;
+        if (input.description !== undefined) updateData.description = input.description;
+        if (input.price !== undefined) updateData.price = input.price;
+        if (input.quantity !== undefined) updateData.quantity = input.quantity;
+        if (input.validFrom !== undefined) updateData.validFrom = input.validFrom ? new Date(input.validFrom) : null;
+        if (input.validUntil !== undefined) updateData.validUntil = input.validUntil ? new Date(input.validUntil) : null;
+        if (input.color) updateData.color = input.color;
+        if (input.order !== undefined) updateData.order = input.order;
+        if (input.isActive !== undefined) updateData.isActive = input.isActive;
+
+        await db.updateTicketType(input.id, updateData);
+        return { success: true };
+      }),
+
+    // Deletar tipo de ingresso
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const ticketType = await db.getTicketTypeById(input.id);
+        if (!ticketType) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket type not found' });
+        }
+
+        const event = await db.getEventById(ticketType.eventId);
+        if (!event || (event.userId !== ctx.user.id && ctx.user.role !== 'admin')) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        await db.deleteTicketType(input.id);
         return { success: true };
       }),
   }),

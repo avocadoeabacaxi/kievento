@@ -1,6 +1,6 @@
 import { eq, desc, and, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, events, formFields, registrations, eventValidators, siteSettings, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator, InsertSiteSetting } from "../drizzle/schema";
+import { InsertUser, users, events, formFields, registrations, eventValidators, siteSettings, ticketTypes, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator, InsertSiteSetting, InsertTicketType } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -404,4 +404,116 @@ export async function updateSiteSetting(key: string, value: string) {
   }
 
   return await getSiteSetting(key);
+}
+
+// ============================================
+// Ticket Types (Tipos de Ingressos/Lotes)
+// ============================================
+
+export async function createTicketType(data: InsertTicketType): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create ticket type: database not available");
+    return 0;
+  }
+
+  const result = await db.insert(ticketTypes).values(data);
+  return result[0].insertId;
+}
+
+export async function getTicketTypesByEventId(eventId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get ticket types: database not available");
+    return [];
+  }
+
+  return await db.select().from(ticketTypes)
+    .where(eq(ticketTypes.eventId, eventId))
+    .orderBy(ticketTypes.order);
+}
+
+export async function getTicketTypeById(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get ticket type: database not available");
+    return null;
+  }
+
+  const results = await db.select().from(ticketTypes).where(eq(ticketTypes.id, id));
+  return results[0] || null;
+}
+
+export async function updateTicketType(id: number, data: Partial<InsertTicketType>) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update ticket type: database not available");
+    return;
+  }
+
+  await db.update(ticketTypes)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(ticketTypes.id, id));
+}
+
+export async function deleteTicketType(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot delete ticket type: database not available");
+    return;
+  }
+
+  await db.delete(ticketTypes).where(eq(ticketTypes.id, id));
+}
+
+export async function incrementTicketTypeSold(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot increment ticket type sold: database not available");
+    return;
+  }
+
+  await db.update(ticketTypes)
+    .set({ quantitySold: sql`${ticketTypes.quantitySold} + 1` })
+    .where(eq(ticketTypes.id, id));
+}
+
+export async function getActiveTicketType(eventId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get active ticket type: database not available");
+    return null;
+  }
+
+  const now = new Date();
+  const allTicketTypes = await db.select().from(ticketTypes)
+    .where(and(
+      eq(ticketTypes.eventId, eventId),
+      eq(ticketTypes.isActive, 1)
+    ))
+    .orderBy(ticketTypes.order);
+
+  // Encontrar o primeiro lote que está válido e tem vagas
+  for (const tt of allTicketTypes) {
+    // Verificar data de início
+    if (tt.validFrom && new Date(tt.validFrom) > now) {
+      continue; // Ainda não começou
+    }
+
+    // Verificar data de fim
+    if (tt.validUntil && new Date(tt.validUntil) < now) {
+      continue; // Já expirou
+    }
+
+    // Verificar quantidade disponível
+    if (tt.quantity && tt.quantitySold >= tt.quantity) {
+      continue; // Esgotado
+    }
+
+    // Este lote está ativo e disponível
+    return tt;
+  }
+
+  // Nenhum lote ativo encontrado
+  return null;
 }

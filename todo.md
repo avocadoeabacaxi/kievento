@@ -330,15 +330,15 @@
 - [x] Bloquear formulário de inscrição após data limite
 
 ## Sistema de Ingressos por Lotes (Opcional)
-- [ ] Adicionar campo booleano "hasTicketTypes" no schema de eventos
-- [ ] Criar tabela "ticketTypes" no banco (eventId, name, description, price, quantity, validUntil, color, order)
-- [ ] API para criar/editar/excluir tipos de ingressos
-- [ ] API para obter tipo de ingresso ativo no momento (por data e disponibilidade)
-- [ ] Toggle no formulário de evento para ativar sistema de ingressos
-- [ ] Interface de gerenciamento de lotes (adicionar/remover/reordenar)
-- [ ] Atualizar página de inscrição para mostrar lote atual disponível
-- [ ] Salvar tipo de ingresso escolhido na inscrição
-- [ ] Mostrar tipo de ingresso no ingresso digital (TicketPage)
-- [ ] Lógica automática: quando lote esgota ou expira, passa para próximo
-- [ ] Atualizar estatísticas para mostrar vendas por tipo
-- [ ] Atualizar exportação CSV com coluna de tipo de ingresso
+- [x] Adicionar campo booleano "hasTicketTypes" no schema de eventos
+- [x] Criar tabela "ticketTypes" no banco (eventId, name, description, price, quantity, validUntil, color, order)
+- [x] API para criar/editar/excluir tipos de ingressos
+- [x] API para obter tipo de ingresso ativo no momento (por data e disponibilidade)
+- [x] Toggle no formulário de evento para ativar sistema de ingressos
+- [x] Interface de gerenciamento de lotes (adicionar/remover/reordenar)
+- [x] Atualizar página de inscrição para mostrar lote atual disponível
+- [x] Salvar tipo de ingresso escolhido na inscrição
+- [x] Mostrar tipo de ingresso no ingresso digital (TicketPage)
+- [x] Lógica automática: quando lote esgota ou expira, passa para próximo
+- [x] Atualizar estatísticas para mostrar vendas por tipo
+- [x] Atualizar exportação CSV com coluna de tipo de ingresso

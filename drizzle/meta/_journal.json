@@ -57,6 +57,13 @@
       "when": 1765210387766,
       "tag": "0007_flowery_ben_grimm",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1765213859543,
+      "tag": "0008_nice_kate_bishop",
+      "breakpoints": true
     }
   ]
 }

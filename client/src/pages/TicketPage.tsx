@@ -14,6 +14,10 @@ export default function TicketPage() {
   const [qrDataUrl, setQrDataUrl] = useState("");
 
   const { data, isLoading } = trpc.registrations.getByQrCode.useQuery({ qrCode });
+  const { data: ticketType } = trpc.ticketTypes.getById.useQuery(
+    { id: data?.registration?.ticketTypeId || 0 },
+    { enabled: !!data?.registration?.ticketTypeId }
+  );
 
   useEffect(() => {
     if (qrCode && qrCanvasRef.current && data) {
@@ -151,6 +155,16 @@ export default function TicketPage() {
                   <div className="text-lg font-bold text-gray-900 uppercase">
                     {registration.name}
                   </div>
+                  {ticketType && (
+                    <div className="mt-2">
+                      <span 
+                        className="inline-block px-3 py-1 text-xs font-semibold text-white rounded-full"
+                        style={{ backgroundColor: ticketType.color || '#ef4444' }}
+                      >
+                        {ticketType.name}
+                      </span>
+                    </div>
+                  )}
                   <div className="text-xs text-gray-500 mt-2">
                     Inscrito dia {purchaseDate}
                   </div>

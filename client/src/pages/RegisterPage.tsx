@@ -23,6 +23,10 @@ export default function RegisterPage() {
   const eventId = params?.id ? parseInt(params.id) : 0;
 
   const { data: eventData, isLoading } = trpc.events.getById.useQuery({ eventId });
+  const { data: activeTicketType } = trpc.ticketTypes.getActive.useQuery(
+    { eventId },
+    { enabled: !!eventData?.hasTicketTypes }
+  );
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [submitted, setSubmitted] = useState(false);
   const [registrationResult, setRegistrationResult] = useState<any>(null);
@@ -92,6 +96,7 @@ export default function RegisterPage() {
       email,
       phone,
       formData: JSON.stringify(formData),
+      ticketTypeId: activeTicketType?.id,
     });
   };
 
@@ -240,6 +245,67 @@ export default function RegisterPage() {
 
       {/* Registration Form */}
       <div className="container max-w-2xl py-6 space-y-6">
+        {/* Tipo de Ingresso Disponível */}
+        {eventData?.hasTicketTypes && activeTicketType && (
+          <div className="border-l-4 pl-4 py-2" style={{ borderLeftColor: activeTicketType.color || '#ef4444' }}>
+            <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-3">Ingresso Disponível</div>
+            <Card>
+              <CardContent className="pt-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xl font-bold">{activeTicketType.name}</h3>
+                      <span 
+                        className="px-2 py-1 text-xs font-semibold text-white rounded"
+                        style={{ backgroundColor: activeTicketType.color || '#ef4444' }}
+                      >
+                        {activeTicketType.price || "Gratuito"}
+                      </span>
+                    </div>
+                    {activeTicketType.description && (
+                      <p className="text-sm text-muted-foreground">{activeTicketType.description}</p>
+                    )}
+                    {activeTicketType.quantity && (
+                      <p className="text-sm font-medium">
+                        <span className="text-muted-foreground">Vagas disponíveis:</span>{" "}
+                        <span className="text-primary">
+                          {activeTicketType.quantity - (activeTicketType.quantitySold || 0)}
+                        </span>
+                      </p>
+                    )}
+                    {activeTicketType.validUntil && (
+                      <p className="text-sm text-muted-foreground">
+                        <Clock className="inline h-4 w-4 mr-1" />
+                        Válido até: {format(new Date(activeTicketType.validUntil), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Mensagem se não houver lote disponível */}
+        {eventData?.hasTicketTypes && !activeTicketType && !isRegistrationClosed && (
+          <div className="border-l-4 border-yellow-500 pl-4 py-2">
+            <Card>
+              <CardContent className="pt-4 text-center py-8 space-y-4">
+                <div className="h-16 w-16 rounded-full bg-yellow-100 dark:bg-yellow-950 flex items-center justify-center mx-auto">
+                  <Clock className="h-8 w-8 text-yellow-600 dark:text-yellow-500" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold">Nenhum Lote Disponível</h3>
+                  <p className="text-muted-foreground">
+                    No momento não há ingressos disponíveis para este evento. Verifique novamente mais tarde.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+
         <div className="border-l-4 border-primary pl-4 py-2">
           <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-3">Formulário de Inscrição</div>
           <Card>
