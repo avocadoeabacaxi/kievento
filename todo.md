@@ -275,3 +275,6 @@
 - [x] Adicionar reprodução de som na validação de QR Code (ScannerPage)
 - [x] Som de sucesso (verde, 800Hz, 0.2s) quando check-in bem-sucedido
 - [x] Som de erro (vermelho, 200Hz, 0.3s) quando QR Code inválido ou já usado
+
+## Remover Botão Duplicado
+- [x] Remover botão "Imprimir Ingresso" do topo da TicketPage (já existe no rodapé fixo)

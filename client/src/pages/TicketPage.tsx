@@ -77,14 +77,6 @@ export default function TicketPage() {
 
   return (
     <>
-      {/* Botão de impressão - oculto na impressão */}
-      <div className="print:hidden fixed top-4 right-4 z-50">
-        <Button onClick={handlePrint} size="lg" className="shadow-lg">
-          <Printer className="h-5 w-5 mr-2" />
-          Imprimir Ingresso
-        </Button>
-      </div>
-
       {/* Ingresso */}
       <div className="min-h-screen bg-gray-100 print:bg-white flex items-center justify-center p-4 print:p-0">
         <div className="max-w-3xl w-full bg-white shadow-2xl print:shadow-none rounded-lg print:rounded-none overflow-hidden">
