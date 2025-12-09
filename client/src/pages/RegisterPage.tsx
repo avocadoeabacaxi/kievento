@@ -220,8 +220,8 @@ export default function RegisterPage() {
             {/* Data e Horário */}
             <div className="border-l-4 border-primary pl-4 py-2">
               <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
-              <div className="flex items-center gap-2 text-lg font-medium">
-                <Calendar className="h-5 w-5" />
+              <div className="flex items-center gap-2 text-base font-medium">
+                <Calendar className="h-4 w-4" />
                 <span>{format(new Date(eventData.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
               </div>
             </div>
@@ -231,8 +231,8 @@ export default function RegisterPage() {
               <div className="border-l-4 border-primary pl-4 py-2">
                 <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Local</div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <div className="flex items-center gap-2 text-lg font-medium">
-                    <MapPin className="h-5 w-5" />
+                  <div className="flex items-center gap-2 text-base font-medium">
+                    <MapPin className="h-4 w-4" />
                     <span>{displayAddress}</span>
                   </div>
                   {addressLink && addressLink.startsWith('http') && (

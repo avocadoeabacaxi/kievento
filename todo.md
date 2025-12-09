@@ -438,3 +438,7 @@
 - [x] Adicionar overlay embaçado (backdrop-blur) sobre o formulário quando usuário não está logado
 - [x] Adicionar botão "Fazer Login" centralizado no overlay
 - [x] Remover overlay e mostrar formulário após login bem-sucedido
+
+## Ajustes Visuais na Página de Inscrição
+- [ ] Remover "00" que aparece antes do formulário (não encontrado no DOM)
+- [x] Diminuir tamanho da fonte de "Data e Horário" e "Local"
