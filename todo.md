@@ -602,3 +602,7 @@
 - [x] Garantir que alerta de check-in apareça no topo da página
 - [x] Aumentar timer do overlay visual para 5 segundos
 - [x] Aumentar timer do cooldown para 5 segundos (de 10s para 5s)
+
+## Ajuste Alerta Check-in
+- [x] Remover email do alerta de check-in realizado
+- [x] Aumentar tamanho do nome no alerta (text-lg sm:text-2xl font-bold)

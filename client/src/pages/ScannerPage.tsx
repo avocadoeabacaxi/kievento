@@ -248,11 +248,8 @@ export default function ScannerPage() {
                       <p className="font-semibold text-green-900 dark:text-green-100 text-sm sm:text-base">
                         Check-in Realizado!
                       </p>
-                      <p className="text-xs sm:text-sm text-green-700 dark:text-green-300 mt-1 truncate">
+                      <p className="text-lg sm:text-2xl font-bold text-green-700 dark:text-green-300 mt-2 truncate">
                         {lastResult.registration.name}
-                      </p>
-                      <p className="text-xs sm:text-sm text-green-600 dark:text-green-400 truncate">
-                        {lastResult.registration.email}
                       </p>
                     </div>
                   </div>
