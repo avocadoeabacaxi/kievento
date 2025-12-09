@@ -88,13 +88,13 @@ export default function MyTickets() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Status:</span>
-                        <span className={`font-medium ${
-                          reg.status === 'approved' ? 'text-green-600' :
-                          reg.status === 'pending' ? 'text-yellow-600' :
-                          'text-red-600'
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          reg.status === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400' :
+                          reg.status === 'pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400' :
+                          'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400'
                         }`}>
                           {reg.status === 'approved' ? 'Aprovado' :
-                           reg.status === 'pending' ? 'Pendente' :
+                           reg.status === 'pending' ? 'Aguardando Aprovação' :
                            'Rejeitado'}
                         </span>
                       </div>

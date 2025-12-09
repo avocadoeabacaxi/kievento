@@ -217,14 +217,9 @@ export async function getRegistrationsByUserId(userId: number) {
   if (!db) return [];
   
   // Buscar inscrições pelo userId (chave correta para vincular ao usuário logado)
-  // Retornar apenas inscrições aprovadas
+  // Retornar TODOS os ingressos (approved, pending, rejected) para o usuário ver o status
   return db.select().from(registrations)
-    .where(
-      and(
-        eq(registrations.userId, userId),
-        eq(registrations.status, 'approved')
-      )
-    )
+    .where(eq(registrations.userId, userId))
     .orderBy(desc(registrations.createdAt));
 }
 

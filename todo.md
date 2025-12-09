@@ -462,3 +462,8 @@
 - [ ] Verificar filtro de status (aprovado/pendente/rejeitado)
 - [ ] Corrigir lógica para mostrar apenas ingressos aprovados
 - [ ] Testar aprovação e visualização de ingressos
+
+## Exibir Todos os Status em "Meus Ingressos"
+- [x] Modificar query getRegistrationsByUserId para retornar todos os status (approved, pending, rejected)
+- [x] Atualizar MyTickets para exibir badges de status coloridos (verde=aprovado, amarelo=aguardando, vermelho=rejeitado)
+- [x] Testar fluxo com evento de aprovação manual
