@@ -7,9 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail, Server, Key, Send, Info, Save, Trash2, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
+import { Mail, Server, Key, Send, Info, Save, Trash2, CheckCircle2, XCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { Link } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -114,15 +113,6 @@ export default function EmailSettingsPage() {
           { label: "Admin", href: "/admin" },
           { label: "Configurações de Email" },
         ]} />
-        
-        <div className="flex items-center gap-4 mb-6">
-          <Link href="/admin">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-          </Link>
-        </div>
 
         <div>
           <h1 className="text-3xl font-bold">Configurações de Email</h1>

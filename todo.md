@@ -519,3 +519,4 @@
 ## Ajustes de Layout
 - [x] Remover DashboardLayout da EmailSettingsPage
 - [x] Adicionar Header padrão e botão de voltar na EmailSettingsPage
+- [x] Remover botão Voltar separado da EmailSettingsPage (deixar apenas Breadcrumb)
