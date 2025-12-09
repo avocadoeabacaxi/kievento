@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -24,6 +24,13 @@ export default function RegisterPage() {
   const [, params] = useRoute("/register/:id");
   const [, setLocation] = useLocation();
   const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const [showLoginOverlay, setShowLoginOverlay] = useState(false);
+  
+  // Verificar se usuário está autenticado checando cookie de sessão
+  useEffect(() => {
+    const hasSessionCookie = document.cookie.includes('session');
+    setShowLoginOverlay(!hasSessionCookie && !authLoading);
+  }, [authLoading]);
   const eventId = params?.id ? parseInt(params.id) : 0;
 
   const { data: eventData, isLoading } = trpc.events.getById.useQuery({ eventId });
@@ -325,7 +332,7 @@ export default function RegisterPage() {
 
         <div className="border-l-4 border-primary pl-4 py-2">
           <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-3">Formulário de Inscrição</div>
-          <Card>
+          <Card className="relative">
             <CardHeader>
               <CardTitle>Formulário de Inscrição</CardTitle>
               <CardDescription>
@@ -495,6 +502,30 @@ export default function RegisterPage() {
               </form>
               )}
             </CardContent>
+            
+            {/* Overlay embaçado quando usuário não está logado */}
+            {showLoginOverlay && !isRegistrationClosed && (
+              <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10">
+                <div className="text-center space-y-4 p-8">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                    <CheckCircle className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold">Faça Login para se Inscrever</h3>
+                    <p className="text-muted-foreground max-w-sm mx-auto">
+                      Para se inscrever neste evento, você precisa estar logado em sua conta.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => window.location.href = getLoginUrl()}
+                    size="lg"
+                    className="mt-4"
+                  >
+                    Fazer Login
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
         </div>
 

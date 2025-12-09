@@ -433,3 +433,8 @@
 - [ ] Após login, mostrar formulário de inscrição + seleção de ingressos
 - [ ] Após submeter inscrição, mostrar mensagem de confirmação
 - [ ] Redirecionar automaticamente para /my-tickets após confirmação
+
+## Overlay Embaçado no Formulário de Inscrição
+- [x] Adicionar overlay embaçado (backdrop-blur) sobre o formulário quando usuário não está logado
+- [x] Adicionar botão "Fazer Login" centralizado no overlay
+- [x] Remover overlay e mostrar formulário após login bem-sucedido
