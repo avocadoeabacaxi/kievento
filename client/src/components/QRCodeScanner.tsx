@@ -130,8 +130,8 @@ export default function QRCodeScanner({ onScan, onError, borderState = 'idle' }:
           </div>
         )}
 
-        {/* Vídeo da câmera */}
-        <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+        {/* Vídeo da câmera - Formato quadrado maior */}
+        <div className="relative aspect-square max-w-2xl mx-auto bg-black rounded-lg overflow-hidden">
           <video
             ref={videoRef}
             className="w-full h-full object-cover"

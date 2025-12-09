@@ -590,3 +590,9 @@
 ## Reorganização Layout Validação de Entrada
 - [x] Mover cards de estatísticas (Check-ins e Total) para baixo da busca por nome
 - [x] Manter alerta de sucesso/erro no topo da página (movido para cima do scanner)
+
+## Melhorias no Scanner QR Code
+- [x] Aumentar câmera para formato quadrado (aspect-square, max-w-2xl)
+- [x] Adicionar overlay de ✓ verde grande centralizado ao escanear com sucesso
+- [x] Adicionar overlay de X vermelho grande centralizado com mensagem de erro (Já Cadastrado / QR Code Inválido)
+- [x] Animar entrada/saída do feedback visual (animate-in fade-in zoom-in)

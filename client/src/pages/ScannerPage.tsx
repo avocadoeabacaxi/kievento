@@ -83,6 +83,9 @@ export default function ScannerPage() {
   const [isInCooldown, setIsInCooldown] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const lastScanRef = useRef<string | null>(null);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [overlayType, setOverlayType] = useState<'success' | 'error'>('success');
+  const [overlayMessage, setOverlayMessage] = useState('');
   
   // Animar quando contador aumentar
   useEffect(() => {
@@ -111,6 +114,12 @@ export default function ScannerPage() {
       setBorderState('success');
       setTimeout(() => setBorderState('idle'), 2000);
       
+      // Overlay de sucesso
+      setOverlayType('success');
+      setOverlayMessage('Check-in Realizado!');
+      setShowOverlay(true);
+      setTimeout(() => setShowOverlay(false), 2000);
+      
       // Atualizar estatísticas
       refetchRegistrations();
       
@@ -132,6 +141,12 @@ export default function ScannerPage() {
       // Borda vermelha piscante
       setBorderState('error');
       setTimeout(() => setBorderState('idle'), 2000);
+      
+      // Overlay de erro
+      setOverlayType('error');
+      setOverlayMessage(error.message.includes('já fez check-in') ? 'Já Cadastrado' : 'QR Code Inválido');
+      setShowOverlay(true);
+      setTimeout(() => setShowOverlay(false), 2000);
       
       setTimeout(() => inputRef.current?.focus(), 100);
     },
@@ -243,12 +258,35 @@ export default function ScannerPage() {
           </div>
 
           {/* QR Code Scanner com Câmera */}
-          <div>
+          <div className="relative">
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2">
               <Camera className="h-5 w-5 sm:h-6 sm:w-6" />
               Scanner de QR Code
             </h2>
             <QRCodeScanner onScan={handleQrCodeScan} borderState={borderState} />
+            
+            {/* Overlay de Feedback Visual Centralizado */}
+            {showOverlay && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 rounded-lg animate-in fade-in duration-300">
+                <div className="text-center">
+                  {overlayType === 'success' ? (
+                    <>
+                      <div className="mx-auto w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-green-500 flex items-center justify-center mb-4 animate-in zoom-in duration-300">
+                        <CheckCircle className="w-20 h-20 sm:w-24 sm:h-24 text-white" strokeWidth={3} />
+                      </div>
+                      <p className="text-2xl sm:text-4xl font-bold text-white">{overlayMessage}</p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mx-auto w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-red-500 flex items-center justify-center mb-4 animate-in zoom-in duration-300">
+                        <XCircle className="w-20 h-20 sm:w-24 sm:h-24 text-white" strokeWidth={3} />
+                      </div>
+                      <p className="text-2xl sm:text-4xl font-bold text-white">{overlayMessage}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
             
             {/* Cooldown Feedback */}
             {isInCooldown && (
