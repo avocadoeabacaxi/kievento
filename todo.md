@@ -582,3 +582,7 @@
 - [x] Implementar cooldown de 10 segundos após cada leitura (sucesso ou erro)
 - [x] Bloquear novas leituras durante o período de cooldown
 - [x] Exibir feedback visual do tempo restante de cooldown (badge amarelo com ícone de relógio)
+
+## Correção de Formatação das Abas
+- [x] Corrigir formatação da aba "Aprovados" para ficar igual às outras abas (flex-col em mobile)
+- [x] Garantir ordem correta: Pendentes, Aprovados, Rejeitados, Colaboradores

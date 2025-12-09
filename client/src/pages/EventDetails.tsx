@@ -451,13 +451,13 @@ export default function EventDetails() {
                     <p className="text-center text-muted-foreground py-8">Nenhuma inscrição aprovada</p>
                   ) : (
                     approvedRegistrations.map((reg) => (
-                      <div key={reg.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={reg.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-3">
                         <div className="flex-1">
                           <p className="font-medium">{reg.name}</p>
                           <p className="text-sm text-muted-foreground">{reg.email}</p>
                           {reg.phone && <p className="text-sm text-muted-foreground">{reg.phone}</p>}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                           <Button
                             size="sm"
                             variant="ghost"
