@@ -359,34 +359,28 @@ export const appRouter = router({
 
         await db.updateRegistration(input.registrationId, { status: input.status });
 
-        // Enviar e-mail de notificação
+        // Enviar e-mail automático usando templates personalizados
         const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
         const ticketUrl = `${baseUrl}/ticket/${registration.qrCode}`;
         const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
         const [address] = event.address?.split('|') || [];
 
-        if (input.status === 'approved') {
-          await sendEmail({
-            to: registration.email,
-            subject: `🎉 Inscrição aprovada - ${event.title}`,
-            html: getApprovalEmailTemplate({
-              participantName: registration.name,
-              eventTitle: event.title,
-              eventDate,
-              eventAddress: address,
-              ticketUrl,
-            }),
-          });
-        } else if (input.status === 'rejected') {
-          await sendEmail({
-            to: registration.email,
-            subject: `Atualização sobre sua inscrição - ${event.title}`,
-            html: getRejectionEmailTemplate({
-              participantName: registration.name,
-              eventTitle: event.title,
-            }),
-          });
-        }
+        const templateType = input.status === 'approved' ? 'approval' : 'rejection';
+        await sendEventEmail({
+          eventId: registration.eventId,
+          registrationId: input.registrationId,
+          templateType,
+          recipientEmail: registration.email,
+          variables: {
+            nome: registration.name,
+            email: registration.email,
+            evento: event.title,
+            data: eventDate,
+            local: address,
+            qrcode: registration.qrCode || undefined,
+            convite_url: ticketUrl,
+          },
+        });
 
         return { success: true };
       }),
@@ -621,6 +615,75 @@ export const appRouter = router({
 
         const csv = [headers.join(','), ...rows.map(row => row.map(cell => `"${cell}"`).join(','))].join('\n');
         return { csv, filename: `participantes-${event.title.replace(/\s+/g, '-')}-${Date.now()}.csv` };
+      }),
+
+    // Enviar emails em massa
+    sendBulkEmails: protectedProcedure
+      .input(z.object({
+        eventId: z.number(),
+        templateType: z.enum(['approval', 'rejection', 'pending', 'purchase', 'confirmation']),
+        status: z.enum(['all', 'approved', 'pending', 'rejected']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const event = await db.getEventById(input.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        // Buscar inscrições baseado no filtro
+        let registrations = await db.getRegistrationsByEventId(input.eventId);
+        if (input.status && input.status !== 'all') {
+          registrations = registrations.filter(r => r.status === input.status);
+        }
+
+        // Enviar emails em paralelo (máximo 10 por vez para não sobrecarregar)
+        const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
+        const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+        const [address] = event.address?.split('|') || [];
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const registration of registrations) {
+          try {
+            const ticketUrl = `${baseUrl}/ticket/${registration.qrCode}`;
+            const success = await sendEventEmail({
+              eventId: input.eventId,
+              registrationId: registration.id,
+              templateType: input.templateType,
+              recipientEmail: registration.email,
+              variables: {
+                nome: registration.name,
+                email: registration.email,
+                evento: event.title,
+                data: eventDate,
+                local: address,
+                qrcode: registration.qrCode || undefined,
+                convite_url: ticketUrl,
+              },
+            });
+
+            if (success) {
+              successCount++;
+            } else {
+              failCount++;
+            }
+          } catch (error) {
+            console.error(`[Bulk Email] Erro ao enviar para ${registration.email}:`, error);
+            failCount++;
+          }
+        }
+
+        return {
+          success: true,
+          total: registrations.length,
+          sent: successCount,
+          failed: failCount,
+        };
       }),
   }),
 
@@ -999,6 +1062,46 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await db.deleteEmailSetting(input.id);
         return { success: true };
+      }),
+
+    // Enviar email de teste
+    sendTest: adminProcedure
+      .input(z.object({
+        testEmail: z.string().email(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const config = await db.getActiveEmailSetting();
+        if (!config || config.enabled !== 1) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'Nenhuma configuração de email ativa encontrada',
+          });
+        }
+
+        try {
+          const success = await sendEmail({
+            to: input.testEmail,
+            subject: '📧 Email de Teste - KiEvento',
+            html: `
+              <h2>Email de Teste</h2>
+              <p>Este é um email de teste do sistema KiEvento.</p>
+              <p><strong>Provedor:</strong> ${config.provider}</p>
+              <p><strong>Remetente:</strong> ${config.senderName} &lt;${config.senderEmail}&gt;</p>
+              <p>Se você recebeu este email, significa que suas configurações estão corretas! ✅</p>
+            `,
+          });
+
+          if (!success) {
+            throw new Error('Falha ao enviar email de teste');
+          }
+
+          return { success: true, message: 'Email de teste enviado com sucesso!' };
+        } catch (error) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: error instanceof Error ? error.message : 'Erro ao enviar email de teste',
+          });
+        }
       }),
   }),
 

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,11 +38,24 @@ export default function EventDetails() {
   const [selectedRegistration, setSelectedRegistration] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isBulkEmailOpen, setIsBulkEmailOpen] = useState(false);
+  const [bulkEmailTemplate, setBulkEmailTemplate] = useState<'approval' | 'confirmation'>('confirmation');
+  const [bulkEmailStatus, setBulkEmailStatus] = useState<'all' | 'approved' | 'pending' | 'rejected'>('approved');
   const [manualFormData, setManualFormData] = useState<Record<string, any>>({});
 
   const { data: event, isLoading } = trpc.events.getById.useQuery({ eventId });
   const { data: registrations, refetch: refetchRegistrations } = trpc.registrations.listByEvent.useQuery({ eventId });
   const { data: stats } = trpc.events.getStats.useQuery({ eventId });
+
+  const sendBulkEmailsMutation = trpc.registrations.sendBulkEmails.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Emails enviados! ${data.sent} enviados, ${data.failed} falharam.`);
+      setIsBulkEmailOpen(false);
+    },
+    onError: (error) => {
+      toast.error("Erro ao enviar emails: " + error.message);
+    },
+  });
 
   const updateStatusMutation = trpc.registrations.updateStatus.useMutation({
     onSuccess: () => {
@@ -322,6 +335,10 @@ export default function EventDetails() {
                   <Plus className="h-4 w-4 mr-2" />
                   Adicionar Participante
                 </Button>
+                <Button variant="outline" onClick={() => setIsBulkEmailOpen(true)}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Enviar Emails
+                </Button>
                 <Link href={`/events/${eventId}/scan`}>
                   <Button variant="outline">
                     <QrCodeIcon className="h-4 w-4 mr-2" />
@@ -577,6 +594,69 @@ export default function EventDetails() {
               <Button variant="outline" onClick={() => setIsAddOpen(false)}>Cancelar</Button>
               <Button onClick={handleManualSubmit} disabled={createManualMutation.isPending}>
                 {createManualMutation.isPending ? 'Cadastrando...' : 'Cadastrar Participante'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Envio em Massa */}
+      <Dialog open={isBulkEmailOpen} onOpenChange={setIsBulkEmailOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enviar Emails em Massa</DialogTitle>
+            <DialogDescription>Envie emails personalizados para os participantes</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Tipo de Email</Label>
+              <select
+                className="w-full mt-2 p-2 border rounded"
+                value={bulkEmailTemplate}
+                onChange={(e) => setBulkEmailTemplate(e.target.value as any)}
+              >
+                <option value="confirmation">✉️ Confirmação de Inscrição</option>
+                <option value="approval">🎉 Aprovação de Inscrição</option>
+              </select>
+            </div>
+
+            <div>
+              <Label>Filtrar por Status</Label>
+              <select
+                className="w-full mt-2 p-2 border rounded"
+                value={bulkEmailStatus}
+                onChange={(e) => setBulkEmailStatus(e.target.value as any)}
+              >
+                <option value="all">📊 Todos</option>
+                <option value="approved">✅ Apenas Aprovados</option>
+                <option value="pending">⏳ Apenas Pendentes</option>
+                <option value="rejected">❌ Apenas Rejeitados</option>
+              </select>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded text-sm">
+              <p className="font-semibold mb-1">💡 Informação</p>
+              <p className="text-muted-foreground">
+                {bulkEmailStatus === 'all' ? 'Todos os participantes' : 
+                 bulkEmailStatus === 'approved' ? 'Apenas participantes aprovados' :
+                 bulkEmailStatus === 'pending' ? 'Apenas participantes pendentes' :
+                 'Apenas participantes rejeitados'} receberão o email.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setIsBulkEmailOpen(false)}>Cancelar</Button>
+              <Button 
+                onClick={() => {
+                  sendBulkEmailsMutation.mutate({
+                    eventId,
+                    templateType: bulkEmailTemplate,
+                    status: bulkEmailStatus,
+                  });
+                }}
+                disabled={sendBulkEmailsMutation.isPending}
+              >
+                {sendBulkEmailsMutation.isPending ? 'Enviando...' : '📧 Enviar Emails'}
               </Button>
             </div>
           </div>

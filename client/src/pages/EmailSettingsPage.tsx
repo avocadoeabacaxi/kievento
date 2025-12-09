@@ -39,9 +39,13 @@ export default function EmailSettingsPage() {
   });
 
   const { data: settings, refetch } = trpc.emailSettings.list.useQuery();
+  const [testEmail, setTestEmail] = useState("");
+  const [testStatus, setTestStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  
   const createSetting = trpc.emailSettings.create.useMutation();
   const updateSetting = trpc.emailSettings.update.useMutation();
   const deleteSetting = trpc.emailSettings.delete.useMutation();
+  const sendTestEmail = trpc.emailSettings.sendTest.useMutation();
   const { data: emailLogs } = trpc.emailLogs.list.useQuery({ limit: 50 });
 
   const handleSave = async () => {
@@ -77,6 +81,25 @@ export default function EmailSettingsPage() {
       refetch();
     } catch (error) {
       alert("Erro ao deletar configuração.");
+    }
+  };
+
+  const handleSendTest = async () => {
+    if (!testEmail) {
+      alert("Digite um email para teste");
+      return;
+    }
+
+    setTestStatus("loading");
+    try {
+      await sendTestEmail.mutateAsync({ testEmail });
+      setTestStatus("success");
+      alert("✅ Email de teste enviado com sucesso!");
+      setTimeout(() => setTestStatus("idle"), 3000);
+    } catch (error) {
+      setTestStatus("error");
+      alert("❌ Erro ao enviar email de teste: " + (error instanceof Error ? error.message : "Erro desconhecido"));
+      setTimeout(() => setTestStatus("idle"), 3000);
     }
   };
 
@@ -284,7 +307,54 @@ export default function EmailSettingsPage() {
                   </div>
                 </div>
 
-                <Button onClick={handleSave} className="w-full">
+                {/* Teste de Email */}
+                <div className="border-t pt-6 mt-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Send className="h-5 w-5" />
+                    Testar Configurações
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Envie um email de teste para verificar se suas configurações estão corretas.
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      type="email"
+                      placeholder="seu-email@exemplo.com"
+                      value={testEmail}
+                      onChange={(e) => setTestEmail(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={handleSendTest}
+                      disabled={testStatus === "loading" || !testEmail}
+                      variant="outline"
+                    >
+                      {testStatus === "loading" ? (
+                        <>
+                          <span className="animate-spin mr-2">⏳</span>
+                          Enviando...
+                        </>
+                      ) : testStatus === "success" ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 mr-2 text-green-600" />
+                          Enviado!
+                        </>
+                      ) : testStatus === "error" ? (
+                        <>
+                          <XCircle className="h-4 w-4 mr-2 text-red-600" />
+                          Erro
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          Enviar Teste
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <Button onClick={handleSave} className="w-full mt-6">
                   <Save className="h-4 w-4 mr-2" />
                   Salvar Configurações
                 </Button>

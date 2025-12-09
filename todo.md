@@ -485,3 +485,30 @@
 - [x] Testar fluxo completo de personalização e envio
 - [ ] Função de teste de envio de email (implementar botão "Enviar Email de Teste")
 - [ ] Integrar com serviço real de email (SendGrid/AWS SES/Resend/SMTP)
+
+## Integração Real de Email e Automação
+- [x] Instalar dependências (nodemailer para SMTP, @sendgrid/mail, resend)
+- [x] Implementar função sendEmailWithSMTP usando nodemailer
+- [x] Implementar função sendEmailWithSendGrid
+- [x] Implementar função sendEmailWithResend
+- [x] Adicionar botão "Enviar Email de Teste" na página de configurações globais
+- [x] Criar API tRPC para enviar email de teste
+- [ ] Testar envio real com cada provedor (requer credenciais do usuário)
+
+## Geração de Anexos de Convite (JPG/PDF)
+- [x] Instalar dependências (puppeteer para geração de imagens/PDF)
+- [x] Criar template HTML do convite com QR Code
+- [x] Implementar função generateTicketJPG
+- [x] Implementar função generateTicketPDF
+- [x] Integrar geração de anexo no sistema de envio de emails
+- [x] Adicionar anexo ao email baseado na configuração do template
+- [ ] Testar geração e anexo de convites (requer configuração de email)
+
+## Automação de Envios
+- [x] Criar triggers automáticos ao aprovar inscrição (chamar sendEventEmail)
+- [x] Criar triggers automáticos ao rejeitar inscrição
+- [x] Criar API tRPC para envio em massa (sendBulkEmails)
+- [x] Adicionar botão "Enviar Emails" no EventDetails
+- [x] Implementar modal de confirmação para envio em massa
+- [x] Adicionar opção de filtro (todos/aprovados/pendentes/rejeitados) no envio em massa
+- [ ] Testar automação completa (requer configuração de email)

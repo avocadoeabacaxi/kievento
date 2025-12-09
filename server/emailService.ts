@@ -1,4 +1,5 @@
 import * as db from "./db";
+import { generateTicketJPG, generateTicketPDF } from "./ticketGenerator";
 
 interface EmailParams {
   to: string;
@@ -69,7 +70,63 @@ export async function sendEventEmail(params: SendEventEmailParams): Promise<bool
       status: "pending",
     });
 
-    // 6. Enviar email usando o provedor configurado
+    // 6. Gerar anexo se configurado
+    let attachments: Array<{ filename: string; content: Buffer; contentType: string }> | undefined;
+    if (customTemplate.attachmentFormat && customTemplate.attachmentFormat !== 'none' && params.variables.qrcode) {
+      try {
+        // Buscar dados da inscrição e evento para gerar convite
+        const registration = await db.getRegistrationById(params.registrationId);
+        const event = await db.getEventById(params.eventId);
+        
+        if (registration && event && registration.qrCode) {
+          // Buscar nome do tipo de ingresso se houver
+          let ticketTypeName: string | undefined;
+          if (registration.ticketTypeId) {
+            const ticketType = await db.getTicketTypeById(registration.ticketTypeId);
+            ticketTypeName = ticketType?.name;
+          }
+
+          const ticketData = {
+            participantName: registration.name,
+            eventTitle: event.title,
+            eventDate: new Date(event.eventDate),
+            eventAddress: event.address || '',
+            qrCode: registration.qrCode,
+            ticketType: ticketTypeName,
+            registrationDate: new Date(registration.createdAt),
+          };
+
+          let attachmentBuffer: Buffer;
+          let filename: string;
+          let contentType: string;
+
+          if (customTemplate.attachmentFormat === 'jpg') {
+            attachmentBuffer = await generateTicketJPG(ticketData);
+            filename = `convite-${registration.qrCode}.jpg`;
+            contentType = 'image/jpeg';
+          } else if (customTemplate.attachmentFormat === 'pdf') {
+            attachmentBuffer = await generateTicketPDF(ticketData);
+            filename = `convite-${registration.qrCode}.pdf`;
+            contentType = 'application/pdf';
+          } else {
+            throw new Error('Formato de anexo inválido');
+          }
+
+          attachments = [{
+            filename,
+            content: attachmentBuffer,
+            contentType,
+          }];
+
+          console.log(`[Email Service] Anexo gerado: ${filename}`);
+        }
+      } catch (error) {
+        console.error('[Email Service] Erro ao gerar anexo:', error);
+        // Continua sem anexo se houver erro
+      }
+    }
+
+    // 7. Enviar email usando o provedor configurado
     let success = false;
     try {
       success = await sendEmailWithProvider({
@@ -77,6 +134,7 @@ export async function sendEventEmail(params: SendEventEmailParams): Promise<bool
         subject,
         html,
         config: emailConfig,
+        attachments,
       });
 
       // 7. Atualizar log com resultado
@@ -108,40 +166,156 @@ async function sendEmailWithProvider(params: {
   subject: string;
   html: string;
   config: any;
+  attachments?: Array<{ filename: string; content: Buffer; contentType: string }>;
 }): Promise<boolean> {
-  const { to, subject, html, config } = params;
+  const { to, subject, html, config, attachments } = params;
 
   console.log('[Email Service] Enviando email:');
   console.log('Para:', to);
   console.log('Assunto:', subject);
   console.log('Provedor:', config.provider);
 
-  // TODO: Implementar integração real com provedores
-  // Por enquanto, apenas simula o envio
-  
-  switch (config.provider) {
-    case "smtp":
-      // TODO: Implementar SMTP com nodemailer
-      console.log('[Email Service] SMTP:', config.smtpHost, config.smtpPort);
-      break;
-    
-    case "sendgrid":
-      // TODO: Implementar SendGrid
-      console.log('[Email Service] SendGrid API Key:', config.apiKey?.substring(0, 10) + '...');
-      break;
-    
-    case "resend":
-      // TODO: Implementar Resend
-      console.log('[Email Service] Resend API Key:', config.apiKey?.substring(0, 10) + '...');
-      break;
-    
-    case "ses":
-      // TODO: Implementar AWS SES
-      console.log('[Email Service] AWS SES Region:', config.awsRegion);
-      break;
+  try {
+    switch (config.provider) {
+      case "smtp":
+        return await sendWithSMTP({ to, subject, html, config, attachments });
+      
+      case "sendgrid":
+        return await sendWithSendGrid({ to, subject, html, config, attachments });
+      
+      case "resend":
+        return await sendWithResend({ to, subject, html, config, attachments });
+      
+      case "ses":
+        console.log('[Email Service] AWS SES não implementado ainda');
+        return false;
+      
+      default:
+        console.error('[Email Service] Provedor desconhecido:', config.provider);
+        return false;
+    }
+  } catch (error) {
+    console.error('[Email Service] Erro ao enviar email:', error);
+    return false;
+  }
+}
+
+/**
+ * Envia email via SMTP usando nodemailer
+ */
+async function sendWithSMTP(params: {
+  to: string;
+  subject: string;
+  html: string;
+  config: any;
+  attachments?: Array<{ filename: string; content: Buffer; contentType: string }>;
+}): Promise<boolean> {
+  const nodemailer = await import('nodemailer');
+  const { to, subject, html, config, attachments } = params;
+
+  const transporter = nodemailer.default.createTransport({
+    host: config.smtpHost,
+    port: config.smtpPort,
+    secure: config.smtpPort === 465,
+    auth: {
+      user: config.smtpUser,
+      pass: config.smtpPassword,
+    },
+  });
+
+  const mailOptions: any = {
+    from: `"${config.senderName}" <${config.senderEmail}>`,
+    to,
+    subject,
+    html,
+    replyTo: config.replyToEmail,
+  };
+
+  if (attachments && attachments.length > 0) {
+    mailOptions.attachments = attachments.map(att => ({
+      filename: att.filename,
+      content: att.content,
+      contentType: att.contentType,
+    }));
   }
 
-  // Simula envio bem-sucedido
+  await transporter.sendMail(mailOptions);
+  console.log('[Email Service] Email enviado via SMTP com sucesso');
+  return true;
+}
+
+/**
+ * Envia email via SendGrid
+ */
+async function sendWithSendGrid(params: {
+  to: string;
+  subject: string;
+  html: string;
+  config: any;
+  attachments?: Array<{ filename: string; content: Buffer; contentType: string }>;
+}): Promise<boolean> {
+  const sgMail = await import('@sendgrid/mail');
+  const { to, subject, html, config, attachments } = params;
+
+  sgMail.default.setApiKey(config.apiKey);
+
+  const msg: any = {
+    to,
+    from: {
+      email: config.senderEmail,
+      name: config.senderName,
+    },
+    replyTo: config.replyToEmail,
+    subject,
+    html,
+  };
+
+  if (attachments && attachments.length > 0) {
+    msg.attachments = attachments.map(att => ({
+      filename: att.filename,
+      content: att.content.toString('base64'),
+      type: att.contentType,
+      disposition: 'attachment',
+    }));
+  }
+
+  await sgMail.default.send(msg);
+  console.log('[Email Service] Email enviado via SendGrid com sucesso');
+  return true;
+}
+
+/**
+ * Envia email via Resend
+ */
+async function sendWithResend(params: {
+  to: string;
+  subject: string;
+  html: string;
+  config: any;
+  attachments?: Array<{ filename: string; content: Buffer; contentType: string }>;
+}): Promise<boolean> {
+  const { Resend } = await import('resend');
+  const { to, subject, html, config, attachments } = params;
+
+  const resend = new Resend(config.apiKey);
+
+  const emailData: any = {
+    from: `${config.senderName} <${config.senderEmail}>`,
+    to,
+    subject,
+    html,
+    reply_to: config.replyToEmail,
+  };
+
+  if (attachments && attachments.length > 0) {
+    emailData.attachments = attachments.map(att => ({
+      filename: att.filename,
+      content: att.content,
+    }));
+  }
+
+  await resend.emails.send(emailData);
+  console.log('[Email Service] Email enviado via Resend com sucesso');
   return true;
 }
 
