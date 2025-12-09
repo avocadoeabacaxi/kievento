@@ -414,7 +414,7 @@ export default function EventDetails() {
                             <Eye className="h-4 w-4 mr-1" />
                           </Button>
                           {permissions?.canApproveRegistrations && (
-                            <div className="flex gap-2">
+                            <div className="flex flex-col sm:flex-row gap-2">
                               <Button
                                 size="sm"
                                 onClick={() => updateStatusMutation.mutate({ registrationId: reg.id, status: "approved" })}

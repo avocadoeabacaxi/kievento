@@ -426,7 +426,7 @@ export const appRouter = router({
         }
 
         if (registration.checkedIn) {
-          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Already checked in' });
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Já fez check-in' });
         }
 
         await db.checkInRegistration(registration.id, ctx.user.id);
@@ -456,7 +456,7 @@ export const appRouter = router({
         }
 
         if (registration.checkedIn) {
-          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Already checked in' });
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Já fez check-in' });
         }
 
         await db.checkInRegistration(registration.id, ctx.user.id);

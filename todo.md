@@ -543,3 +543,9 @@
 - [x] Criar página /events/:id/checkin dedicada para check-in
 - [x] Página de check-in: scanner QR Code, busca rápida e estatísticas
 - [ ] Testar fluxo completo de permissões e check-in
+
+## Correções de UX Mobile
+- [x] Ajustar layout dos botões Aprovar/Rejeitar no mobile (flex-col ao invés de flex-row)
+- [x] Adicionar vibração ao escanear QR Code com sucesso
+- [x] Traduzir mensagem "Already checked in" para "Já fez check-in"
+- [ ] Testar responsividade no mobile

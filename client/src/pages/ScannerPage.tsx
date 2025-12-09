@@ -76,6 +76,12 @@ export default function ScannerPage() {
       setLastResult({ success: true, registration: data.registration });
       setQrCodeInput("");
       toast.success(`Check-in realizado: ${data.registration.name}`);
+      
+      // Vibrar celular
+      if ('vibrate' in navigator) {
+        navigator.vibrate(200); // Vibra por 200ms
+      }
+      
       // Tocar som de sucesso
       successSound.current?.play();
       setTimeout(() => inputRef.current?.focus(), 100);
