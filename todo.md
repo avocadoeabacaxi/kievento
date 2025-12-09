@@ -554,3 +554,10 @@
 - [x] Adicionar som de erro (bip grave) ao escanear QR Code já utilizado (já existia)
 - [x] Adicionar vibração diferenciada para erro (padrão: 100ms-pausa-100ms)
 - [ ] Testar feedback de erro no mobile
+
+## Contador em Tempo Real no Scanner
+- [x] Adicionar card de estatísticas no topo do scanner
+- [x] Exibir total de check-ins realizados
+- [x] Exibir percentual de presença (check-ins / total aprovados)
+- [x] Adicionar animação ao incrementar contador (escala + cor amarela)
+- [x] Atualizar automaticamente após cada scan

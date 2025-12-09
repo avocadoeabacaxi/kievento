@@ -60,16 +60,34 @@ export default function ScannerPage() {
   }, []);
 
   const { data: event } = trpc.events.getById.useQuery({ eventId });
+  const { data: registrations, refetch: refetchRegistrations } = trpc.registrations.listByEvent.useQuery({ eventId });
   const { data: searchResults } = trpc.registrations.searchByName.useQuery(
     { eventId, searchTerm: searchName },
     { enabled: searchName.length >= 2 }
   );
+  
+  // Calcular estatísticas
+  const totalApproved = registrations?.filter(r => r.status === 'approved').length || 0;
+  const totalCheckedIn = registrations?.filter(r => r.checkedInAt).length || 0;
+  const percentageCheckedIn = totalApproved > 0 ? Math.round((totalCheckedIn / totalApproved) * 100) : 0;
 
   const [lastResult, setLastResult] = useState<{
     success: boolean;
     registration?: any;
     error?: string;
   } | null>(null);
+  
+  const [animateCounter, setAnimateCounter] = useState(false);
+  const prevCheckedInRef = useRef(totalCheckedIn);
+  
+  // Animar quando contador aumentar
+  useEffect(() => {
+    if (totalCheckedIn > prevCheckedInRef.current) {
+      setAnimateCounter(true);
+      setTimeout(() => setAnimateCounter(false), 600);
+    }
+    prevCheckedInRef.current = totalCheckedIn;
+  }, [totalCheckedIn]);
 
   const checkInByQrCodeMutation = trpc.registrations.checkInByQrCode.useMutation({
     onSuccess: (data) => {
@@ -84,6 +102,10 @@ export default function ScannerPage() {
       
       // Tocar som de sucesso
       successSound.current?.play();
+      
+      // Atualizar estatísticas
+      refetchRegistrations();
+      
       setTimeout(() => inputRef.current?.focus(), 100);
     },
     onError: (error) => {
@@ -157,6 +179,26 @@ export default function ScannerPage() {
         </div>
 
         <div className="space-y-4 sm:space-y-6">
+          {/* Estatísticas em Tempo Real */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 sm:p-6 text-white shadow-lg">
+              <div className="text-xs sm:text-sm font-medium opacity-90 mb-1">Check-ins Realizados</div>
+              <div className={`text-3xl sm:text-4xl font-bold tabular-nums transition-all duration-300 ${
+                animateCounter ? 'scale-125 text-yellow-300' : 'scale-100'
+              }`}>
+                {totalCheckedIn}
+              </div>
+              <div className="text-xs sm:text-sm opacity-75 mt-1">de {totalApproved} aprovados</div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 sm:p-6 text-white shadow-lg">
+              <div className="text-xs sm:text-sm font-medium opacity-90 mb-1">Taxa de Presença</div>
+              <div className="text-3xl sm:text-4xl font-bold tabular-nums">{percentageCheckedIn}%</div>
+              <div className="text-xs sm:text-sm opacity-75 mt-1">
+                {totalApproved - totalCheckedIn} faltando
+              </div>
+            </div>
+          </div>
+
           {/* QR Code Scanner com Câmera */}
           <div>
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2">
