@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Calendar, Users, Search, ArrowLeft } from "lucide-react";
+import { Calendar, Users, Search, ArrowLeft, Settings, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Header from "@/components/Header";
@@ -41,11 +41,17 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <Header />
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-center">
+        <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <Calendar className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">Admin Geral</span>
           </div>
+          <Link href="/admin/email-settings">
+            <Button variant="outline" size="sm">
+              <Mail className="h-4 w-4 mr-2" />
+              Configurações de Email
+            </Button>
+          </Link>
         </div>
       </header>
       <main className="container py-8">

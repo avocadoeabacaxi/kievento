@@ -512,3 +512,6 @@
 - [x] Implementar modal de confirmação para envio em massa
 - [x] Adicionar opção de filtro (todos/aprovados/pendentes/rejeitados) no envio em massa
 - [ ] Testar automação completa (requer configuração de email)
+
+## Melhorias de UX
+- [x] Adicionar link "Configurações de Email" no menu do AdminDashboard
