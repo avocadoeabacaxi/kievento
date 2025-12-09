@@ -577,3 +577,8 @@
 ## Reorganização Botão Excluir Evento
 - [x] Mover botão "Excluir Evento" para dentro do grid de botões coloridos
 - [x] Manter organização visual consistente em mobile
+
+## Sistema de Cooldown no Scanner QR Code
+- [x] Implementar cooldown de 10 segundos após cada leitura (sucesso ou erro)
+- [x] Bloquear novas leituras durante o período de cooldown
+- [x] Exibir feedback visual do tempo restante de cooldown (badge amarelo com ícone de relógio)

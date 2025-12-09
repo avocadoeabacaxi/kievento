@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Camera, CheckCircle, XCircle, Search } from "lucide-react";
+import { ArrowLeft, Camera, CheckCircle, XCircle, Search, Clock } from "lucide-react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -80,6 +80,9 @@ export default function ScannerPage() {
   const [animateCounter, setAnimateCounter] = useState(false);
   const prevCheckedInRef = useRef(totalCheckedIn);
   const [borderState, setBorderState] = useState<'idle' | 'success' | 'error'>('idle');
+  const [isInCooldown, setIsInCooldown] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const lastScanRef = useRef<string | null>(null);
   
   // Animar quando contador aumentar
   useEffect(() => {
@@ -158,7 +161,37 @@ export default function ScannerPage() {
   };
 
   const handleQrCodeScan = (qrCode: string) => {
+    // Verificar se está em cooldown
+    if (isInCooldown) {
+      console.log("Scanner em cooldown, ignorando leitura");
+      return;
+    }
+
+    // Verificar se é o mesmo QR Code que acabou de ser lido
+    if (lastScanRef.current === qrCode) {
+      console.log("Mesmo QR Code, ignorando leitura duplicada");
+      return;
+    }
+
     console.log("QR Code scanned:", qrCode);
+    lastScanRef.current = qrCode;
+    
+    // Ativar cooldown de 10 segundos
+    setIsInCooldown(true);
+    setCooldownSeconds(10);
+    
+    // Countdown de 10 segundos
+    let remaining = 10;
+    const countdownInterval = setInterval(() => {
+      remaining--;
+      setCooldownSeconds(remaining);
+      if (remaining <= 0) {
+        clearInterval(countdownInterval);
+        setIsInCooldown(false);
+        lastScanRef.current = null;
+      }
+    }, 1000);
+    
     checkInByQrCodeMutation.mutate({ qrCode });
   };
 
@@ -216,6 +249,18 @@ export default function ScannerPage() {
               Scanner de QR Code
             </h2>
             <QRCodeScanner onScan={handleQrCodeScan} borderState={borderState} />
+            
+            {/* Cooldown Feedback */}
+            {isInCooldown && (
+              <div className="mt-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                <div className="flex items-center gap-2 justify-center">
+                  <Clock className="h-4 w-4 text-amber-600 dark:text-amber-500 animate-pulse" />
+                  <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                    Aguarde {cooldownSeconds}s para próxima leitura
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Last Result - Mobile optimized */}
