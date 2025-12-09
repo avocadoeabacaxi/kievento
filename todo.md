@@ -549,3 +549,8 @@
 - [x] Adicionar vibração ao escanear QR Code com sucesso
 - [x] Traduzir mensagem "Already checked in" para "Já fez check-in"
 - [ ] Testar responsividade no mobile
+
+## Feedback Sonoro de Erro
+- [x] Adicionar som de erro (bip grave) ao escanear QR Code já utilizado (já existia)
+- [x] Adicionar vibração diferenciada para erro (padrão: 100ms-pausa-100ms)
+- [ ] Testar feedback de erro no mobile

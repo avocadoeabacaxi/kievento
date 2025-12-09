@@ -90,6 +90,12 @@ export default function ScannerPage() {
       setLastResult({ success: false, error: error.message });
       setQrCodeInput("");
       toast.error(error.message);
+      
+      // Vibrar celular com padrão de erro (curto-pausa-curto)
+      if ('vibrate' in navigator) {
+        navigator.vibrate([100, 50, 100]); // Vibra 100ms, pausa 50ms, vibra 100ms
+      }
+      
       // Tocar som de erro
       errorSound.current?.play();
       setTimeout(() => inputRef.current?.focus(), 100);
