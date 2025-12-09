@@ -25,9 +25,23 @@ function Router() {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Verificar se há redirecionamento pendente após login
+    // Verificar se há inscrição pendente após login
     if (isAuthenticated) {
-      // Ler cookie de redirecionamento
+      const pendingData = sessionStorage.getItem('pendingRegistration');
+      if (pendingData) {
+        // Remover dados do sessionStorage
+        sessionStorage.removeItem('pendingRegistration');
+        
+        // Processar inscrição automaticamente
+        const { eventId, formData, ticketTypeId } = JSON.parse(pendingData);
+        
+        // Redirecionar para a página de inscrição com parâmetro para processar
+        sessionStorage.setItem('autoSubmitRegistration', pendingData);
+        setLocation(`/register/${eventId}`);
+        return;
+      }
+      
+      // Verificar se há redirecionamento pendente após login
       const cookies = document.cookie.split('; ');
       const redirectCookie = cookies.find(c => c.startsWith('redirectAfterLogin='));
       if (redirectCookie) {

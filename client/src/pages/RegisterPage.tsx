@@ -24,22 +24,6 @@ export default function RegisterPage() {
   const [, params] = useRoute("/register/:id");
   const [, setLocation] = useLocation();
   const { user, loading: authLoading, isAuthenticated } = useAuth();
-  const [showLoginOverlay, setShowLoginOverlay] = useState(false);
-  
-  // Verificar se usuário está autenticado checando cookie de sessão
-  useEffect(() => {
-    const checkAuth = () => {
-      const hasSessionCookie = document.cookie.includes('session');
-      setShowLoginOverlay(!hasSessionCookie && !authLoading);
-    };
-    
-    checkAuth();
-    
-    // Verificar periodicamente se o cookie foi adicionado (após login)
-    const interval = setInterval(checkAuth, 1000);
-    
-    return () => clearInterval(interval);
-  }, [authLoading, isAuthenticated]);
   const eventId = params?.id ? parseInt(params.id) : 0;
 
   const { data: eventData, isLoading } = trpc.events.getById.useQuery({ eventId });
@@ -50,6 +34,34 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [submitted, setSubmitted] = useState(false);
   const [registrationResult, setRegistrationResult] = useState<any>(null);
+  
+  // Processar inscrição automática após login
+  useEffect(() => {
+    if (isAuthenticated && eventData) {
+      const autoSubmitData = sessionStorage.getItem('autoSubmitRegistration');
+      if (autoSubmitData) {
+        sessionStorage.removeItem('autoSubmitRegistration');
+        const { formData: savedFormData, ticketTypeId } = JSON.parse(autoSubmitData);
+        
+        // Preencher formulário com dados salvos
+        setFormData(savedFormData);
+        
+        // Processar inscrição automaticamente
+        const name = savedFormData["Nome Completo"] || savedFormData["Nome"] || "";
+        const email = savedFormData["E-mail"] || savedFormData["Email"] || "";
+        const phone = savedFormData["Telefone"] || "";
+        
+        registerMutation.mutate({
+          eventId,
+          name,
+          email,
+          phone,
+          formData: savedFormData,
+          ticketTypeId: ticketTypeId || undefined,
+        });
+      }
+    }
+  }, [isAuthenticated, eventData]);
 
   const registerMutation = trpc.registrations.create.useMutation({
     onSuccess: (data) => {
@@ -95,16 +107,7 @@ export default function RegisterPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Verificar se o usuário está logado
-    if (!isAuthenticated) {
-      toast.error("Você precisa fazer login para se inscrever neste evento");
-      setTimeout(() => {
-        window.location.href = getLoginUrl();
-      }, 1500);
-      return;
-    }
-
-    // Validar campos obrigatórios
+    // Validar campos obrigatórios primeiro
     const requiredFields = eventData!.formFields.filter((f) => f.required);
     for (const field of requiredFields) {
       if (!formData[field.label]) {
@@ -112,6 +115,24 @@ export default function RegisterPage() {
         return;
       }
     }
+
+    // Se não estiver logado, salvar dados e redirecionar para login
+    if (!isAuthenticated) {
+      // Salvar dados da inscrição em sessionStorage
+      sessionStorage.setItem('pendingRegistration', JSON.stringify({
+        eventId,
+        formData,
+        ticketTypeId: activeTicketType?.id
+      }));
+      
+      toast.info("Redirecionando para login...");
+      setTimeout(() => {
+        window.location.href = getLoginUrl();
+      }, 1000);
+      return;
+    }
+
+
 
     // Extrair nome, email e telefone dos campos padrão
     const name = formData["Nome Completo"] || formData["Nome"] || "";
@@ -511,34 +532,7 @@ export default function RegisterPage() {
               </form>
               )}
             </CardContent>
-            
-            {/* Overlay embaçado quando usuário não está logado */}
-            {showLoginOverlay && !isRegistrationClosed && (
-              <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10">
-                <div className="text-center space-y-4 p-8">
-                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                    <CheckCircle className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-bold">Faça Login para se Inscrever</h3>
-                    <p className="text-muted-foreground max-w-sm mx-auto">
-                      Para se inscrever neste evento, você precisa estar logado em sua conta.
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => {
-                      // Salvar URL atual em cookie para redirecionar após login
-                      document.cookie = `redirectAfterLogin=${encodeURIComponent(window.location.pathname)}; path=/; max-age=600`;
-                      window.location.href = getLoginUrl();
-                    }}
-                    size="lg"
-                    className="mt-4"
-                  >
-                    Fazer Login
-                  </Button>
-                </div>
-              </div>
-            )}
+
           </Card>
         </div>
 

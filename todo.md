@@ -448,3 +448,11 @@
 - [ ] Configurar OAuth callback para redirecionar para URL salva
 - [ ] Atualizar estado de autenticação após login para remover overlay
 - [ ] Testar fluxo: clicar em "Fazer Login" → fazer login → voltar para página de inscrição sem overlay
+
+## Novo Fluxo de Inscrição (Sem Overlay)
+- [x] Remover overlay embaçado do formulário
+- [x] Permitir preenchimento do formulário sem login
+- [x] Ao clicar "Confirmar Inscrição", salvar dados em sessionStorage
+- [x] Redirecionar para página de login (quando não autenticado)
+- [x] Após login, processar inscrição automaticamente
+- [x] Redirecionar para "Meus Ingressos" com inscrição confirmada
