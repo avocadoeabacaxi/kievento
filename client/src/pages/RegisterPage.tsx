@@ -28,9 +28,18 @@ export default function RegisterPage() {
   
   // Verificar se usuário está autenticado checando cookie de sessão
   useEffect(() => {
-    const hasSessionCookie = document.cookie.includes('session');
-    setShowLoginOverlay(!hasSessionCookie && !authLoading);
-  }, [authLoading]);
+    const checkAuth = () => {
+      const hasSessionCookie = document.cookie.includes('session');
+      setShowLoginOverlay(!hasSessionCookie && !authLoading);
+    };
+    
+    checkAuth();
+    
+    // Verificar periodicamente se o cookie foi adicionado (após login)
+    const interval = setInterval(checkAuth, 1000);
+    
+    return () => clearInterval(interval);
+  }, [authLoading, isAuthenticated]);
   const eventId = params?.id ? parseInt(params.id) : 0;
 
   const { data: eventData, isLoading } = trpc.events.getById.useQuery({ eventId });
@@ -517,7 +526,11 @@ export default function RegisterPage() {
                     </p>
                   </div>
                   <Button
-                    onClick={() => window.location.href = getLoginUrl()}
+                    onClick={() => {
+                      // Salvar URL atual em cookie para redirecionar após login
+                      document.cookie = `redirectAfterLogin=${encodeURIComponent(window.location.pathname)}; path=/; max-age=600`;
+                      window.location.href = getLoginUrl();
+                    }}
                     size="lg"
                     className="mt-4"
                   >

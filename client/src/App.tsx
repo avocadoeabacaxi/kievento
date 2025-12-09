@@ -1,6 +1,7 @@
-import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
+import { useEffect } from "react";
+import { useAuth } from "./_core/hooks/useAuth";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import PublicHome from "./pages/PublicHome";
@@ -20,6 +21,24 @@ import PublicEvent from "./pages/PublicEvent";
 import NotFound from "./pages/NotFound";
 
 function Router() {
+  const [, setLocation] = useLocation();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    // Verificar se há redirecionamento pendente após login
+    if (isAuthenticated) {
+      // Ler cookie de redirecionamento
+      const cookies = document.cookie.split('; ');
+      const redirectCookie = cookies.find(c => c.startsWith('redirectAfterLogin='));
+      if (redirectCookie) {
+        const redirectPath = decodeURIComponent(redirectCookie.split('=')[1]);
+        // Remover cookie
+        document.cookie = 'redirectAfterLogin=; path=/; max-age=0';
+        setLocation(redirectPath);
+      }
+    }
+  }, [isAuthenticated, setLocation]);
+
   return (
     <Switch>
       <Route path={"/"} component={PublicHome} />
@@ -48,7 +67,6 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
-          <Toaster />
           <Router />
         </TooltipProvider>
       </ThemeProvider>

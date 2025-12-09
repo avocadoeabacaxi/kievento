@@ -442,3 +442,9 @@
 ## Ajustes Visuais na Página de Inscrição
 - [ ] Remover "00" que aparece antes do formulário (não encontrado no DOM)
 - [x] Diminuir tamanho da fonte de "Data e Horário" e "Local"
+
+## Correção de Redirecionamento Após Login
+- [ ] Salvar URL atual antes de redirecionar para login
+- [ ] Configurar OAuth callback para redirecionar para URL salva
+- [ ] Atualizar estado de autenticação após login para remover overlay
+- [ ] Testar fluxo: clicar em "Fazer Login" → fazer login → voltar para página de inscrição sem overlay
