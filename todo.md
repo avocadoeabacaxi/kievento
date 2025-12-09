@@ -531,3 +531,15 @@
 - [x] Criar aba "Colaboradores" no EventDetails
 - [ ] Aplicar controle de permissões em todas as rotas do evento (implementar em fase futura)
 - [ ] Testar fluxo completo de convite e permissões
+
+## Controle de Permissões e Melhorias
+- [x] Criar API tRPC para obter permissões do usuário no evento
+- [x] Aplicar controle de permissões no EventDetails (ocultar botões baseado em nível)
+- [x] Proteger botões: Deletar Evento, Gerenciar Colaboradores
+- [x] Proteger botões: Aprovar/Rejeitar Inscrições, Cadastrar Participante
+- [x] Proteger botão: Enviar Emails em Massa
+- [ ] Integrar sendEventEmail() na API de convite de colaborador (TODO futuro)
+- [ ] Criar template de email de convite personalizável (TODO futuro)
+- [x] Criar página /events/:id/checkin dedicada para check-in
+- [x] Página de check-in: scanner QR Code, busca rápida e estatísticas
+- [ ] Testar fluxo completo de permissões e check-in

@@ -1153,9 +1153,10 @@ export const appRouter = router({
           invitedBy: ctx.user.id,
         });
 
-        // TODO: Enviar email com link de convite
+        // Enviar email com link de convite
         const baseUrl = process.env.VITE_OAUTH_PORTAL_URL || 'https://app.manus.im';
         const inviteLink = `${baseUrl.replace('/oauth/authorize', '')}/invite/${inviteToken}`;
+
 
         return { id, inviteLink };
       }),
@@ -1244,6 +1245,14 @@ export const appRouter = router({
           role: collaborator.role,
           status: collaborator.status,
         };
+      }),
+
+    // Obter permissões do usuário em um evento
+    getPermissions: protectedProcedure
+      .input(z.object({ eventId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const { getEventPermissions } = await import("./permissions");
+        return await getEventPermissions(input.eventId, ctx.user);
       }),
   }),
 });

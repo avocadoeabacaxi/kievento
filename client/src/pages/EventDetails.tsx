@@ -47,6 +47,7 @@ export default function EventDetails() {
   const { data: event, isLoading } = trpc.events.getById.useQuery({ eventId });
   const { data: registrations, refetch: refetchRegistrations } = trpc.registrations.listByEvent.useQuery({ eventId });
   const { data: stats } = trpc.events.getStats.useQuery({ eventId });
+  const { data: permissions } = trpc.collaborators.getPermissions.useQuery({ eventId });
 
   const sendBulkEmailsMutation = trpc.registrations.sendBulkEmails.useMutation({
     onSuccess: (data) => {
@@ -172,12 +173,14 @@ export default function EventDetails() {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-end">
           <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm">
-                <Trash2 className="h-4 w-4 mr-2" />
-                Excluir Evento
-              </Button>
-            </AlertDialogTrigger>
+            {permissions?.canDeleteEvent && (
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Excluir Evento
+                </Button>
+              </AlertDialogTrigger>
+            )}
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
@@ -332,14 +335,18 @@ export default function EventDetails() {
                   <Download className="h-4 w-4 mr-2" />
                   Exportar Excel
                 </Button>
-                <Button variant="outline" onClick={() => setIsAddOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar Participante
-                </Button>
-                <Button variant="outline" onClick={() => setIsBulkEmailOpen(true)}>
-                  <Mail className="h-4 w-4 mr-2" />
-                  Enviar Emails
-                </Button>
+                {permissions?.canCreateParticipants && (
+                  <Button variant="outline" onClick={() => setIsAddOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Adicionar Participante
+                  </Button>
+                )}
+                {permissions?.canSendEmails && (
+                  <Button variant="outline" onClick={() => setIsBulkEmailOpen(true)}>
+                    <Mail className="h-4 w-4 mr-2" />
+                    Enviar Emails
+                  </Button>
+                )}
                 <Link href={`/events/${eventId}/scan`}>
                   <Button variant="outline">
                     <QrCodeIcon className="h-4 w-4 mr-2" />
@@ -405,25 +412,28 @@ export default function EventDetails() {
                             }}
                           >
                             <Eye className="h-4 w-4 mr-1" />
-                            Ver Detalhes
                           </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => updateStatusMutation.mutate({ registrationId: reg.id, status: "approved" })}
-                            disabled={updateStatusMutation.isPending}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            Aprovar
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => updateStatusMutation.mutate({ registrationId: reg.id, status: "rejected" })}
-                            disabled={updateStatusMutation.isPending}
-                          >
-                            <XCircle className="h-4 w-4 mr-1" />
-                            Rejeitar
-                          </Button>
+                          {permissions?.canApproveRegistrations && (
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => updateStatusMutation.mutate({ registrationId: reg.id, status: "approved" })}
+                                disabled={updateStatusMutation.isPending}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Aprovar
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => updateStatusMutation.mutate({ registrationId: reg.id, status: "rejected" })}
+                                disabled={updateStatusMutation.isPending}
+                              >
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Rejeitar
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))
