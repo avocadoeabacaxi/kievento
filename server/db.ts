@@ -1,6 +1,6 @@
 import { eq, desc, and, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, events, formFields, registrations, eventValidators, siteSettings, ticketTypes, emailTemplates, emailSettings, emailLogs, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator, InsertSiteSetting, InsertTicketType, InsertEmailTemplate, InsertEmailSetting, InsertEmailLog } from "../drizzle/schema";
+import { InsertUser, users, events, formFields, registrations, eventValidators, siteSettings, ticketTypes, emailTemplates, emailSettings, emailLogs, eventCollaborators, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator, InsertSiteSetting, InsertTicketType, InsertEmailTemplate, InsertEmailSetting, InsertEmailLog, InsertEventCollaborator } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -695,4 +695,102 @@ export async function updateEmailLog(id: number, data: Partial<InsertEmailLog>) 
   await db.update(emailLogs)
     .set(data)
     .where(eq(emailLogs.id, id));
+}
+
+
+// ============================================
+// Event Collaborators
+// ============================================
+
+export async function createEventCollaborator(data: InsertEventCollaborator): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create event collaborator: database not available");
+    return 0;
+  }
+
+  const result = await db.insert(eventCollaborators).values(data);
+  return result[0].insertId;
+}
+
+export async function getEventCollaborators(eventId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get event collaborators: database not available");
+    return [];
+  }
+
+  return await db.select().from(eventCollaborators)
+    .where(eq(eventCollaborators.eventId, eventId))
+    .orderBy(desc(eventCollaborators.createdAt));
+}
+
+export async function getCollaboratorByToken(token: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get collaborator by token: database not available");
+    return null;
+  }
+
+  const result = await db.select().from(eventCollaborators)
+    .where(eq(eventCollaborators.inviteToken, token))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+export async function getCollaboratorByEventAndUser(eventId: number, userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get collaborator: database not available");
+    return null;
+  }
+
+  const result = await db.select().from(eventCollaborators)
+    .where(and(
+      eq(eventCollaborators.eventId, eventId),
+      eq(eventCollaborators.userId, userId)
+    ))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+export async function acceptCollaboratorInvite(token: string, userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot accept invite: database not available");
+    return;
+  }
+
+  await db.update(eventCollaborators)
+    .set({
+      userId,
+      status: 'active',
+      acceptedAt: new Date(),
+    })
+    .where(eq(eventCollaborators.inviteToken, token));
+}
+
+export async function updateCollaboratorRole(id: number, role: 'coordinator' | 'supervisor' | 'checkin') {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update collaborator role: database not available");
+    return;
+  }
+
+  await db.update(eventCollaborators)
+    .set({ role })
+    .where(eq(eventCollaborators.id, id));
+}
+
+export async function deleteCollaborator(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot delete collaborator: database not available");
+    return;
+  }
+
+  await db.delete(eventCollaborators)
+    .where(eq(eventCollaborators.id, id));
 }

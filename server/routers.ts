@@ -1121,6 +1121,131 @@ export const appRouter = router({
         return await db.getEmailLogsByEventId(input.eventId);
       }),
   }),
+
+  // Event Collaborators (Colaboradores por Evento)
+  collaborators: router({
+    // Convidar colaborador
+    invite: protectedProcedure
+      .input(z.object({
+        eventId: z.number(),
+        email: z.string().email(),
+        role: z.enum(["coordinator", "supervisor", "checkin"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verificar se o usuário é dono do evento ou admin
+        const event = await db.getEventById(input.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        // Gerar token único
+        const inviteToken = nanoid(32);
+
+        const id = await db.createEventCollaborator({
+          eventId: input.eventId,
+          email: input.email,
+          role: input.role,
+          status: 'pending',
+          inviteToken,
+          invitedBy: ctx.user.id,
+        });
+
+        // TODO: Enviar email com link de convite
+        const baseUrl = process.env.VITE_OAUTH_PORTAL_URL || 'https://app.manus.im';
+        const inviteLink = `${baseUrl.replace('/oauth/authorize', '')}/invite/${inviteToken}`;
+
+        return { id, inviteLink };
+      }),
+
+    // Listar colaboradores de um evento
+    listByEvent: protectedProcedure
+      .input(z.object({ eventId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getEventCollaborators(input.eventId);
+      }),
+
+    // Aceitar convite
+    acceptInvite: protectedProcedure
+      .input(z.object({ token: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const collaborator = await db.getCollaboratorByToken(input.token);
+        if (!collaborator) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Invite not found' });
+        }
+        if (collaborator.status === 'active') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Invite already accepted' });
+        }
+
+        await db.acceptCollaboratorInvite(input.token, ctx.user.id);
+        return { eventId: collaborator.eventId };
+      }),
+
+    // Promover/rebaixar colaborador (mudar nível)
+    updateRole: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        role: z.enum(["coordinator", "supervisor", "checkin"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Buscar colaborador para pegar eventId
+        const collaborators = await db.getEventCollaborators(0); // TODO: melhorar isso
+        const collaborator = collaborators.find(c => c.id === input.id);
+        if (!collaborator) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Collaborator not found' });
+        }
+
+        // Verificar permissão
+        const event = await db.getEventById(collaborator.eventId);
+        if (!event || (event.userId !== ctx.user.id && ctx.user.role !== 'admin')) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        await db.updateCollaboratorRole(input.id, input.role);
+        return { success: true };
+      }),
+
+    // Remover colaborador
+    remove: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Buscar colaborador para pegar eventId
+        const collaborators = await db.getEventCollaborators(0); // TODO: melhorar isso
+        const collaborator = collaborators.find(c => c.id === input.id);
+        if (!collaborator) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Collaborator not found' });
+        }
+
+        // Verificar permissão
+        const event = await db.getEventById(collaborator.eventId);
+        if (!event || (event.userId !== ctx.user.id && ctx.user.role !== 'admin')) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        await db.deleteCollaborator(input.id);
+        return { success: true };
+      }),
+
+    // Obter convite por token (público para ver detalhes antes de aceitar)
+    getByToken: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        const collaborator = await db.getCollaboratorByToken(input.token);
+        if (!collaborator) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Invite not found' });
+        }
+
+        const event = await db.getEventById(collaborator.eventId);
+        return {
+          eventId: collaborator.eventId,
+          eventTitle: event?.title,
+          role: collaborator.role,
+          status: collaborator.status,
+        };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

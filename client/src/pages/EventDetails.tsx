@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail, UserCog } from "lucide-react";
+import EventCollaborators from "@/components/EventCollaborators";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -367,7 +368,7 @@ export default function EventDetails() {
               </div>
 
               <Tabs defaultValue="pending">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="pending">
                     Pendentes ({pendingRegistrations.length})
                   </TabsTrigger>
@@ -376,6 +377,10 @@ export default function EventDetails() {
                   </TabsTrigger>
                   <TabsTrigger value="rejected">
                     Rejeitados ({rejectedRegistrations.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="collaborators">
+                    <UserCog className="h-4 w-4 mr-2" />
+                    Colaboradores
                   </TabsTrigger>
                 </TabsList>
 
@@ -489,6 +494,10 @@ export default function EventDetails() {
                       </div>
                     ))
                   )}
+                </TabsContent>
+
+                <TabsContent value="collaborators" className="mt-4">
+                  <EventCollaborators eventId={eventId} />
                 </TabsContent>
               </Tabs>
             </div>

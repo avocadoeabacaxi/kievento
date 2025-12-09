@@ -241,3 +241,22 @@ export const emailLogs = mysqlTable("emailLogs", {
 
 export type EmailLog = typeof emailLogs.$inferSelect;
 export type InsertEmailLog = typeof emailLogs.$inferInsert;
+
+/**
+ * Event Collaborators - Sistema de hierarquia de permissões por evento
+ */
+export const eventCollaborators = mysqlTable("eventCollaborators", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: int("eventId").notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  role: mysqlEnum("role", ["coordinator", "supervisor", "checkin"]).notNull(),
+  status: mysqlEnum("status", ["pending", "active"]).default("pending").notNull(),
+  inviteToken: varchar("inviteToken", { length: 64 }).notNull().unique(),
+  userId: int("userId"), // NULL até aceitar convite
+  invitedBy: int("invitedBy").notNull(), // userId de quem convidou
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  acceptedAt: timestamp("acceptedAt"),
+});
+
+export type EventCollaborator = typeof eventCollaborators.$inferSelect;
+export type InsertEventCollaborator = typeof eventCollaborators.$inferInsert;

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `eventCollaborators` (\n  `id` int AUTO_INCREMENT PRIMARY KEY,\n  `eventId` int NOT NULL,\n  `email` varchar(320) NOT NULL,\n  `role` enum('coordinator', 'supervisor', 'checkin') NOT NULL,\n  `status` enum('pending', 'active') NOT NULL DEFAULT 'pending',\n  `inviteToken` varchar(64) NOT NULL UNIQUE,\n  `userId` int,\n  `invitedBy` int NOT NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `acceptedAt` timestamp\n)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute CREATE TABLE IF NOT EXISTS `eventCollaborators` (\n  `id` int AUTO_INCREMENT PRIMARY KEY,\n  `eventId` int NOT NULL,\n  `email` varchar(320) NOT NULL,\n  `role` enum('coordinator', 'supervisor', 'checkin') NOT NULL,\n  `status` enum('pending', 'active') NOT NULL DEFAULT 'pending',\n  `inviteToken` varchar(64) NOT NULL UNIQUE,\n  `userId` int,\n  `invitedBy` int NOT NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `acceptedAt` timestamp\n)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 248
+}

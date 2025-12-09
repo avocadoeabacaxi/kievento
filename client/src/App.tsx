@@ -15,6 +15,7 @@ import ScannerPage from "./pages/ScannerPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import SiteSettings from "./pages/SiteSettings";
 import EmailSettingsPage from "./pages/EmailSettingsPage";
+import AcceptInvite from "./pages/AcceptInvite";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import MyTickets from "./pages/MyTickets";
@@ -63,6 +64,7 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/settings" component={SiteSettings} />
       <Route path="/admin/email-settings" component={EmailSettingsPage} />
+      <Route path="/invite/:token" component={AcceptInvite} />
       <Route path="/termos" component={TermsPage} />
       <Route path="/privacidade" component={PrivacyPage} />
       <Route path={"/events/new"} component={CreateEvent} />

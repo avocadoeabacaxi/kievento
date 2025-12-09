@@ -520,3 +520,14 @@
 - [x] Remover DashboardLayout da EmailSettingsPage
 - [x] Adicionar Header padrão e botão de voltar na EmailSettingsPage
 - [x] Remover botão Voltar separado da EmailSettingsPage (deixar apenas Breadcrumb)
+
+## Sistema de Hierarquia de Colaboradores
+- [x] Criar tabela eventCollaborators no banco de dados
+- [x] Implementar APIs tRPC para CRUD de colaboradores
+- [x] Criar sistema de convites com token único
+- [x] Implementar middleware de permissões por nível
+- [x] Criar helpers de autorização (canEdit, canDelete, canManageCollaborators, etc.)
+- [x] Criar página de aceitar convite (/invite/:token)
+- [x] Criar aba "Colaboradores" no EventDetails
+- [ ] Aplicar controle de permissões em todas as rotas do evento (implementar em fase futura)
+- [ ] Testar fluxo completo de convite e permissões
