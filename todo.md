@@ -467,3 +467,21 @@
 - [x] Modificar query getRegistrationsByUserId para retornar todos os status (approved, pending, rejected)
 - [x] Atualizar MyTickets para exibir badges de status coloridos (verde=aprovado, amarelo=aguardando, vermelho=rejeitado)
 - [x] Testar fluxo com evento de aprovação manual
+
+## Sistema de Configuração de Emails
+- [x] Planejar estrutura de banco de dados (emailTemplates, emailSettings, emailLogs)
+- [x] Criar schema para templates de email por evento
+- [x] Criar schema para configurações globais de email
+- [x] Implementar APIs tRPC para CRUD de templates
+- [x] Implementar APIs tRPC para configurações globais
+- [x] Criar aba "Emails" no formulário de criação/edição de evento
+- [x] Interface para personalizar templates (aprovação, reprovação, aguardando, compra, confirmação)
+- [x] Seletor de formato de anexo (JPG ou PDF)
+- [x] Sistema de variáveis dinâmicas ({{nome}}, {{evento}}, {{data}}, etc.)
+- [x] Página admin de configurações globais (/admin/email-settings)
+- [x] Configuração de credenciais SMTP/SendGrid/AWS SES/Resend
+- [x] Painel de monitoramento de emails enviados (logs de envio)
+- [x] Integrar templates personalizados no sistema de envio existente
+- [x] Testar fluxo completo de personalização e envio
+- [ ] Função de teste de envio de email (implementar botão "Enviar Email de Teste")
+- [ ] Integrar com serviço real de email (SendGrid/AWS SES/Resend/SMTP)

@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { nanoid } from 'nanoid';
-import { sendEmail, getApprovalEmailTemplate, getRejectionEmailTemplate, getConfirmationEmailTemplate } from './emailService';
+import { sendEmail, sendEventEmail, getApprovalEmailTemplate, getRejectionEmailTemplate, getConfirmationEmailTemplate } from './emailService';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ENV } from './_core/env';
@@ -859,6 +859,164 @@ export const appRouter = router({
     getCategories: publicProcedure.query(async () => {
       return await db.getAllCategories();
     }),
+  }),
+
+  // Email Templates (Templates de Email por Evento)
+  emailTemplates: router({
+    // Criar template de email
+    create: protectedProcedure
+      .input(z.object({
+        eventId: z.number(),
+        templateType: z.enum(["approval", "rejection", "pending", "purchase", "confirmation"]),
+        subject: z.string().min(1),
+        htmlBody: z.string().min(1),
+        attachmentFormat: z.enum(["jpg", "pdf", "none"]).default("none"),
+        enabled: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createEmailTemplate({
+          ...input,
+          enabled: input.enabled ? 1 : 0,
+        });
+        return { id };
+      }),
+
+    // Listar templates de um evento
+    listByEvent: protectedProcedure
+      .input(z.object({ eventId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getEmailTemplatesByEventId(input.eventId);
+      }),
+
+    // Obter template específico
+    getByEventAndType: protectedProcedure
+      .input(z.object({
+        eventId: z.number(),
+        templateType: z.enum(["approval", "rejection", "pending", "purchase", "confirmation"]),
+      }))
+      .query(async ({ input }) => {
+        return await db.getEmailTemplateByEventAndType(input.eventId, input.templateType);
+      }),
+
+    // Atualizar template
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        subject: z.string().optional(),
+        htmlBody: z.string().optional(),
+        attachmentFormat: z.enum(["jpg", "pdf", "none"]).optional(),
+        enabled: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateEmailTemplate(id, {
+          ...data,
+          enabled: data.enabled !== undefined ? (data.enabled ? 1 : 0) : undefined,
+        });
+        return { success: true };
+      }),
+
+    // Deletar template
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteEmailTemplate(input.id);
+        return { success: true };
+      }),
+  }),
+
+  // Email Settings (Configurações Globais de Email)
+  emailSettings: router({
+    // Criar configuração
+    create: adminProcedure
+      .input(z.object({
+        provider: z.enum(["smtp", "sendgrid", "ses", "resend"]),
+        smtpHost: z.string().optional(),
+        smtpPort: z.number().optional(),
+        smtpUser: z.string().optional(),
+        smtpPassword: z.string().optional(),
+        smtpSecure: z.boolean().optional(),
+        apiKey: z.string().optional(),
+        awsRegion: z.string().optional(),
+        awsAccessKey: z.string().optional(),
+        awsSecretKey: z.string().optional(),
+        senderEmail: z.string().email(),
+        senderName: z.string().min(1),
+        replyToEmail: z.string().email().optional(),
+        enabled: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createEmailSetting({
+          ...input,
+          smtpSecure: input.smtpSecure ? 1 : 0,
+          enabled: input.enabled ? 1 : 0,
+        });
+        return { id };
+      }),
+
+    // Listar todas as configurações
+    list: adminProcedure.query(async () => {
+      return await db.getEmailSettings();
+    }),
+
+    // Obter configuração ativa
+    getActive: protectedProcedure.query(async () => {
+      return await db.getActiveEmailSetting();
+    }),
+
+    // Atualizar configuração
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        provider: z.enum(["smtp", "sendgrid", "ses", "resend"]).optional(),
+        smtpHost: z.string().optional(),
+        smtpPort: z.number().optional(),
+        smtpUser: z.string().optional(),
+        smtpPassword: z.string().optional(),
+        smtpSecure: z.boolean().optional(),
+        apiKey: z.string().optional(),
+        awsRegion: z.string().optional(),
+        awsAccessKey: z.string().optional(),
+        awsSecretKey: z.string().optional(),
+        senderEmail: z.string().email().optional(),
+        senderName: z.string().optional(),
+        replyToEmail: z.string().email().optional(),
+        enabled: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateEmailSetting(id, {
+          ...data,
+          smtpSecure: data.smtpSecure !== undefined ? (data.smtpSecure ? 1 : 0) : undefined,
+          enabled: data.enabled !== undefined ? (data.enabled ? 1 : 0) : undefined,
+        });
+        return { success: true };
+      }),
+
+    // Deletar configuração
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteEmailSetting(input.id);
+        return { success: true };
+      }),
+  }),
+
+  // Email Logs (Logs de Emails Enviados)
+  emailLogs: router({
+    // Listar logs recentes
+    list: adminProcedure
+      .input(z.object({ limit: z.number().default(100) }))
+      .query(async ({ input }) => {
+        return await db.getEmailLogs(input.limit);
+      }),
+
+    // Listar logs de um evento
+    listByEvent: protectedProcedure
+      .input(z.object({ eventId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getEmailLogsByEventId(input.eventId);
+      }),
   }),
 });
 

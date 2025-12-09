@@ -1,6 +1,6 @@
 import { eq, desc, and, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, events, formFields, registrations, eventValidators, siteSettings, ticketTypes, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator, InsertSiteSetting, InsertTicketType } from "../drizzle/schema";
+import { InsertUser, users, events, formFields, registrations, eventValidators, siteSettings, ticketTypes, emailTemplates, emailSettings, emailLogs, InsertEvent, InsertFormField, InsertRegistration, InsertEventValidator, InsertSiteSetting, InsertTicketType, InsertEmailTemplate, InsertEmailSetting, InsertEmailLog } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -521,4 +521,178 @@ export async function getActiveTicketType(eventId: number) {
 
   // Nenhum lote ativo encontrado
   return null;
+}
+
+
+// ============================================
+// Email Templates (Templates de Email por Evento)
+// ============================================
+
+export async function createEmailTemplate(data: InsertEmailTemplate): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create email template: database not available");
+    return 0;
+  }
+
+  const result = await db.insert(emailTemplates).values(data);
+  return result[0].insertId;
+}
+
+export async function getEmailTemplatesByEventId(eventId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get email templates: database not available");
+    return [];
+  }
+
+  return await db.select().from(emailTemplates)
+    .where(eq(emailTemplates.eventId, eventId));
+}
+
+export async function getEmailTemplateByEventAndType(eventId: number, templateType: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get email template: database not available");
+    return null;
+  }
+
+  const results = await db.select().from(emailTemplates)
+    .where(and(
+      eq(emailTemplates.eventId, eventId),
+      eq(emailTemplates.templateType, templateType as any)
+    ));
+  return results[0] || null;
+}
+
+export async function updateEmailTemplate(id: number, data: Partial<InsertEmailTemplate>) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update email template: database not available");
+    return;
+  }
+
+  await db.update(emailTemplates)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(emailTemplates.id, id));
+}
+
+export async function deleteEmailTemplate(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot delete email template: database not available");
+    return;
+  }
+
+  await db.delete(emailTemplates).where(eq(emailTemplates.id, id));
+}
+
+// ============================================
+// Email Settings (Configurações Globais de Email)
+// ============================================
+
+export async function createEmailSetting(data: InsertEmailSetting): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create email setting: database not available");
+    return 0;
+  }
+
+  const result = await db.insert(emailSettings).values(data);
+  return result[0].insertId;
+}
+
+export async function getEmailSettings() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get email settings: database not available");
+    return [];
+  }
+
+  return await db.select().from(emailSettings);
+}
+
+export async function getActiveEmailSetting() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get active email setting: database not available");
+    return null;
+  }
+
+  const results = await db.select().from(emailSettings)
+    .where(eq(emailSettings.enabled, 1));
+  return results[0] || null;
+}
+
+export async function updateEmailSetting(id: number, data: Partial<InsertEmailSetting>) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update email setting: database not available");
+    return;
+  }
+
+  await db.update(emailSettings)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(emailSettings.id, id));
+}
+
+export async function deleteEmailSetting(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot delete email setting: database not available");
+    return;
+  }
+
+  await db.delete(emailSettings).where(eq(emailSettings.id, id));
+}
+
+// ============================================
+// Email Logs (Logs de Emails Enviados)
+// ============================================
+
+export async function createEmailLog(data: InsertEmailLog): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create email log: database not available");
+    return 0;
+  }
+
+  const result = await db.insert(emailLogs).values(data);
+  return result[0].insertId;
+}
+
+export async function getEmailLogs(limit = 100) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get email logs: database not available");
+    return [];
+  }
+
+  return await db.select().from(emailLogs)
+    .orderBy(desc(emailLogs.createdAt))
+    .limit(limit);
+}
+
+export async function getEmailLogsByEventId(eventId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get email logs: database not available");
+    return [];
+  }
+
+  return await db.select().from(emailLogs)
+    .where(eq(emailLogs.eventId, eventId))
+    .orderBy(desc(emailLogs.createdAt));
+}
+
+export async function updateEmailLog(id: number, data: Partial<InsertEmailLog>) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update email log: database not available");
+    return;
+  }
+
+  await db.update(emailLogs)
+    .set(data)
+    .where(eq(emailLogs.id, id));
 }

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `emailLogs` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`eventId` int,\n\t`registrationId` int,\n\t`templateType` enum('approval','rejection','pending','purchase','confirmation'),\n\t`recipient` varchar(320) NOT NULL,\n\t`subject` varchar(200) NOT NULL,\n\t`status` enum('sent','failed','pending') NOT NULL DEFAULT 'pending',\n\t`error` text,\n\t`sentAt` timestamp,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `emailLogs_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `emailLogs_eventId_events_id_fk` FOREIGN KEY (`eventId`) REFERENCES `events`(`id`) ON DELETE set null ON UPDATE no action,\n\tCONSTRAINT `emailLogs_registrationId_registrations_id_fk` FOREIGN KEY (`registrationId`) REFERENCES `registrations`(`id`) ON DELETE set null ON UPDATE no action\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute CREATE TABLE IF NOT EXISTS `emailLogs` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`eventId` int,\n\t`registrationId` int,\n\t`templateType` enum('approval','rejection','pending','purchase','confirmation'),\n\t`recipient` varchar(320) NOT NULL,\n\t`subject` varchar(200) NOT NULL,\n\t`status` enum('sent','failed','pending') NOT NULL DEFAULT 'pending',\n\t`error` text,\n\t`sentAt` timestamp,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `emailLogs_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `emailLogs_eventId_events_id_fk` FOREIGN KEY (`eventId`) REFERENCES `events`(`id`) ON DELETE set null ON UPDATE no action,\n\tCONSTRAINT `emailLogs_registrationId_registrations_id_fk` FOREIGN KEY (`registrationId`) REFERENCES `registrations`(`id`) ON DELETE set null ON UPDATE no action\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 302
+}

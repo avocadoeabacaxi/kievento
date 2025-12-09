@@ -18,6 +18,7 @@ import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import EventCreationSidebar, { Step } from "@/components/EventCreationSidebar";
 import ReviewStep from "@/components/event-steps/ReviewStep";
+import { EventEmailSettings } from "@/components/EventEmailSettings";
 
 type FormFieldType = "text" | "email" | "phone" | "textarea" | "select" | "checkbox" | "cpf" | "cnpj" | "cep";
 
@@ -324,6 +325,7 @@ export default function CreateEvent() {
     { id: "images", title: "Banner e Imagens", completed: !!bannerBase64 },
     { id: "form", title: "Formulário de Inscrição", completed: formFields.length >= 2 },
     { id: "tickets", title: "Sistema de Ingressos", completed: true },
+    { id: "emails", title: "Configurações de Email", completed: true },
     { id: "faq", title: "Perguntas Frequentes", completed: true },
     { id: "review", title: "Publicar", completed: false },
   ];
@@ -697,7 +699,32 @@ export default function CreateEvent() {
           </Card>
           )}
 
-          {/* Bloco 5: Perguntas Frequentes (FAQ) */}
+          {/* Bloco 5: Configurações de Email */}
+          {currentStepId === "emails" && eventId && (
+            <EventEmailSettings eventId={eventId} />
+          )}
+
+          {currentStepId === "emails" && !eventId && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Configurações de Email</CardTitle>
+                <CardDescription>
+                  Salve o evento primeiro para configurar os templates de email
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    As configurações de email estarão disponíveis após salvar o evento.
+                    Você poderá personalizar os emails enviados aos participantes.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Bloco 6: Perguntas Frequentes (FAQ) */}
           {currentStepId === "faq" && (
           <Card id="faq">
             <CardHeader>

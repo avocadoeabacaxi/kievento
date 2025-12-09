@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `emailTemplates` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`eventId` int NOT NULL,\n\t`templateType` enum('approval','rejection','pending','purchase','confirmation') NOT NULL,\n\t`subject` varchar(200) NOT NULL,\n\t`htmlBody` text NOT NULL,\n\t`attachmentFormat` enum('jpg','pdf','none') NOT NULL DEFAULT 'none',\n\t`enabled` tinyint NOT NULL DEFAULT 1,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `emailTemplates_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `emailTemplates_eventId_events_id_fk` FOREIGN KEY (`eventId`) REFERENCES `events`(`id`) ON DELETE cascade ON UPDATE no action\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute CREATE TABLE IF NOT EXISTS `emailTemplates` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`eventId` int NOT NULL,\n\t`templateType` enum('approval','rejection','pending','purchase','confirmation') NOT NULL,\n\t`subject` varchar(200) NOT NULL,\n\t`htmlBody` text NOT NULL,\n\t`attachmentFormat` enum('jpg','pdf','none') NOT NULL DEFAULT 'none',\n\t`enabled` tinyint NOT NULL DEFAULT 1,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `emailTemplates_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `emailTemplates_eventId_events_id_fk` FOREIGN KEY (`eventId`) REFERENCES `events`(`id`) ON DELETE cascade ON UPDATE no action\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 266
+}

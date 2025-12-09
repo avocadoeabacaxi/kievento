@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `emailSettings` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`provider` enum('smtp','sendgrid','ses','resend') NOT NULL,\n\t`smtpHost` varchar(255),\n\t`smtpPort` int,\n\t`smtpUser` varchar(255),\n\t`smtpPassword` text,\n\t`smtpSecure` tinyint DEFAULT 1,\n\t`apiKey` text,\n\t`awsRegion` varchar(50),\n\t`awsAccessKey` varchar(255),\n\t`awsSecretKey` text,\n\t`senderEmail` varchar(320) NOT NULL,\n\t`senderName` varchar(100) NOT NULL,\n\t`replyToEmail` varchar(320),\n\t`enabled` tinyint NOT NULL DEFAULT 1,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `emailSettings_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute CREATE TABLE IF NOT EXISTS `emailSettings` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`provider` enum('smtp','sendgrid','ses','resend') NOT NULL,\n\t`smtpHost` varchar(255),\n\t`smtpPort` int,\n\t`smtpUser` varchar(255),\n\t`smtpPassword` text,\n\t`smtpSecure` tinyint DEFAULT 1,\n\t`apiKey` text,\n\t`awsRegion` varchar(50),\n\t`awsAccessKey` varchar(255),\n\t`awsSecretKey` text,\n\t`senderEmail` varchar(320) NOT NULL,\n\t`senderName` varchar(100) NOT NULL,\n\t`replyToEmail` varchar(320),\n\t`enabled` tinyint NOT NULL DEFAULT 1,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `emailSettings_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 199
+}

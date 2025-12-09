@@ -169,3 +169,75 @@ export const ticketTypes = mysqlTable("ticketTypes", {
 
 export type TicketType = typeof ticketTypes.$inferSelect;
 export type InsertTicketType = typeof ticketTypes.$inferInsert;
+
+/**
+ * Templates de email personalizáveis por evento
+ */
+export const emailTemplates = mysqlTable("emailTemplates", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: int("eventId").notNull().references(() => events.id, { onDelete: "cascade" }),
+  templateType: mysqlEnum("templateType", ["approval", "rejection", "pending", "purchase", "confirmation"]).notNull(),
+  subject: varchar("subject", { length: 200 }).notNull(), // Assunto do email
+  htmlBody: text("htmlBody").notNull(), // Corpo HTML com variáveis {{nome}}, {{evento}}, etc.
+  attachmentFormat: mysqlEnum("attachmentFormat", ["jpg", "pdf", "none"]).default("none").notNull(), // Formato do convite anexado
+  enabled: tinyint("enabled").default(1).notNull(), // 1 = ativo, 0 = inativo
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type InsertEmailTemplate = typeof emailTemplates.$inferInsert;
+
+/**
+ * Configurações globais de email (credenciais e provedor)
+ */
+export const emailSettings = mysqlTable("emailSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  provider: mysqlEnum("provider", ["smtp", "sendgrid", "ses", "resend"]).notNull(),
+  
+  // SMTP
+  smtpHost: varchar("smtpHost", { length: 255 }),
+  smtpPort: int("smtpPort"),
+  smtpUser: varchar("smtpUser", { length: 255 }),
+  smtpPassword: text("smtpPassword"), // Criptografado
+  smtpSecure: tinyint("smtpSecure").default(1), // 1 = TLS, 0 = sem criptografia
+  
+  // SendGrid / Resend
+  apiKey: text("apiKey"), // Criptografado
+  
+  // AWS SES
+  awsRegion: varchar("awsRegion", { length: 50 }),
+  awsAccessKey: varchar("awsAccessKey", { length: 255 }),
+  awsSecretKey: text("awsSecretKey"), // Criptografado
+  
+  // Configurações gerais
+  senderEmail: varchar("senderEmail", { length: 320 }).notNull(),
+  senderName: varchar("senderName", { length: 100 }).notNull(),
+  replyToEmail: varchar("replyToEmail", { length: 320 }),
+  enabled: tinyint("enabled").default(1).notNull(), // 1 = ativo, 0 = inativo
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type EmailSetting = typeof emailSettings.$inferSelect;
+export type InsertEmailSetting = typeof emailSettings.$inferInsert;
+
+/**
+ * Log de emails enviados (monitoramento)
+ */
+export const emailLogs = mysqlTable("emailLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  eventId: int("eventId").references(() => events.id, { onDelete: "set null" }),
+  registrationId: int("registrationId").references(() => registrations.id, { onDelete: "set null" }),
+  templateType: mysqlEnum("templateType", ["approval", "rejection", "pending", "purchase", "confirmation"]),
+  recipient: varchar("recipient", { length: 320 }).notNull(),
+  subject: varchar("subject", { length: 200 }).notNull(),
+  status: mysqlEnum("status", ["sent", "failed", "pending"]).default("pending").notNull(),
+  error: text("error"), // Mensagem de erro caso falhe
+  sentAt: timestamp("sentAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EmailLog = typeof emailLogs.$inferSelect;
+export type InsertEmailLog = typeof emailLogs.$inferInsert;
