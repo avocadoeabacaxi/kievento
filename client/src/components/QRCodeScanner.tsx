@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface QRCodeScannerProps {
   onScan: (result: string) => void;
   onError?: (error: string) => void;
+  borderState?: 'idle' | 'success' | 'error';
 }
 
-export default function QRCodeScanner({ onScan, onError }: QRCodeScannerProps) {
+export default function QRCodeScanner({ onScan, onError, borderState = 'idle' }: QRCodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -146,7 +147,11 @@ export default function QRCodeScanner({ onScan, onError }: QRCodeScannerProps) {
             </div>
           )}
           {isScanning && (
-            <div className="absolute inset-0 border-4 border-green-500 animate-pulse pointer-events-none" />
+            <div className={`absolute inset-0 border-4 pointer-events-none ${
+              borderState === 'success' ? 'border-green-500 animate-pulse' :
+              borderState === 'error' ? 'border-red-500 animate-pulse' :
+              'border-green-500 animate-pulse'
+            }`} />
           )}
         </div>
 

@@ -79,6 +79,7 @@ export default function ScannerPage() {
   
   const [animateCounter, setAnimateCounter] = useState(false);
   const prevCheckedInRef = useRef(totalCheckedIn);
+  const [borderState, setBorderState] = useState<'idle' | 'success' | 'error'>('idle');
   
   // Animar quando contador aumentar
   useEffect(() => {
@@ -103,6 +104,10 @@ export default function ScannerPage() {
       // Tocar som de sucesso
       successSound.current?.play();
       
+      // Borda verde piscante
+      setBorderState('success');
+      setTimeout(() => setBorderState('idle'), 2000);
+      
       // Atualizar estatísticas
       refetchRegistrations();
       
@@ -120,6 +125,11 @@ export default function ScannerPage() {
       
       // Tocar som de erro
       errorSound.current?.play();
+      
+      // Borda vermelha piscante
+      setBorderState('error');
+      setTimeout(() => setBorderState('idle'), 2000);
+      
       setTimeout(() => inputRef.current?.focus(), 100);
     },
   });
@@ -205,7 +215,7 @@ export default function ScannerPage() {
               <Camera className="h-5 w-5 sm:h-6 sm:w-6" />
               Scanner de QR Code
             </h2>
-            <QRCodeScanner onScan={handleQrCodeScan} />
+            <QRCodeScanner onScan={handleQrCodeScan} borderState={borderState} />
           </div>
 
           {/* Last Result - Mobile optimized */}

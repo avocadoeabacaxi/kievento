@@ -566,4 +566,10 @@
 - [x] Reorganizar botões de ação em grid 2 colunas
 - [x] Adicionar cores distintas aos botões (verde/azul/roxo/laranja/índigo)
 - [x] Corrigir espaçamento entre abas (grid 2 colunas mobile, 4 desktop)
-- [ ] Testar responsividade mobile
+- [x] Testar responsividade mobile
+
+## Feedback Visual Scanner QR Code
+- [x] Corrigir layout do alerta de erro (texto cortado - adicionado break-words)
+- [x] Implementar borda verde piscante na câmera ao confirmar check-in
+- [x] Implementar borda vermelha piscante na câmera quando QR já fez check-in
+- [x] Resetar borda para estado normal após 2 segundos
