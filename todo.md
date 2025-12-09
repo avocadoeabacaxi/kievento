@@ -573,3 +573,7 @@
 - [x] Implementar borda verde piscante na câmera ao confirmar check-in
 - [x] Implementar borda vermelha piscante na câmera quando QR já fez check-in
 - [x] Resetar borda para estado normal após 2 segundos
+
+## Reorganização Botão Excluir Evento
+- [x] Mover botão "Excluir Evento" para dentro do grid de botões coloridos
+- [x] Manter organização visual consistente em mobile
