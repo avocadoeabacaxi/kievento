@@ -596,3 +596,9 @@
 - [x] Adicionar overlay de ✓ verde grande centralizado ao escanear com sucesso
 - [x] Adicionar overlay de X vermelho grande centralizado com mensagem de erro (Já Cadastrado / QR Code Inválido)
 - [x] Animar entrada/saída do feedback visual (animate-in fade-in zoom-in)
+
+## Correções Scanner QR Code
+- [x] Remover cards de estatísticas duplicados (deixar apenas embaixo)
+- [x] Garantir que alerta de check-in apareça no topo da página
+- [x] Aumentar timer do overlay visual para 5 segundos
+- [x] Aumentar timer do cooldown para 5 segundos (de 10s para 5s)
