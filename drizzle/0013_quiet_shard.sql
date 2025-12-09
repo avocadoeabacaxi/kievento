@@ -1,0 +1,2 @@
+ALTER TABLE `registrations` ADD `userId` int NOT NULL;--> statement-breakpoint
+ALTER TABLE `registrations` ADD CONSTRAINT `registrations_userId_users_id_fk` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;

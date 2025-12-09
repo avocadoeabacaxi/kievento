@@ -258,7 +258,7 @@ export const appRouter = router({
 
   registrations: router({
     // Criar inscrição (público)
-    create: publicProcedure
+    create: protectedProcedure
       .input(z.object({
         eventId: z.number(),
         name: z.string().min(1),
@@ -267,7 +267,7 @@ export const appRouter = router({
         formData: z.string(), // JSON stringified
         ticketTypeId: z.number().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const event = await db.getEventById(input.eventId);
         if (!event) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
@@ -278,6 +278,7 @@ export const appRouter = router({
 
         const registrationId = await db.createRegistration({
           eventId: input.eventId,
+          userId: ctx.user.id, // ID do usuário logado que fez a inscrição
           name: input.name,
           email: input.email,
           phone: input.phone,
@@ -532,6 +533,7 @@ export const appRouter = router({
 
         const registrationId = await db.createRegistration({
           eventId: input.eventId,
+          userId: ctx.user.id, // ID do usuário que está criando a inscrição manual
           name: input.name,
           email: input.email,
           phone: input.phone,

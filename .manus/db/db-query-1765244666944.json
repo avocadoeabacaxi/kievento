@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, title, hasTicketTypes FROM events WHERE id = 22;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, title, hasTicketTypes FROM events WHERE id = 22;",
+  "rows": [
+    {
+      "id": "22",
+      "title": "Papo de Padaria",
+      "hasTicketTypes": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\thasTicketTypes\n22\tPapo de Padaria\t0\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

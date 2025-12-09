@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, eventId, email, name, status, createdAt\nFROM registrations\nWHERE status = 'approved'\nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, eventId, email, name, status, createdAt\nFROM registrations\nWHERE status = 'approved'\nLIMIT 10;",
+  "rows": [
+    {
+      "id": "104",
+      "eventId": "22",
+      "email": "fernando@avocado.buzz",
+      "name": "FERNANDO GONCALVES DE MATOS MACHADO",
+      "status": "approved",
+      "createdAt": "2025-12-08 02:11:31"
+    },
+    {
+      "id": "30007",
+      "eventId": "22",
+      "email": "fernando@gmail.com",
+      "name": "fernando machado",
+      "status": "approved",
+      "createdAt": "2025-12-08 23:35:16"
+    },
+    {
+      "id": "30008",
+      "eventId": "22",
+      "email": "joao.teste@example.com",
+      "name": "João Silva Teste",
+      "status": "approved",
+      "createdAt": "2025-12-09 00:31:57"
+    },
+    {
+      "id": "30009",
+      "eventId": "22",
+      "email": "lele@gmail.com",
+      "name": "Leticia Helena",
+      "status": "approved",
+      "createdAt": "2025-12-09 01:30:34"
+    },
+    {
+      "id": "30010",
+      "eventId": "22",
+      "email": "testr@gmail.com",
+      "name": "Lecio Melo ",
+      "status": "approved",
+      "createdAt": "2025-12-09 01:31:34"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\teventId\temail\tname\tstatus\tcreatedAt\n104\t22\tfernando@avocado.buzz\tFERNANDO GONCALVES DE MATOS MACHADO\tapproved\t2025-12-08 02:11:31\n30007\t22\tfernando@gmail.com\tfernando machado\tapproved\t2025-12-08 23:35:16\n30008\t22\tjoao.teste@example.com\tJoão Silva Teste\tapproved\t2025-12-09 00:31:57\n30009\t22\tlele@gmail.com\tLeticia Helena\tapproved\t2025-12-09 01:30:34\n30010\t22\ttestr@gmail.com\tLecio Melo \tapproved\t2025-12-09 01:31:34\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

@@ -102,6 +102,7 @@ export type InsertFormField = typeof formFields.$inferInsert;
 export const registrations = mysqlTable("registrations", {
   id: int("id").autoincrement().primaryKey(),
   eventId: int("eventId").notNull().references(() => events.id, { onDelete: "cascade" }),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }), // Usuário que fez a inscrição
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 320 }).notNull(),
   phone: varchar("phone", { length: 50 }),

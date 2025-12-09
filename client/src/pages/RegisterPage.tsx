@@ -300,7 +300,7 @@ export default function RegisterPage() {
       {/* Registration Form */}
       <div className="container max-w-2xl py-6 space-y-6">
         {/* Tipo de Ingresso Disponível */}
-        {eventData?.hasTicketTypes && activeTicketType && (
+        {!!eventData?.hasTicketTypes && activeTicketType && (
           <div className="border-l-4 pl-4 py-2" style={{ borderLeftColor: activeTicketType.color || '#ef4444' }}>
             <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-3">Ingresso Disponível</div>
             <Card>
@@ -341,7 +341,7 @@ export default function RegisterPage() {
         )}
 
         {/* Mensagem se não houver lote disponível */}
-        {eventData?.hasTicketTypes && !activeTicketType && !isRegistrationClosed && (
+        {!!eventData?.hasTicketTypes && !activeTicketType && !isRegistrationClosed && (
           <div className="border-l-4 border-yellow-500 pl-4 py-2">
             <Card>
               <CardContent className="pt-4 text-center py-8 space-y-4">

@@ -456,3 +456,9 @@
 - [x] Redirecionar para página de login (quando não autenticado)
 - [x] Após login, processar inscrição automaticamente
 - [x] Redirecionar para "Meus Ingressos" com inscrição confirmada
+
+## Correção: Ingressos Aprovados Não Aparecem em Meus Ingressos
+- [ ] Investigar query que busca ingressos do usuário
+- [ ] Verificar filtro de status (aprovado/pendente/rejeitado)
+- [ ] Corrigir lógica para mostrar apenas ingressos aprovados
+- [ ] Testar aprovação e visualização de ingressos

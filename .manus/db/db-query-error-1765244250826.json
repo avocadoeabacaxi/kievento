@@ -1,0 +1,8 @@
+{
+  "query": "SELECT u.id, u.email, u.name, \n       (SELECT COUNT(*) FROM registrations r WHERE r.email = u.email) as total_registrations,\n       (SELECT COUNT(*) FROM registrations r WHERE r.email = u.email AND r.status = 'approved') as approved_registrations\nFROM user u \nWHERE u.name LIKE '%FG%' OR u.name LIKE '%Felipe%'\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT u.id, u.email, u.name, \n       (SELECT COUNT(*) FROM registrations r WHERE r.email = u.email) as total_registrations,\n       (SELECT COUNT(*) FROM registrations r WHERE r.email = u.email AND r.status = 'approved') as approved_registrations\nFROM user u \nWHERE u.name LIKE '%FG%' OR u.name LIKE '%Felipe%'\nLIMIT 5;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'kfey3nsqjbldeh7yzxdytq.user' doesn't exist"
+  ]
+}

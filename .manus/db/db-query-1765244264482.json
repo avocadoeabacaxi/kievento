@@ -1,0 +1,31 @@
+{
+  "query": "SELECT u.id, u.email, u.name, \n       (SELECT COUNT(*) FROM registrations r WHERE r.email = u.email) as total_registrations,\n       (SELECT COUNT(*) FROM registrations r WHERE r.email = u.email AND r.status = 'approved') as approved_registrations\nFROM users u \nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT u.id, u.email, u.name, \n       (SELECT COUNT(*) FROM registrations r WHERE r.email = u.email) as total_registrations,\n       (SELECT COUNT(*) FROM registrations r WHERE r.email = u.email AND r.status = 'approved') as approved_registrations\nFROM users u \nLIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "email": "firnando@gmail.com",
+      "name": "Fernando Gonçalves",
+      "total_registrations": "0",
+      "approved_registrations": "0"
+    },
+    {
+      "id": "1112",
+      "email": "fernando@avocado.buzz",
+      "name": "Fernando Gonçalves",
+      "total_registrations": "1",
+      "approved_registrations": "1"
+    },
+    {
+      "id": "30747",
+      "email": "goldpao@avocado.buzz",
+      "name": "Gold Pão",
+      "total_registrations": "0",
+      "approved_registrations": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\ttotal_registrations\tapproved_registrations\n1\tfirnando@gmail.com\tFernando Gonçalves\t0\t0\n1112\tfernando@avocado.buzz\tFernando Gonçalves\t1\t1\n30747\tgoldpao@avocado.buzz\tGold Pão\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

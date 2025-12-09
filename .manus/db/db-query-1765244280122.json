@@ -1,0 +1,9 @@
+{
+  "query": "SELECT r.id, r.eventId, r.email, r.status, r.createdAt,\n       e.title, e.eventDate\nFROM registrations r\nLEFT JOIN events e ON r.eventId = e.id\nWHERE r.email = 'felipe.gomes.rp@gmail.com' AND r.status = 'approved'\nORDER BY e.eventDate DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT r.id, r.eventId, r.email, r.status, r.createdAt,\n       e.title, e.eventDate\nFROM registrations r\nLEFT JOIN events e ON r.eventId = e.id\nWHERE r.email = 'felipe.gomes.rp@gmail.com' AND r.status = 'approved'\nORDER BY e.eventDate DESC;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 54
+}

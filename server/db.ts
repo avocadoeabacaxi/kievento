@@ -216,12 +216,15 @@ export async function getRegistrationsByUserId(userId: number) {
   const db = await getDb();
   if (!db) return [];
   
-  // Buscar inscrições pelo e-mail do usuário
-  const user = await getUserById(userId);
-  if (!user || !user.email) return [];
-  
+  // Buscar inscrições pelo userId (chave correta para vincular ao usuário logado)
+  // Retornar apenas inscrições aprovadas
   return db.select().from(registrations)
-    .where(eq(registrations.email, user.email))
+    .where(
+      and(
+        eq(registrations.userId, userId),
+        eq(registrations.status, 'approved')
+      )
+    )
     .orderBy(desc(registrations.createdAt));
 }
 
