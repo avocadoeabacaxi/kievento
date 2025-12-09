@@ -515,3 +515,7 @@
 
 ## Melhorias de UX
 - [x] Adicionar link "Configurações de Email" no menu do AdminDashboard
+
+## Ajustes de Layout
+- [x] Remover DashboardLayout da EmailSettingsPage
+- [x] Adicionar Header padrão e botão de voltar na EmailSettingsPage

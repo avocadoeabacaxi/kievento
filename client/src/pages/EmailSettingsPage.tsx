@@ -7,9 +7,12 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail, Server, Key, Send, Info, Save, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { Mail, Server, Key, Send, Info, Save, Trash2, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import DashboardLayout from "@/components/DashboardLayout";
+import { Link } from "wouter";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 
 type Provider = "smtp" | "sendgrid" | "ses" | "resend";
 
@@ -104,8 +107,23 @@ export default function EmailSettingsPage() {
   };
 
   return (
-    <DashboardLayout>
-      <div className="container max-w-5xl py-8 space-y-6">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container py-8 space-y-6">
+        <Breadcrumb items={[
+          { label: "Admin", href: "/admin" },
+          { label: "Configurações de Email" },
+        ]} />
+        
+        <div className="flex items-center gap-4 mb-6">
+          <Link href="/admin">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+          </Link>
+        </div>
+
         <div>
           <h1 className="text-3xl font-bold">Configurações de Email</h1>
           <p className="text-muted-foreground mt-2">
@@ -439,7 +457,8 @@ export default function EmailSettingsPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </DashboardLayout>
+      </main>
+      <Footer />
+    </div>
   );
 }
