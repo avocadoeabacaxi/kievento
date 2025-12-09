@@ -586,3 +586,7 @@
 ## Correção de Formatação das Abas
 - [x] Corrigir formatação da aba "Aprovados" para ficar igual às outras abas (flex-col em mobile)
 - [x] Garantir ordem correta: Pendentes, Aprovados, Rejeitados, Colaboradores
+
+## Reorganização Layout Validação de Entrada
+- [x] Mover cards de estatísticas (Check-ins e Total) para baixo da busca por nome
+- [x] Manter alerta de sucesso/erro no topo da página (movido para cima do scanner)

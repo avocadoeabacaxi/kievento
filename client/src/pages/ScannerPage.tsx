@@ -263,41 +263,7 @@ export default function ScannerPage() {
             )}
           </div>
 
-          {/* Last Result - Mobile optimized */}
-          {lastResult && (
-            <div>
-              {lastResult.success ? (
-                <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3 sm:p-4">
-                  <div className="flex items-start gap-2 sm:gap-3">
-                    <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 dark:text-green-500 mt-0.5 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-green-900 dark:text-green-100 text-sm sm:text-base">
-                        Check-in Realizado!
-                      </p>
-                      <p className="text-xs sm:text-sm text-green-700 dark:text-green-300 mt-1 truncate">
-                        {lastResult.registration.name}
-                      </p>
-                      <p className="text-xs sm:text-sm text-green-600 dark:text-green-400 truncate">
-                        {lastResult.registration.email}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4">
-                  <div className="flex items-start gap-2 sm:gap-3">
-                    <XCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 dark:text-red-500 mt-0.5 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-red-900 dark:text-red-100 text-sm sm:text-base">Erro na Validação</p>
-                      <p className="text-xs sm:text-sm text-red-700 dark:text-red-300 mt-1 break-words">
-                        {lastResult.error}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+
 
           {/* Search by Name - Mobile optimized */}
           <Card>
@@ -382,6 +348,26 @@ export default function ScannerPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Estatísticas em Tempo Real - MOVIDO PARA BAIXO DA BUSCA */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 sm:p-6 text-white shadow-lg">
+              <div className="text-xs sm:text-sm font-medium opacity-90 mb-1">Check-ins Realizados</div>
+              <div className={`text-3xl sm:text-4xl font-bold tabular-nums transition-all duration-300 ${
+                animateCounter ? 'scale-125 text-yellow-300' : 'scale-100'
+              }`}>
+                {totalCheckedIn}
+              </div>
+              <div className="text-xs sm:text-sm opacity-75 mt-1">de {totalApproved} aprovados</div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 sm:p-6 text-white shadow-lg">
+              <div className="text-xs sm:text-sm font-medium opacity-90 mb-1">Taxa de Presença</div>
+              <div className="text-3xl sm:text-4xl font-bold tabular-nums">{percentageCheckedIn}%</div>
+              <div className="text-xs sm:text-sm opacity-75 mt-1">
+                {totalApproved - totalCheckedIn} faltando
+              </div>
+            </div>
+          </div>
         </div>
       </main>
       
