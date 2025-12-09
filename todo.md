@@ -561,3 +561,9 @@
 - [x] Exibir percentual de presença (check-ins / total aprovados)
 - [x] Adicionar animação ao incrementar contador (escala + cor amarela)
 - [x] Atualizar automaticamente após cada scan
+
+## Organização Visual EventDetails Mobile
+- [x] Reorganizar botões de ação em grid 2 colunas
+- [x] Adicionar cores distintas aos botões (verde/azul/roxo/laranja/índigo)
+- [x] Corrigir espaçamento entre abas (grid 2 colunas mobile, 4 desktop)
+- [ ] Testar responsividade mobile

@@ -330,30 +330,39 @@ export default function EventDetails() {
                 <CardTitle>Gerenciar Inscrições</CardTitle>
                 <CardDescription>Aprove, rejeite e faça check-in dos participantes</CardDescription>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" onClick={handleExportCsv}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                <Button 
+                  className="bg-green-600 hover:bg-green-700 text-white" 
+                  onClick={handleExportCsv}
+                >
                   <Download className="h-4 w-4 mr-2" />
                   Exportar Excel
                 </Button>
                 {permissions?.canCreateParticipants && (
-                  <Button variant="outline" onClick={() => setIsAddOpen(true)}>
+                  <Button 
+                    className="bg-blue-600 hover:bg-blue-700 text-white" 
+                    onClick={() => setIsAddOpen(true)}
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Adicionar Participante
                   </Button>
                 )}
                 {permissions?.canSendEmails && (
-                  <Button variant="outline" onClick={() => setIsBulkEmailOpen(true)}>
+                  <Button 
+                    className="bg-purple-600 hover:bg-purple-700 text-white" 
+                    onClick={() => setIsBulkEmailOpen(true)}
+                  >
                     <Mail className="h-4 w-4 mr-2" />
                     Enviar Emails
                   </Button>
                 )}
-                <Link href={`/events/${eventId}/scan`}>
-                  <Button variant="outline">
+                <Link href={`/events/${eventId}/scan`} className="w-full">
+                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
                     <QrCodeIcon className="h-4 w-4 mr-2" />
                     Scanner QR Code
                   </Button>
                 </Link>
-                <Button variant="outline" asChild>
+                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white" asChild>
                   <a href={`/register/${eventId}`} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Página de Inscrição
@@ -375,18 +384,18 @@ export default function EventDetails() {
               </div>
 
               <Tabs defaultValue="pending">
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="pending">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+                  <TabsTrigger value="pending" className="text-xs sm:text-sm">
                     Pendentes ({pendingRegistrations.length})
                   </TabsTrigger>
-                  <TabsTrigger value="approved">
+                  <TabsTrigger value="approved" className="text-xs sm:text-sm">
                     Aprovados ({approvedRegistrations.length})
                   </TabsTrigger>
-                  <TabsTrigger value="rejected">
+                  <TabsTrigger value="rejected" className="text-xs sm:text-sm">
                     Rejeitados ({rejectedRegistrations.length})
                   </TabsTrigger>
-                  <TabsTrigger value="collaborators">
-                    <UserCog className="h-4 w-4 mr-2" />
+                  <TabsTrigger value="collaborators" className="text-xs sm:text-sm">
+                    <UserCog className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Colaboradores
                   </TabsTrigger>
                 </TabsList>
