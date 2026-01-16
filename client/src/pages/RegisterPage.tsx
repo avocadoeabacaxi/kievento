@@ -36,6 +36,18 @@ export default function RegisterPage() {
   const [submitted, setSubmitted] = useState(false);
   const [registrationResult, setRegistrationResult] = useState<any>(null);
   
+  // Cores personalizadas do evento (com fallback para cores padrão)
+  const customColors = {
+    sidebarBg: eventData?.customSidebarBg || "#dc2626",
+    sidebarText: eventData?.customSidebarText || "#ffffff",
+    buttonBg: eventData?.customButtonBg || "#dc2626",
+    buttonHover: eventData?.customButtonHover || "#b91c1c",
+    titleColor: eventData?.customTitleColor || "#1f2937",
+    subtitleColor: eventData?.customSubtitleColor || "#6b7280",
+    bgGradientStart: eventData?.customBgGradientStart || "#fef2f2",
+    bgGradientEnd: eventData?.customBgGradientEnd || "#ffffff",
+  };
+  
   // Processar inscrição automática após login
   useEffect(() => {
     if (isAuthenticated && eventData) {
@@ -197,7 +209,16 @@ export default function RegisterPage() {
                     Sua inscrição foi aprovada automaticamente. Você receberá seu convite com QR Code por e-mail.
                   </p>
                 </div>
-                <Button asChild className="w-full">
+                <Button 
+                  asChild 
+                  className="w-full"
+                  style={{
+                    backgroundColor: customColors.buttonBg,
+                    color: customColors.sidebarText,
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = customColors.buttonHover}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = customColors.buttonBg}
+                >
                   <a href={`/ticket/${registrationResult.qrCode}`} target="_blank">
                     Ver Meu Convite
                   </a>
@@ -228,7 +249,12 @@ export default function RegisterPage() {
   const addressLink = addressParts[1] || "";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen"
+      style={{
+        background: `linear-gradient(135deg, ${customColors.bgGradientStart} 0%, ${customColors.bgGradientEnd} 100%)`
+      }}
+    >
       {/* Logo Centralizada */}
       <div className="w-full bg-white border-b py-3">
         <div className="container flex justify-center">
@@ -246,10 +272,18 @@ export default function RegisterPage() {
           )}
 
           <div className="space-y-4">
-            <h1 className="text-3xl md:text-4xl font-bold mb-6">{eventData.title}</h1>
+            <h1 
+              className="text-3xl md:text-4xl font-bold mb-6"
+              style={{ color: customColors.titleColor }}
+            >
+              {eventData.title}
+            </h1>
             
             {/* Data e Horário */}
-            <div className="border-l-4 border-primary pl-4 py-2">
+            <div 
+              className="border-l-4 pl-4 py-2"
+              style={{ borderColor: customColors.sidebarBg }}
+            >
               <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
               <div className="flex items-center gap-2 text-base font-medium">
                 <Calendar className="h-4 w-4" />
@@ -259,7 +293,10 @@ export default function RegisterPage() {
 
             {/* Local */}
             {displayAddress && (
-              <div className="border-l-4 border-primary pl-4 py-2">
+              <div 
+                className="border-l-4 pl-4 py-2"
+                style={{ borderColor: customColors.sidebarBg }}
+              >
                 <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Local</div>
                 <div className="flex items-center gap-3 flex-wrap">
                   <div className="flex items-center gap-2 text-base font-medium">
@@ -527,7 +564,18 @@ export default function RegisterPage() {
                   </div>
                 ))}
 
-                <Button type="submit" size="lg" className="w-full" disabled={registerMutation.isPending}>
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="w-full" 
+                  disabled={registerMutation.isPending}
+                  style={{
+                    backgroundColor: customColors.buttonBg,
+                    color: customColors.sidebarText,
+                  }}
+                  onMouseEnter={(e) => !registerMutation.isPending && (e.currentTarget.style.backgroundColor = customColors.buttonHover)}
+                  onMouseLeave={(e) => !registerMutation.isPending && (e.currentTarget.style.backgroundColor = customColors.buttonBg)}
+                >
                   {registerMutation.isPending ? "Enviando..." : "Confirmar Inscrição"}
                 </Button>
               </form>

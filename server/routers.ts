@@ -270,6 +270,38 @@ export const appRouter = router({
         await db.updateEvent(input.eventId, { timezone: input.timezone });
         return { success: true };
       }),
+
+    // Atualizar personalização visual do evento
+    updateCustomization: protectedProcedure
+      .input(z.object({ 
+        eventId: z.number(),
+        customSidebarBg: z.string().optional(),
+        customSidebarText: z.string().optional(),
+        customButtonBg: z.string().optional(),
+        customButtonHover: z.string().optional(),
+        customTitleColor: z.string().optional(),
+        customSubtitleColor: z.string().optional(),
+        customBgGradientStart: z.string().optional(),
+        customBgGradientEnd: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const event = await db.getEventById(input.eventId);
+        if (!event || (event.userId !== ctx.user.id && ctx.user.role !== 'admin')) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        await db.updateEvent(input.eventId, {
+          customSidebarBg: input.customSidebarBg,
+          customSidebarText: input.customSidebarText,
+          customButtonBg: input.customButtonBg,
+          customButtonHover: input.customButtonHover,
+          customTitleColor: input.customTitleColor,
+          customSubtitleColor: input.customSubtitleColor,
+          customBgGradientStart: input.customBgGradientStart,
+          customBgGradientEnd: input.customBgGradientEnd,
+        });
+        return { success: true };
+      }),
   }),
 
   registrations: router({

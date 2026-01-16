@@ -625,3 +625,12 @@
 - [x] Sistema agora exibe datas no timezone configurado do evento
 - [ ] Aplicar conversão nas páginas restantes (MyTickets, PublicHome, AdminDashboard) - opcional
 - [ ] Aplicar conversão nos emails enviados aos participantes - futuro
+
+## Sistema de Personalização Visual da Página de Cadastro
+- [x] Adicionar campos de customização no schema de eventos (8 campos de cores hex)
+- [x] Criar seção "Personalização Visual" na aba Configurações do Evento
+- [x] Implementar seletores de cores (color pickers) para cada elemento
+- [x] Adicionar preview em tempo real do gradiente selecionado
+- [x] Criar mutation updateCustomization no backend
+- [x] Aplicar cores personalizadas na RegisterPage dinamicamente (título, bordas, botões, fundo)
+- [x] Implementar gradiente de fundo com 2 cores customizáveis

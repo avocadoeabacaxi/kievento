@@ -73,6 +73,17 @@ export const events = mysqlTable("events", {
   registrationDeadline: timestamp("registrationDeadline"), // Data limite para inscrições
   hasTicketTypes: tinyint("hasTicketTypes").default(0).notNull(), // Sistema de ingressos ativado? (0=false, 1=true)
   timezone: varchar("timezone", { length: 100 }).default("America/Sao_Paulo").notNull(), // Fuso horário do evento
+  
+  // Campos de personalização visual da página de cadastro
+  customSidebarBg: varchar("customSidebarBg", { length: 7 }), // Cor de fundo da barra lateral (hex)
+  customSidebarText: varchar("customSidebarText", { length: 7 }), // Cor do texto da barra lateral (hex)
+  customButtonBg: varchar("customButtonBg", { length: 7 }), // Cor de fundo dos botões (hex)
+  customButtonHover: varchar("customButtonHover", { length: 7 }), // Cor de hover dos botões (hex)
+  customTitleColor: varchar("customTitleColor", { length: 7 }), // Cor dos títulos principais (hex)
+  customSubtitleColor: varchar("customSubtitleColor", { length: 7 }), // Cor dos subtítulos (hex)
+  customBgGradientStart: varchar("customBgGradientStart", { length: 7 }), // Cor inicial do gradiente de fundo (hex)
+  customBgGradientEnd: varchar("customBgGradientEnd", { length: 7 }), // Cor final do gradiente de fundo (hex)
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
