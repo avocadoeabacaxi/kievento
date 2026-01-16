@@ -14,6 +14,7 @@ import { Calendar, MapPin, CheckCircle, Clock, HelpCircle } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatEventDate } from "@/lib/dateUtils";
 import { toast } from "sonner";
 import parse from "html-react-parser";
 import { MaskedInput } from "@/components/MaskedInput";
@@ -252,7 +253,7 @@ export default function RegisterPage() {
               <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
               <div className="flex items-center gap-2 text-base font-medium">
                 <Calendar className="h-4 w-4" />
-                <span>{format(new Date(eventData.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
+                <span>{formatEventDate(eventData.eventDate, eventData.timezone || "America/Sao_Paulo", "d 'de' MMMM 'de' yyyy 'às' HH:mm")}</span>
               </div>
             </div>
 

@@ -7,6 +7,7 @@ import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatEventDateOnly, formatEventTimeOnly } from "@/lib/dateUtils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -68,9 +69,8 @@ export default function Dashboard() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => {
-              const eventDate = new Date(event.eventDate);
-              const formattedDate = format(eventDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-              const formattedTime = format(eventDate, "HH:mm", { locale: ptBR });
+              const formattedDate = formatEventDateOnly(event.eventDate, event.timezone || "America/Sao_Paulo");
+              const formattedTime = formatEventTimeOnly(event.eventDate, event.timezone || "America/Sao_Paulo");
 
               return (
                 <Card 

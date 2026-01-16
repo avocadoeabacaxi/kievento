@@ -615,3 +615,13 @@
 - [x] Criar interface de seleção de timezone nas Configurações do Evento (nova aba)
 - [x] Implementar mutation updateTimezone no backend
 - [ ] Implementar conversão de datas para timezone configurado em todas as exibições
+
+## Correção de Conversão de Timezone
+- [x] Criar helper function para formatar datas com timezone correto (dateUtils.ts)
+- [x] Aplicar conversão na página de inscrição pública (RegisterPage)
+- [x] Aplicar conversão na página de detalhes do evento (EventDetails)
+- [x] Aplicar conversão no Dashboard
+- [x] Aplicar conversão na página de ingresso (TicketPage)
+- [x] Sistema agora exibe datas no timezone configurado do evento
+- [ ] Aplicar conversão nas páginas restantes (MyTickets, PublicHome, AdminDashboard) - opcional
+- [ ] Aplicar conversão nos emails enviados aos participantes - futuro

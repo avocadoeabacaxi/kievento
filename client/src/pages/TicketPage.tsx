@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { XCircle, Printer, Wallet } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatEventDate } from "@/lib/dateUtils";
 import QRCode from "qrcode";
 
 export default function TicketPage() {
@@ -72,7 +73,7 @@ export default function TicketPage() {
 
   const { registration, event } = data;
   const [addressName, fullAddress] = event.address?.split('|') || ['', ''];
-  const eventDate = format(new Date(event.eventDate), "dd 'set.' yyyy, HH'h'", { locale: ptBR });
+  const eventDate = formatEventDate(event.eventDate, event.timezone || "America/Sao_Paulo", "dd 'set.' yyyy, HH'h'");
   const purchaseDate = format(new Date(registration.createdAt), "dd 'set.' yyyy '-' HH'h'mm", { locale: ptBR });
 
   return (
