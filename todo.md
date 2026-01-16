@@ -640,3 +640,10 @@
 - [x] Corrigir lógica de conversão ao exibir (removido toZonedTime duplicado)
 - [x] Simplificar formatEventDate para usar apenas format() com timeZone
 - [ ] Testar com evento real: cadastrar 15:14 e verificar se aparece 15:14 para cliente
+
+## URGENTE: Correção Backend Timezone
+- [x] Investigar mutation createEvent - estava usando new Date() direto
+- [x] Criar helper parseEventDateTime com fromZonedTime
+- [x] Aplicar parseEventDateTime em createEvent e updateEvent
+- [x] Agora salva data considerando timezone do evento (17:16 GMT-3 salva corretamente)
+- [ ] Testar: cadastrar 17:16 e verificar se aparece 17:16 em todos os lugares
