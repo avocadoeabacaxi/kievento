@@ -22,9 +22,9 @@ export default function Home() {
                 <span className="text-sm text-muted-foreground hidden sm:inline">
                   Olá, {user?.name}
                 </span>
-                <Link href="/dashboard">
-                  <Button>Meus Eventos</Button>
-                </Link>
+                <Button asChild>
+                  <Link href="/dashboard">Meus Eventos</Link>
+                </Button>
               </>
             ) : (
               <Button asChild>
@@ -49,11 +49,9 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {isAuthenticated ? (
-                <Link href="/dashboard">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    Acessar Dashboard
-                  </Button>
-                </Link>
+                <Button size="lg" asChild className="w-full sm:w-auto">
+                  <Link href="/dashboard">Acessar Dashboard</Link>
+                </Button>
               ) : (
                 <Button size="lg" asChild className="w-full sm:w-auto">
                   <a href={getLoginUrl()}>Começar Agora</a>

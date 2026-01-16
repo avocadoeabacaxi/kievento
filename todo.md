@@ -606,3 +606,6 @@
 ## Ajuste Alerta Check-in
 - [x] Remover email do alerta de check-in realizado
 - [x] Aumentar tamanho do nome no alerta (text-lg sm:text-2xl font-bold)
+
+## Correção de Erro HTML
+- [x] Corrigir nested anchor tags (<a> dentro de <a>) na página inicial (Home.tsx)
