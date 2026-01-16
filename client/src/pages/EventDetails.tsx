@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail, UserCog } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail, UserCog, Settings as SettingsIcon } from "lucide-react";
 import EventCollaborators from "@/components/EventCollaborators";
+import EventSettingsTab from "@/components/EventSettingsTab";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -381,7 +382,7 @@ export default function EventDetails() {
               </div>
 
               <Tabs defaultValue="pending">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 gap-1">
                   <TabsTrigger value="pending" className="text-xs sm:text-sm">
                     Pendentes ({pendingRegistrations.length})
                   </TabsTrigger>
@@ -394,6 +395,10 @@ export default function EventDetails() {
                   <TabsTrigger value="collaborators" className="text-xs sm:text-sm">
                     <UserCog className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Colaboradores
+                  </TabsTrigger>
+                  <TabsTrigger value="settings" className="text-xs sm:text-sm">
+                    <SettingsIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    Configurações
                   </TabsTrigger>
                 </TabsList>
 
@@ -514,6 +519,10 @@ export default function EventDetails() {
 
                 <TabsContent value="collaborators" className="mt-4">
                   <EventCollaborators eventId={eventId} />
+                </TabsContent>
+
+                <TabsContent value="settings" className="mt-4">
+                  <EventSettingsTab eventId={eventId} event={event} refetch={() => {}} />
                 </TabsContent>
               </Tabs>
             </div>

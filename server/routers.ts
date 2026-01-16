@@ -254,6 +254,22 @@ export const appRouter = router({
         await db.deleteEvent(input.eventId);
         return { success: true };
       }),
+
+    // Atualizar timezone do evento
+    updateTimezone: protectedProcedure
+      .input(z.object({ 
+        eventId: z.number(),
+        timezone: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const event = await db.getEventById(input.eventId);
+        if (!event || (event.userId !== ctx.user.id && ctx.user.role !== 'admin')) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        await db.updateEvent(input.eventId, { timezone: input.timezone });
+        return { success: true };
+      }),
   }),
 
   registrations: router({

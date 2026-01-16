@@ -72,6 +72,7 @@ export const events = mysqlTable("events", {
   faq: text("faq"), // JSON string: [{question: string, answer: string}]
   registrationDeadline: timestamp("registrationDeadline"), // Data limite para inscrições
   hasTicketTypes: tinyint("hasTicketTypes").default(0).notNull(), // Sistema de ingressos ativado? (0=false, 1=true)
+  timezone: varchar("timezone", { length: 100 }).default("America/Sao_Paulo").notNull(), // Fuso horário do evento
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

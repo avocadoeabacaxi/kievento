@@ -609,3 +609,9 @@
 
 ## Correção de Erro HTML
 - [x] Corrigir nested anchor tags (<a> dentro de <a>) na página inicial (Home.tsx)
+
+## Sistema de Configuração de Fuso Horário
+- [x] Adicionar campo timezone no schema de eventos (VARCHAR(100), default America/Sao_Paulo)
+- [x] Criar interface de seleção de timezone nas Configurações do Evento (nova aba)
+- [x] Implementar mutation updateTimezone no backend
+- [ ] Implementar conversão de datas para timezone configurado em todas as exibições
