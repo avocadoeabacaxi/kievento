@@ -634,3 +634,9 @@
 - [x] Criar mutation updateCustomization no backend
 - [x] Aplicar cores personalizadas na RegisterPage dinamicamente (título, bordas, botões, fundo)
 - [x] Implementar gradiente de fundo com 2 cores customizáveis
+
+## Correção Urgente de Timezone
+- [x] Investigar como datas estão sendo salvas no banco (UTC no banco)
+- [x] Corrigir lógica de conversão ao exibir (removido toZonedTime duplicado)
+- [x] Simplificar formatEventDate para usar apenas format() com timeZone
+- [ ] Testar com evento real: cadastrar 15:14 e verificar se aparece 15:14 para cliente

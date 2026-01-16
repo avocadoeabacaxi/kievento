@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, title, eventDate, timezone, createdAt FROM events ORDER BY id DESC LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, title, eventDate, timezone, createdAt FROM events ORDER BY id DESC LIMIT 1;",
+  "rows": [
+    {
+      "id": "60001",
+      "title": "Conversa de Padaria",
+      "eventDate": "2026-02-04 08:00:00",
+      "timezone": "America/Sao_Paulo",
+      "createdAt": "2026-01-08 20:12:18"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\teventDate\ttimezone\tcreatedAt\n60001\tConversa de Padaria\t2026-02-04 08:00:00\tAmerica/Sao_Paulo\t2026-01-08 20:12:18\n",
+  "stderr": "",
+  "execution_time_ms": 49
+}

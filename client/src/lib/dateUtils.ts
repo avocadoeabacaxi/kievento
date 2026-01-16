@@ -1,4 +1,4 @@
-import { format, toZonedTime } from 'date-fns-tz';
+import { format } from 'date-fns-tz';
 import { ptBR } from 'date-fns/locale';
 
 /**
@@ -16,11 +16,9 @@ export function formatEventDate(
   try {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     
-    // Converter para o timezone do evento
-    const zonedDate = toZonedTime(dateObj, timezone);
-    
-    // Formatar a data
-    return format(zonedDate, formatString, { 
+    // Formatar diretamente com o timezone (sem toZonedTime)
+    // O format() com timeZone já faz a conversão correta de UTC para o timezone especificado
+    return format(dateObj, formatString, { 
       locale: ptBR,
       timeZone: timezone 
     });
