@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id, provider, smtpHost, smtpPort, smtpUser, senderEmail, senderName FROM emailSettings LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, provider, smtpHost, smtpPort, smtpUser, senderEmail, senderName FROM emailSettings LIMIT 1;",
+  "rows": [
+    {
+      "id": "1",
+      "provider": "resend",
+      "smtpHost": "",
+      "smtpPort": "587",
+      "smtpUser": "",
+      "senderEmail": "contato@kievento.com.br",
+      "senderName": "KiEvento"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tprovider\tsmtpHost\tsmtpPort\tsmtpUser\tsenderEmail\tsenderName\n1\tresend\t\t587\t\tcontato@kievento.com.br\tKiEvento\n",
+  "stderr": "",
+  "execution_time_ms": 73
+}

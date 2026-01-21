@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, provider, enabled, senderEmail, senderName FROM emailSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, provider, enabled, senderEmail, senderName FROM emailSettings;",
+  "rows": [
+    {
+      "id": "1",
+      "provider": "resend",
+      "enabled": "1",
+      "senderEmail": "contato@kievento.com.br",
+      "senderName": "KiEvento"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tprovider\tenabled\tsenderEmail\tsenderName\n1\tresend\t1\tcontato@kievento.com.br\tKiEvento\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

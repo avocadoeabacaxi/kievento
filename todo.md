@@ -827,3 +827,9 @@
 - [x] Verificar se emailSentCount está sendo retornado na query de registrations
 - [x] Corrigir exibição do contador na interface (contador só aparece após primeiro reenvio)
 - [x] Testar envio de convite (funciona, contador é atualizado no banco)
+
+## Bug: E-mail não está sendo enviado ao aprovar/reenviar (Jan 2026)
+- [x] Verificar se configuração de e-mail está correta (estava como SMTP ao invés de Resend)
+- [x] Comparar código de envio entre inscrição e aprovação/reenvio (todas usam configuração centralizada)
+- [x] Verificar logs de erro no servidor
+- [x] Corrigir problema de envio (atualizado para Resend com API Key)

@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, provider, apiKey, senderEmail, senderName, enabled FROM emailSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, provider, apiKey, senderEmail, senderName, enabled FROM emailSettings;",
+  "rows": [
+    {
+      "id": "1",
+      "provider": "resend",
+      "apiKey": "re_5rGt5Qe4_JpKap8qTQEQ6hu612nwB8GLU",
+      "senderEmail": "onboarding@resend.dev",
+      "senderName": "KiEventos",
+      "enabled": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tprovider\tapiKey\tsenderEmail\tsenderName\tenabled\n1\tresend\tre_5rGt5Qe4_JpKap8qTQEQ6hu612nwB8GLU\tonboarding@resend.dev\tKiEventos\t1\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

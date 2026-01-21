@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, provider, enabled, CASE WHEN enabled = 1 THEN 'SIM' ELSE 'NAO' END as habilitado FROM emailSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, provider, enabled, CASE WHEN enabled = 1 THEN 'SIM' ELSE 'NAO' END as habilitado FROM emailSettings;",
+  "rows": [
+    {
+      "id": "1",
+      "provider": "resend",
+      "enabled": "1",
+      "habilitado": "SIM"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tprovider\tenabled\thabilitado\n1\tresend\t1\tSIM\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

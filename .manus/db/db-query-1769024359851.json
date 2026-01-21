@@ -1,0 +1,43 @@
+{
+  "query": "SELECT id, eventId, registrationId, templateType, recipient, status, error, sentAt, createdAt FROM emailLogs ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, eventId, registrationId, templateType, recipient, status, error, sentAt, createdAt FROM emailLogs ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "3",
+      "eventId": "90009",
+      "registrationId": "90047",
+      "templateType": "pending",
+      "recipient": "fernando@avocado.buzz",
+      "status": "sent",
+      "error": "NULL",
+      "sentAt": "2026-01-21 19:00:23",
+      "createdAt": "2026-01-21 19:00:22"
+    },
+    {
+      "id": "2",
+      "eventId": "90007",
+      "registrationId": "90046",
+      "templateType": "confirmation",
+      "recipient": "fernando@avocado.buzz",
+      "status": "sent",
+      "error": "NULL",
+      "sentAt": "2026-01-21 11:22:32",
+      "createdAt": "2026-01-21 11:22:31"
+    },
+    {
+      "id": "1",
+      "eventId": "90006",
+      "registrationId": "90045",
+      "templateType": "confirmation",
+      "recipient": "firnando@gmail.com",
+      "status": "sent",
+      "error": "NULL",
+      "sentAt": "2026-01-21 11:20:31",
+      "createdAt": "2026-01-21 11:20:29"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\teventId\tregistrationId\ttemplateType\trecipient\tstatus\terror\tsentAt\tcreatedAt\n3\t90009\t90047\tpending\tfernando@avocado.buzz\tsent\tNULL\t2026-01-21 19:00:23\t2026-01-21 19:00:22\n2\t90007\t90046\tconfirmation\tfernando@avocado.buzz\tsent\tNULL\t2026-01-21 11:22:32\t2026-01-21 11:22:31\n1\t90006\t90045\tconfirmation\tfirnando@gmail.com\tsent\tNULL\t2026-01-21 11:20:31\t2026-01-21 11:20:29\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
