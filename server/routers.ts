@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { nanoid } from 'nanoid';
-import { sendEmail, sendEventEmail, getApprovalEmailTemplate, getRejectionEmailTemplate, getConfirmationEmailTemplate } from './emailService';
+import { sendEmail, sendTestEmail, sendEventEmail, getApprovalEmailTemplate, getRejectionEmailTemplate, getConfirmationEmailTemplate } from './emailService';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ENV } from './_core/env';
@@ -1169,7 +1169,7 @@ export const appRouter = router({
         }
 
         try {
-          const success = await sendEmail({
+          const success = await sendTestEmail({
             to: input.testEmail,
             subject: '📧 Email de Teste - KiEvento',
             html: `
@@ -1179,6 +1179,7 @@ export const appRouter = router({
               <p><strong>Remetente:</strong> ${config.senderName} &lt;${config.senderEmail}&gt;</p>
               <p>Se você recebeu este email, significa que suas configurações estão corretas! ✅</p>
             `,
+            config,
           });
 
           if (!success) {

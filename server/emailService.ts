@@ -314,9 +314,31 @@ async function sendWithResend(params: {
     }));
   }
 
-  await resend.emails.send(emailData);
-  console.log('[Email Service] Email enviado via Resend com sucesso');
-  return true;
+  try {
+    const result = await resend.emails.send(emailData);
+    console.log('[Email Service] Email enviado via Resend com sucesso:', result);
+    return true;
+  } catch (error: any) {
+    console.error('[Email Service] Erro ao enviar via Resend:', error);
+    throw new Error(`Erro Resend: ${error.message || 'Erro desconhecido'}`);
+  }
+}
+
+/**
+ * Envia email de teste usando configuração ativa
+ */
+export async function sendTestEmail(params: {
+  to: string;
+  subject: string;
+  html: string;
+  config: any;
+}): Promise<boolean> {
+  return await sendEmailWithProvider({
+    to: params.to,
+    subject: params.subject,
+    html: params.html,
+    config: params.config,
+  });
 }
 
 /**

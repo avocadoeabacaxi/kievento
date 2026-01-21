@@ -114,7 +114,7 @@
 - [x] Integrar envio automático na aprovação de inscrições
 - [x] Integrar envio automático na rejeição de inscrições
 - [x] Integrar envio automático na criação de inscrição (eventos abertos)
-- [ ] Integrar com serviço real de e-mail (SendGrid, AWS SES, Resend)
+- [x] Integrar com serviço real de e-mail (SendGrid, AWS SES, Resend)
 
 ## Bugs Encontrados
 - [x] react-input-mask incompatível com React 19 - substituído por máscaras customizadas
@@ -756,3 +756,5 @@
 - [x] Corrigir erro "toISOString is not a function" ao criar eventos - backend tentando converter string para ISO
 
 - [x] Corrigir perda de dados ao editar evento - data/hora, categoria, cidade e visibilidade voltam para padrão
+
+- [ ] Corrigir envio de e-mail de teste com Resend - não está funcionando
