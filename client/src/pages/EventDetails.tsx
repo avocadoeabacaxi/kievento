@@ -26,7 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { formatEventDate } from "@/lib/dateUtils";
+
 import { toast } from "sonner";
 import parse from "html-react-parser";
 import Header from "@/components/Header";
@@ -198,7 +198,7 @@ export default function EventDetails() {
             <div className="border-l-4 border-primary pl-4 py-2">
               <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
               <div className="text-lg font-medium">
-                {formatEventDate(event.eventDate, event.timezone || "America/Sao_Paulo", "d 'de' MMMM 'de' yyyy 'às' HH:mm")}
+                {format(new Date(event.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
               </div>
             </div>
 

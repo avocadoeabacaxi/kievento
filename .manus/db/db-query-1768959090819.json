@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, title, slug, eventDate, timezone FROM events WHERE title LIKE '%Teste%' ORDER BY id DESC LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, title, slug, eventDate, timezone FROM events WHERE title LIKE '%Teste%' ORDER BY id DESC LIMIT 1;",
+  "rows": [
+    {
+      "id": "90001",
+      "title": "Teste Timezone",
+      "slug": "teste",
+      "eventDate": "2026-01-21 07:18:00",
+      "timezone": "America/Sao_Paulo"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tslug\teventDate\ttimezone\n90001\tTeste Timezone\tteste\t2026-01-21 07:18:00\tAmerica/Sao_Paulo\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

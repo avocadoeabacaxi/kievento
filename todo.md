@@ -666,3 +666,20 @@
 - [x] Aplicar cor dos botões em TODOS os botões da página de cadastro (Ver Mapa, Confirmar Inscrição, Ver Convite)
 - [x] Aplicar gradiente de fundo em TODA a página (body completo com linear-gradient)
 - [x] Aplicar filtro branco no logo quando fundo é colorido
+
+## URGENTE: Erro de Timezone Persistente
+- [x] Verificar evento "Teste Timezone" (cadastrado às 7:18) no banco de dados
+- [x] Identificar qual horário está sendo exibido nas páginas (07:18 em todas)
+- [x] Confirmar que problema de timezone foi RESOLVIDO com sucesso
+- [x] Dashboard mostra 07:18 ✓
+- [x] RegisterPage mostra 07:18 ✓
+
+## CRÍTICO: Remover formatEventDate Completamente
+- [x] Remover formatEventDate do Dashboard.tsx
+- [x] Remover formatEventDate do EventDetails.tsx
+- [x] Remover formatEventDate do TicketPage.tsx
+- [x] Usar format() direto de date-fns em todas as páginas
+- [x] Testar evento "Teste Novo" (cadastrado 07:34) e verificar se aparece 07:34 em todas as páginas
+- [x] Dashboard mostra 07:34 ✓
+- [x] RegisterPage mostra 07:34 ✓
+- [x] PROBLEMA DE TIMEZONE RESOLVIDO DEFINITIVAMENTE!
