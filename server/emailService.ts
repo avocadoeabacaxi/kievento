@@ -574,7 +574,7 @@ export async function sendPendingEmail(params: {
 }
 
 /**
- * Envia e-mail de aprovação com link do ingresso
+ * Envia e-mail de aprovação com link do ingresso e PDF anexado
  */
 export async function sendApprovalEmail(params: {
   eventId: number;
@@ -633,6 +633,44 @@ export async function sendApprovalEmail(params: {
       });
     }
 
+    // Gerar PDF do convite para anexar
+    let attachments: Array<{ filename: string; content: Buffer; contentType: string }> | undefined;
+    try {
+      console.log('[Email Service] Gerando PDF do convite...');
+      
+      // Buscar dados da inscrição para obter a data de registro
+      const registration = await db.getRegistrationById(params.registrationId);
+      
+      // Parsear a data do evento corretamente
+      let eventDateObj: Date;
+      if (params.eventDate.includes(' de ')) {
+        // Formato: "04 de fevereiro de 2026 às 08:00" - usar data atual como fallback
+        eventDateObj = new Date();
+      } else {
+        eventDateObj = new Date(params.eventDate);
+      }
+      
+      const ticketData = {
+        participantName: params.participantName,
+        eventTitle: params.eventTitle,
+        eventDate: eventDateObj,
+        eventAddress: params.eventAddress || '',
+        qrCode: params.qrCode,
+        registrationDate: registration ? new Date(registration.createdAt) : new Date(),
+      };
+      
+      const pdfBuffer = await generateTicketPDF(ticketData);
+      attachments = [{
+        filename: `convite-${params.qrCode}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf',
+      }];
+      console.log('[Email Service] PDF gerado com sucesso:', pdfBuffer.length, 'bytes');
+    } catch (pdfError) {
+      console.error('[Email Service] Erro ao gerar PDF (continuando sem anexo):', pdfError);
+      // Continua sem anexo se houver erro
+    }
+
     const logId = await db.createEmailLog({
       eventId: params.eventId,
       registrationId: params.registrationId,
@@ -647,6 +685,7 @@ export async function sendApprovalEmail(params: {
       subject,
       html,
       config: emailConfig,
+      attachments,
     });
 
     await db.updateEmailLog(logId, {

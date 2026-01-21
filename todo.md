@@ -859,3 +859,11 @@
 - [x] Adicionado fallback para formatos de data inválidos
 - [x] Criado teste unitário para validar parsing de datas (date-parsing.test.ts)
 - [x] Testado envio de e-mail via interface - funcionando corretamente
+
+
+## Correção de E-mail e PDF do Convite (21/01/2026)
+- [x] Corrigir link do convite no e-mail para usar QR Code correto do participante
+- [x] Implementar geração de PDF do convite (usando Puppeteer com Chromium)
+- [x] Anexar PDF do convite ao e-mail de aprovação
+- [x] Testar envio de e-mail com PDF anexado
+- [x] Criar testes unitários para geração de PDF (5 testes passando)
