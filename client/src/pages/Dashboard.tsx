@@ -2,7 +2,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Users, CheckCircle, Clock, Plus, Edit, Link as LinkIcon, Copy } from "lucide-react";
+import { Calendar, Users, CheckCircle, Clock, Plus, Edit, Link as LinkIcon, Copy, QrCode, ExternalLink } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -165,37 +165,56 @@ export default function Dashboard() {
                         </div>
                       )}
                       
-                      <div className="mt-4 grid grid-cols-3 gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setLocation(`/events/edit/${event.id}`);
-                          }}
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Editar
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setLocation(`/events/${event.id}/scan`);
-                          }}
-                        >
-                          Evento
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setLocation(`/events/${event.id}`);
-                          }}
-                        >
-                          Gerenciar
-                        </Button>
+                      <div className="mt-4 flex flex-col gap-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLocation(`/events/edit/${event.id}`);
+                            }}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Editar
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLocation(`/events/${event.id}/scan`);
+                            }}
+                          >
+                            <QrCode className="h-4 w-4 mr-1" />
+                            Scanner
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const registerUrl = event.slug 
+                                ? `/e/${event.slug}` 
+                                : `/register/${event.id}`;
+                              window.open(registerUrl, '_blank');
+                            }}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            Evento
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLocation(`/events/${event.id}`);
+                            }}
+                          >
+                            Gerenciar
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                 </Card>

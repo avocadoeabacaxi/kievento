@@ -697,3 +697,8 @@
 - [x] Identificar conflito com campo "Fuso Horário do Evento" nas Configurações - PROBLEMA: new Date() no backend interpreta como horário do servidor
 - [x] Implementar correção definitiva - Removido formatEventDate e timezone, usando format() direto
 - [x] Testar com evento "Teste Time Zone" - Usuário deve criar NOVO evento para validar correção
+
+## Alteração de Botões no Dashboard
+- [x] Alterar botão "Evento" para ir para página pública de inscrição (RegisterPage)
+- [x] Adicionar botão "Scanner" para ir para sistema de scanner de QR Code
+- [x] Manter botão "Gerenciar" como está
