@@ -129,6 +129,8 @@ export const registrations = mysqlTable("registrations", {
   checkedIn: int("checkedIn").default(0).notNull(), // 1 = presente, 0 = ausente
   checkedInAt: timestamp("checkedInAt"),
   checkedInBy: int("checkedInBy").references(() => users.id),
+  emailSentCount: int("emailSentCount").default(0).notNull(), // Contador de quantas vezes o convite foi enviado
+  lastEmailSentAt: timestamp("lastEmailSentAt"), // Data/hora do último envio de e-mail
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

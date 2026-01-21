@@ -546,6 +546,69 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // Reenviar convite por e-mail
+    resendInvite: protectedProcedure
+      .input(z.object({
+        registrationId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const registration = await db.getRegistrationById(input.registrationId);
+        if (!registration) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Registration not found' });
+        }
+
+        const event = await db.getEventById(registration.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        if (registration.status !== 'approved') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Apenas inscrições aprovadas podem receber convite' });
+        }
+
+        // Preparar dados para envio de e-mail
+        const baseUrl = ENV.customDomain ? `https://${ENV.customDomain}` : (ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000');
+        const ticketUrl = `${baseUrl}/ticket/${registration.qrCode}`;
+        const eventDateObj = new Date(event.eventDate + ':00');
+        const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+        const [address] = event.address?.split('|') || [];
+
+        // Enviar e-mail de aprovação (convite)
+        try {
+          await sendApprovalEmail({
+            eventId: registration.eventId,
+            registrationId: input.registrationId,
+            recipientEmail: registration.email,
+            participantName: registration.name,
+            eventTitle: event.title,
+            eventDate,
+            eventAddress: address,
+            ticketUrl,
+            qrCode: registration.qrCode || '',
+          });
+
+          // Incrementar contador e atualizar data do último envio
+          const currentCount = (registration as any).emailSentCount || 0;
+          await db.updateRegistration(input.registrationId, {
+            emailSentCount: currentCount + 1,
+            lastEmailSentAt: new Date(),
+          } as any);
+
+          return { 
+            success: true, 
+            emailSentCount: currentCount + 1,
+            message: 'Convite reenviado com sucesso!'
+          };
+        } catch (emailError) {
+          console.error('[Registration] Erro ao reenviar convite:', emailError);
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Erro ao enviar e-mail' });
+        }
+      }),
+
     // Buscar inscrição por nome
     searchByName: protectedProcedure
       .input(z.object({

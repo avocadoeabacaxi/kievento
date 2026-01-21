@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail, UserCog, Settings as SettingsIcon } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail, UserCog, Settings as SettingsIcon, Send, RefreshCw } from "lucide-react";
 import EventCollaborators from "@/components/EventCollaborators";
 import EventSettingsTab from "@/components/EventSettingsTab";
 import {
@@ -83,6 +83,16 @@ export default function EventDetails() {
     },
     onError: (error) => {
       toast.error(`Erro: ${error.message}`);
+    },
+  });
+
+  const resendInviteMutation = trpc.registrations.resendInvite.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Convite reenviado! (${data.emailSentCount}x enviado)`);
+      refetchRegistrations();
+    },
+    onError: (error) => {
+      toast.error(`Erro ao reenviar: ${error.message}`);
     },
   });
 
@@ -507,6 +517,25 @@ export default function EventDetails() {
                               <QrCodeIcon className="h-4 w-4 mr-1" />
                               Ver Convite
                             </a>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => resendInviteMutation.mutate({ registrationId: reg.id })}
+                            disabled={resendInviteMutation.isPending}
+                            title={(reg as any).emailSentCount > 0 ? `Enviado ${(reg as any).emailSentCount}x` : 'Reenviar convite por e-mail'}
+                          >
+                            {resendInviteMutation.isPending ? (
+                              <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+                            ) : (
+                              <Send className="h-4 w-4 mr-1" />
+                            )}
+                            Reenviar
+                            {(reg as any).emailSentCount > 0 && (
+                              <Badge variant="secondary" className="ml-1 text-xs">
+                                {(reg as any).emailSentCount}x
+                              </Badge>
+                            )}
                           </Button>
                         </div>
                       </div>

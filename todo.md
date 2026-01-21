@@ -815,3 +815,10 @@
 - [x] Adicionar aviso de confirmação ao clicar em aprovar/recusar inscrição
 - [x] Implementar envio de e-mail automático ao aprovar (com link do ingresso)
 - [x] Implementar envio de e-mail automático ao recusar (informando que não foi aprovado)
+
+## Botão Reenviar Convite (Jan 2026)
+- [x] Adicionar campo emailSentCount na tabela registrations
+- [x] Criar procedure para reenviar convite e incrementar contador
+- [x] Adicionar botão "Reenviar Convite" ao lado de "Ver Convite" para aprovados
+- [x] Mostrar contador de quantas vezes o convite foi enviado
+- [x] Feedback visual quando e-mail é enviado com sucesso
