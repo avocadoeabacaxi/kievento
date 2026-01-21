@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, Ticket, HelpCircle, Edit, Image as ImageIcon, Eye, CheckCircle } from "lucide-react";
+import { Calendar, MapPin, Users, Ticket, HelpCircle, Edit, Image as ImageIcon, Eye, CheckCircle, ExternalLink } from "lucide-react";
 
 interface ReviewStepProps {
   title: string;
@@ -106,11 +106,22 @@ export default function ReviewStep({
 
             <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
               <MapPin className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                   Local
                 </p>
-                <p className="font-medium text-gray-900">{address || "Não definido"}</p>
+                <p className="font-medium text-gray-900 mb-2">{address || "Não definido"}</p>
+                {addressLink && (
+                  <a
+                    href={addressLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-primary hover:text-primary/80 font-medium"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Ver no Mapa
+                  </a>
+                )}
               </div>
             </div>
           </div>

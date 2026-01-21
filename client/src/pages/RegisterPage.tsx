@@ -243,10 +243,9 @@ export default function RegisterPage() {
     );
   }
 
-  // Separar endereço e link se existir
-  const addressParts = eventData.address?.split("|") || [];
-  const displayAddress = addressParts[0] || "";
-  const addressLink = addressParts[1] || "";
+  // Usar addressLink do banco
+  const displayAddress = eventData.address || "";
+  const addressLink = eventData.addressLink || "";
 
   return (
     <div 

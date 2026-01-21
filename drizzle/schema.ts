@@ -57,6 +57,7 @@ export const events = mysqlTable("events", {
   description: text("description"),
   eventDate: timestamp("eventDate").notNull(),
   address: text("address"),
+  addressLink: text("addressLink"), // Link do Google Maps ou similar
   bannerUrl: text("bannerUrl"),
   bannerKey: text("bannerKey"),
   cardImageUrl: text("cardImageUrl"), // Imagem otimizada 3:4 para página principal

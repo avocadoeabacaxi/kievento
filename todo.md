@@ -702,3 +702,12 @@
 - [x] Alterar botão "Evento" para ir para página pública de inscrição (RegisterPage)
 - [x] Adicionar botão "Scanner" para ir para sistema de scanner de QR Code
 - [x] Manter botão "Gerenciar" como está
+
+## Correção do Campo LOCAL
+- [x] Investigar onde LOCAL está mostrando URLs do Google Maps
+- [x] Corrigir para mostrar apenas endereço limpo
+- [x] Adicionar botão "Ver no Mapa" ao invés de URLs
+- [x] Aplicar correção em todas as páginas (EventDetails, CreateEvent, RegisterPage)
+
+## Correção de Breadcrumb
+- [x] Ajustar estilo do breadcrumb para ter fundo transparente/colorido igual aos outros elementos

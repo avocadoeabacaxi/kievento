@@ -174,13 +174,7 @@ export default function CreateEvent() {
       setEventDate(new Date(existingEvent.eventDate).toISOString().slice(0, 16));
       setRegistrationDeadline(existingEvent.registrationDeadline ? new Date(existingEvent.registrationDeadline).toISOString().slice(0, 16) : "");
       setAddress(existingEvent.address || "");
-      if (existingEvent.address) {
-        // Extrair link se existir no formato do address
-        const linkMatch = existingEvent.address.match(/https?:\/\/[^\s]+/);
-        if (linkMatch) {
-          setAddressLink(linkMatch[0]);
-        }
-      }
+      setAddressLink(existingEvent.addressLink || "");
       setCategory(existingEvent.category || "");
       setCity(existingEvent.city || "");
       setRegistrationType(existingEvent.registrationType);
@@ -295,7 +289,8 @@ export default function CreateEvent() {
       description,
       eventDate,
       registrationDeadline: registrationDeadline || undefined,
-      address: addressLink ? `${address}|${addressLink}` : address,
+      address,
+      addressLink: addressLink || undefined,
       registrationType,
       category: category || undefined,
       city: city || undefined,
