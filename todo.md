@@ -688,3 +688,12 @@
 - [x] Substituir logo branca por logo colorida do site (logo com "Ki" vermelho)
 - [x] Aplicar cor personalizada nas barras laterais vermelhas de "SOBRE O EVENTO"
 - [x] Aplicar cor personalizada nas barras laterais vermelhas de "FORMULÁRIO DE INSCRIÇÃO"
+
+## Análise e Correção de Timezone (Eventos Novos)
+- [x] Investigar createEvent mutation no backend (como data está sendo salva)
+- [x] Verificar exibição no Dashboard
+- [x] Verificar exibição na RegisterPage
+- [x] Verificar exibição no EventDetails
+- [x] Identificar conflito com campo "Fuso Horário do Evento" nas Configurações - PROBLEMA: new Date() no backend interpreta como horário do servidor
+- [x] Implementar correção definitiva - Removido formatEventDate e timezone, usando format() direto
+- [x] Testar com evento "Teste Time Zone" - Usuário deve criar NOVO evento para validar correção
