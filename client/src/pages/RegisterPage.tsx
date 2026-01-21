@@ -261,7 +261,7 @@ export default function RegisterPage() {
         style={{ backgroundColor: customColors.sidebarBg }}
       >
         <div className="container flex justify-center">
-          <img src="/logo.png" alt="KiEvento" className="h-10" style={{ filter: 'brightness(0) invert(1)' }} />
+          <img src="/logo.png" alt="KiEvento" className="h-10" />
         </div>
       </div>
 
@@ -332,7 +332,7 @@ export default function RegisterPage() {
           </div>
 
           {eventData.description && (
-            <div className="border-l-4 border-primary pl-4 py-2">
+            <div className="border-l-4 pl-4 py-2" style={{ borderColor: customColors.sidebarBg }}>
               <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-2">Sobre o Evento</div>
               <Card>
                 <CardContent className="pt-4 prose prose-sm max-w-none dark:prose-invert">
@@ -407,7 +407,7 @@ export default function RegisterPage() {
         )}
 
 
-        <div className="border-l-4 border-primary pl-4 py-2">
+        <div className="border-l-4 pl-4 py-2" style={{ borderColor: customColors.sidebarBg }}>
           <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-3">Formulário de Inscrição</div>
           <Card className="relative">
             <CardHeader>

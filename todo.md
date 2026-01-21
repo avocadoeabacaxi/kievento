@@ -683,3 +683,8 @@
 - [x] Dashboard mostra 07:34 ✓
 - [x] RegisterPage mostra 07:34 ✓
 - [x] PROBLEMA DE TIMEZONE RESOLVIDO DEFINITIVAMENTE!
+
+## Correções na RegisterPage
+- [x] Substituir logo branca por logo colorida do site (logo com "Ki" vermelho)
+- [x] Aplicar cor personalizada nas barras laterais vermelhas de "SOBRE O EVENTO"
+- [x] Aplicar cor personalizada nas barras laterais vermelhas de "FORMULÁRIO DE INSCRIÇÃO"
