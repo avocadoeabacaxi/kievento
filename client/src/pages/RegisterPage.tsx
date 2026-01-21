@@ -283,7 +283,17 @@ export default function RegisterPage() {
               <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
               <div className="flex items-center gap-2 text-base font-medium">
                 <Calendar className="h-4 w-4" />
-                <span>{format(new Date(eventData.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}</span>
+                <span>
+                  {(() => {
+                    const eventDateStr = typeof eventData.eventDate === 'string' ? eventData.eventDate : new Date(eventData.eventDate).toISOString();
+                    const [datePart, timePart] = eventDateStr.split('T');
+                    const [year, month, day] = datePart.split('-');
+                    const monthNames = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+                    const monthName = monthNames[parseInt(month) - 1];
+                    const time = timePart.substring(0, 5);
+                    return `${parseInt(day)} de ${monthName} de ${year} às ${time}`;
+                  })()}
+                </span>
               </div>
             </div>
 

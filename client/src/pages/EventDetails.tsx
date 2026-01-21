@@ -198,7 +198,15 @@ export default function EventDetails() {
             <div className="border-l-4 border-primary pl-4 py-2">
               <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
               <div className="text-lg font-medium">
-                {format(new Date(event.eventDate), "d 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
+                {(() => {
+                  const eventDateStr = typeof event.eventDate === 'string' ? event.eventDate : new Date(event.eventDate).toISOString();
+                  const [datePart, timePart] = eventDateStr.split('T');
+                  const [year, month, day] = datePart.split('-');
+                  const monthNames = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+                  const monthName = monthNames[parseInt(month) - 1];
+                  const time = timePart.substring(0, 5);
+                  return `${parseInt(day)} de ${monthName} de ${year} às ${time}`;
+                })()}
               </div>
             </div>
 

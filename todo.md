@@ -745,3 +745,10 @@
 - [x] Adicionar botão "Acesse para fazer sua inscrição" abaixo da descrição do evento
 - [x] Redirecionar para login ao clicar no botão
 - [x] Mostrar formulário automaticamente quando usuário está logado
+
+## URGENTE: Horário Literal (Sem Conversão)
+- [x] Backend: Remover `new Date()`, salvar string direto
+- [x] Frontend Dashboard: Exibir string direto sem format()
+- [x] Frontend RegisterPage: Exibir string direto sem format()
+- [x] Frontend EventDetails: Exibir string direto sem format()
+- [x] Testar com novo evento - Usuário deve criar NOVO evento para validar

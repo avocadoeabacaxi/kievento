@@ -92,7 +92,7 @@ export const appRouter = router({
           userId: ctx.user.id,
           title: input.title,
           description: input.description,
-          eventDate: new Date(input.eventDate),
+          eventDate: input.eventDate as any, // Salvar como string literal
           registrationDeadline: input.registrationDeadline ? new Date(input.registrationDeadline) : undefined,
           address: input.address,
           bannerUrl,
@@ -199,7 +199,7 @@ export const appRouter = router({
         const updateData: any = {};
         if (input.title) updateData.title = input.title;
         if (input.description !== undefined) updateData.description = input.description;
-        if (input.eventDate) updateData.eventDate = new Date(input.eventDate);
+        if (input.eventDate) updateData.eventDate = input.eventDate as any; // Salvar como string literal
         if (input.registrationDeadline !== undefined) {
           updateData.registrationDeadline = input.registrationDeadline ? new Date(input.registrationDeadline) : null;
         }
