@@ -784,3 +784,8 @@
 - [x] Corrigir erro "Invalid time value" na criação de inscrição (formato de data não-ISO)
 - [x] Adicionar função parseEventDate para suportar múltiplos formatos de data
 - [x] Corrigir data do evento 90006 para formato ISO
+
+## Bug: URL Incorreta no E-mail (Jan 2026)
+- [x] Corrigir URL base do link de ingresso no e-mail (usar kievento.com.br ao invés de manus.space)
+- [x] Adicionar variável CUSTOM_DOMAIN ao env.ts
+- [x] Atualizar todas as ocorrências de baseUrl para usar domínio personalizado

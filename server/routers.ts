@@ -407,7 +407,7 @@ export const appRouter = router({
             console.error('[Registration] Erro ao enviar e-mail de aguardando aprovação:', emailError);
           }
         } else if (status === 'approved') {
-          const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
+          const baseUrl = ENV.customDomain ? `https://${ENV.customDomain}` : (ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000');
           const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
           // eventDate já é string literal, formatar para exibição
           const eventDateObj = parseEventDate(event.eventDate);
@@ -481,7 +481,7 @@ export const appRouter = router({
         await db.updateRegistration(input.registrationId, { status: input.status });
 
         // Enviar e-mail automático usando templates personalizados
-        const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
+        const baseUrl = ENV.customDomain ? `https://${ENV.customDomain}` : (ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000');
         const ticketUrl = `${baseUrl}/ticket/${registration.qrCode}`;
         // eventDate já é string literal, formatar para exibição
         const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
@@ -678,7 +678,7 @@ export const appRouter = router({
 
         // Enviar e-mail de confirmação se aprovado
         if (status === 'approved') {
-          const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
+          const baseUrl = ENV.customDomain ? `https://${ENV.customDomain}` : (ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000');
           const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
           // eventDate já é string literal, formatar para exibição
           const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
@@ -777,7 +777,7 @@ export const appRouter = router({
         }
 
         // Enviar emails em paralelo (máximo 10 por vez para não sobrecarregar)
-        const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
+        const baseUrl = ENV.customDomain ? `https://${ENV.customDomain}` : (ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000');
         // eventDate já é string literal, formatar para exibição
         const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
         const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
