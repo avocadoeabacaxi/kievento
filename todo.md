@@ -727,3 +727,6 @@
 - [x] Tornar menu lateral fixo (não rola com o conteúdo)
 - [x] Adicionar scroll apenas na área de conteúdo/formulário)
 - [x] Ajustar espaçamento e organização geral
+
+## Correção de Espaço Vazio no Final da Página
+- [x] Ajustar altura do container para evitar espaço vazio quando scroll termina

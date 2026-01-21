@@ -336,9 +336,9 @@ export default function CreateEvent() {
   return (
     <>
       <Header />
-      <div className="flex h-[calc(100vh-64px)] bg-gray-50">
+      <div className="flex min-h-[calc(100vh-64px)] bg-gray-50">
         {/* Menu Lateral Fixo */}
-        <div className="w-80 flex-shrink-0 border-r bg-white">
+        <div className="w-80 flex-shrink-0 border-r bg-white sticky top-0 h-[calc(100vh-64px)] overflow-y-auto">
           <EventCreationSidebar
             steps={steps}
             currentStepId={currentStepId}
