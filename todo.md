@@ -810,3 +810,8 @@
 - [x] Campo de texto para a pergunta condicional ao lado do checkbox
 - [x] Atualizar RegisterPage para suportar novo formato
 - [x] Manter compatibilidade com formato antigo (string separada por vírgula)
+
+## Aprovação/Recusa de Inscrições com E-mail (Jan 2026)
+- [x] Adicionar aviso de confirmação ao clicar em aprovar/recusar inscrição
+- [x] Implementar envio de e-mail automático ao aprovar (com link do ingresso)
+- [x] Implementar envio de e-mail automático ao recusar (informando que não foi aprovado)

@@ -45,6 +45,7 @@ export default function EventDetails() {
   const [bulkEmailTemplate, setBulkEmailTemplate] = useState<'approval' | 'confirmation'>('confirmation');
   const [bulkEmailStatus, setBulkEmailStatus] = useState<'all' | 'approved' | 'pending' | 'rejected'>('approved');
   const [manualFormData, setManualFormData] = useState<Record<string, any>>({});
+  const [confirmAction, setConfirmAction] = useState<{ type: 'approve' | 'reject'; registration: any } | null>(null);
 
   const { data: event, isLoading } = trpc.events.getById.useQuery({ eventId });
   const { data: registrations, refetch: refetchRegistrations } = trpc.registrations.listByEvent.useQuery({ eventId });
@@ -62,9 +63,11 @@ export default function EventDetails() {
   });
 
   const updateStatusMutation = trpc.registrations.updateStatus.useMutation({
-    onSuccess: () => {
-      toast.success("Status atualizado!");
+    onSuccess: (_, variables) => {
+      const action = variables.status === 'approved' ? 'aprovada' : 'recusada';
+      toast.success(`Inscrição ${action}! E-mail enviado para o participante.`);
       refetchRegistrations();
+      setConfirmAction(null);
     },
     onError: (error) => {
       toast.error(`Erro: ${error.message}`);
@@ -439,7 +442,7 @@ export default function EventDetails() {
                             <div className="flex flex-col sm:flex-row gap-2">
                               <Button
                                 size="sm"
-                                onClick={() => updateStatusMutation.mutate({ registrationId: reg.id, status: "approved" })}
+                                onClick={() => setConfirmAction({ type: 'approve', registration: reg })}
                                 disabled={updateStatusMutation.isPending}
                               >
                                 <CheckCircle className="h-4 w-4 mr-1" />
@@ -448,7 +451,7 @@ export default function EventDetails() {
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                onClick={() => updateStatusMutation.mutate({ registrationId: reg.id, status: "rejected" })}
+                                onClick={() => setConfirmAction({ type: 'reject', registration: reg })}
                                 disabled={updateStatusMutation.isPending}
                               >
                                 <XCircle className="h-4 w-4 mr-1" />
@@ -707,6 +710,52 @@ export default function EventDetails() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog de Confirmação de Aprovação/Recusa */}
+      <AlertDialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction?.type === 'approve' ? 'Aprovar Inscrição' : 'Recusar Inscrição'}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                {confirmAction?.type === 'approve' 
+                  ? `Você está prestes a APROVAR a inscrição de:`
+                  : `Você está prestes a RECUSAR a inscrição de:`}
+              </p>
+              <p className="font-semibold text-foreground">
+                {confirmAction?.registration?.name} ({confirmAction?.registration?.email})
+              </p>
+              <p className="mt-4">
+                {confirmAction?.type === 'approve' 
+                  ? `Um e-mail será enviado automaticamente com o link para acessar o ingresso/convite.`
+                  : `Um e-mail será enviado automaticamente informando que a inscrição não foi aprovada.`}
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (confirmAction) {
+                  updateStatusMutation.mutate({
+                    registrationId: confirmAction.registration.id,
+                    status: confirmAction.type === 'approve' ? 'approved' : 'rejected',
+                  });
+                }
+              }}
+              className={confirmAction?.type === 'reject' ? 'bg-destructive hover:bg-destructive/90' : ''}
+            >
+              {updateStatusMutation.isPending 
+                ? 'Processando...' 
+                : confirmAction?.type === 'approve' 
+                  ? 'Sim, Aprovar e Enviar E-mail' 
+                  : 'Sim, Recusar e Enviar E-mail'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
