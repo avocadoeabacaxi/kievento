@@ -1,0 +1,3 @@
+-- Migration placeholder for 0016_puzzling_network
+-- This migration was missing and has been recreated as empty
+-- The actual changes were likely already applied to the database

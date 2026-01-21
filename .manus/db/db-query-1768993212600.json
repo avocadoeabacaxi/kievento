@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, eventId, name, email, status, qrCode, createdAt FROM registrations ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, eventId, name, email, status, qrCode, createdAt FROM registrations ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "90029",
+      "eventId": "90007",
+      "name": "Fernando Machado",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "qrCode": "fkJYV_wkZCMXXU3L",
+      "createdAt": "2026-01-21 05:13:32"
+    },
+    {
+      "id": "90028",
+      "eventId": "90007",
+      "name": "Fernando Machado",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "qrCode": "v49uZginJHO0WKWk",
+      "createdAt": "2026-01-21 05:13:32"
+    },
+    {
+      "id": "90027",
+      "eventId": "90007",
+      "name": "Fernando Machado",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "qrCode": "nkk_Ah1hG4i0wz5q",
+      "createdAt": "2026-01-21 05:13:31"
+    },
+    {
+      "id": "90026",
+      "eventId": "90007",
+      "name": "Fernando Machado",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "qrCode": "BSSCB02RMzHvil3A",
+      "createdAt": "2026-01-21 05:13:29"
+    },
+    {
+      "id": "90025",
+      "eventId": "90007",
+      "name": "Fernando Machado",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "qrCode": "ss99FtPGmBLkaOqt",
+      "createdAt": "2026-01-21 05:13:24"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\teventId\tname\temail\tstatus\tqrCode\tcreatedAt\n90029\t90007\tFernando Machado\tfernando@avocado.buzz\tapproved\tfkJYV_wkZCMXXU3L\t2026-01-21 05:13:32\n90028\t90007\tFernando Machado\tfernando@avocado.buzz\tapproved\tv49uZginJHO0WKWk\t2026-01-21 05:13:32\n90027\t90007\tFernando Machado\tfernando@avocado.buzz\tapproved\tnkk_Ah1hG4i0wz5q\t2026-01-21 05:13:31\n90026\t90007\tFernando Machado\tfernando@avocado.buzz\tapproved\tBSSCB02RMzHvil3A\t2026-01-21 05:13:29\n90025\t90007\tFernando Machado\tfernando@avocado.buzz\tapproved\tss99FtPGmBLkaOqt\t2026-01-21 05:13:24\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

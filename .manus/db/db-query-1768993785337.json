@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, name, email, status, createdAt FROM registrations ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, name, email, status, createdAt FROM registrations ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "90041",
+      "name": "Fernando machado",
+      "email": "firnando@gmail.com",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:08:47"
+    },
+    {
+      "id": "90042",
+      "name": "Fernando machado",
+      "email": "firnando@gmail.com",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:08:47"
+    },
+    {
+      "id": "90040",
+      "name": "Fernando machado",
+      "email": "firnando@gmail.com",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:08:43"
+    },
+    {
+      "id": "90039",
+      "name": "Teste Email Preview",
+      "email": "teste@preview.com",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:06:50"
+    },
+    {
+      "id": "90038",
+      "name": "Fernando machado",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:06:04"
+    },
+    {
+      "id": "90037",
+      "name": "FERNANDO GONCALVES DE MATOS MACHADO",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:05:26"
+    },
+    {
+      "id": "90036",
+      "name": "Fernando machado",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:05:23"
+    },
+    {
+      "id": "90035",
+      "name": "Fernando machado",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:04:56"
+    },
+    {
+      "id": "90034",
+      "name": "Teste Email Producao",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:04:12"
+    },
+    {
+      "id": "90033",
+      "name": "Teste Email Producao",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "createdAt": "2026-01-21 11:04:05"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tstatus\tcreatedAt\n90041\tFernando machado\tfirnando@gmail.com\tapproved\t2026-01-21 11:08:47\n90042\tFernando machado\tfirnando@gmail.com\tapproved\t2026-01-21 11:08:47\n90040\tFernando machado\tfirnando@gmail.com\tapproved\t2026-01-21 11:08:43\n90039\tTeste Email Preview\tteste@preview.com\tapproved\t2026-01-21 11:06:50\n90038\tFernando machado\tfernando@avocado.buzz\tapproved\t2026-01-21 11:06:04\n90037\tFERNANDO GONCALVES DE MATOS MACHADO\tfernando@avocado.buzz\tapproved\t2026-01-21 11:05:26\n90036\tFernando machado\tfernando@avocado.buzz\tapproved\t2026-01-21 11:05:23\n90035\tFernando machado\tfernando@avocado.buzz\tapproved\t2026-01-21 11:04:56\n90034\tTeste Email Producao\tfernando@avocado.buzz\tapproved\t2026-01-21 11:04:12\n90033\tTeste Email Producao\tfernando@avocado.buzz\tapproved\t2026-01-21 11:04:05\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

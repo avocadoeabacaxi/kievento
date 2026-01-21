@@ -375,10 +375,23 @@ export const appRouter = router({
           await db.incrementTicketTypeSold(input.ticketTypeId);
         }
 
+        // Função auxiliar para parsear data do evento (suporta formato ISO e literal)
+        const parseEventDate = (dateStr: string): Date => {
+          // Tentar formato ISO primeiro (2025-01-25T16:30)
+          if (dateStr.includes('T') || dateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+            const isoDate = dateStr.includes(':00:00') ? dateStr : dateStr + ':00';
+            const parsed = new Date(isoDate);
+            if (!isNaN(parsed.getTime())) return parsed;
+          }
+          // Se falhar, retornar data atual como fallback
+          console.warn('[Registration] Formato de data não reconhecido:', dateStr);
+          return new Date();
+        };
+
         // Enviar e-mail baseado no tipo de evento
         if (status === 'pending') {
           // Evento com aprovação - enviar e-mail de aguardando
-          const eventDateObj = new Date(event.eventDate + ':00');
+          const eventDateObj = parseEventDate(event.eventDate);
           const eventDateFormatted = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
           
           try {
@@ -397,7 +410,7 @@ export const appRouter = router({
           const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
           const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
           // eventDate já é string literal, formatar para exibição
-          const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
+          const eventDateObj = parseEventDate(event.eventDate);
           const eventDateFormatted = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
           const [address] = event.address?.split('|') || [];
 

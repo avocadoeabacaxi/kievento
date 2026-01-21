@@ -1,0 +1,8 @@
+{
+  "query": "SELECT * FROM email_settings WHERE enabled = 1 LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT * FROM email_settings WHERE enabled = 1 LIMIT 1;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'kfey3nsqjbldeh7yzxdytq.email_settings' doesn't exist"
+  ]
+}

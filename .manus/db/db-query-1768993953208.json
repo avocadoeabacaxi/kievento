@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, title, eventDate FROM events WHERE id = 90006;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, title, eventDate FROM events WHERE id = 90006;",
+  "rows": [
+    {
+      "id": "90006",
+      "title": "Teste de Horário Literal",
+      "eventDate": "2025-01-25T16:30:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\teventDate\n90006\tTeste de Horário Literal\t2025-01-25T16:30:00\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

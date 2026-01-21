@@ -36,6 +36,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [submitted, setSubmitted] = useState(false);
   const [registrationResult, setRegistrationResult] = useState<any>(null);
+  const [countdown, setCountdown] = useState<number>(5);
   
   // Cores personalizadas do evento (com fallback para cores padrão)
   const customColors = {
@@ -77,15 +78,31 @@ export default function RegisterPage() {
     }
   }, [isAuthenticated, eventData]);
 
+  // Contador para redirecionar para central de ingressos
+  useEffect(() => {
+    if (submitted && registrationResult) {
+      if (countdown > 0) {
+        const timer = setTimeout(() => {
+          setCountdown(countdown - 1);
+        }, 1000);
+        return () => clearTimeout(timer);
+      } else {
+        // Redirecionar para central de ingressos quando contador chegar a 0
+        if (registrationResult.status === "approved") {
+          setLocation(`/ticket/${registrationResult.qrCode}`);
+        } else {
+          setLocation("/my-tickets");
+        }
+      }
+    }
+  }, [submitted, registrationResult, countdown, setLocation]);
+
   const registerMutation = trpc.registrations.create.useMutation({
     onSuccess: (data) => {
       setRegistrationResult(data);
       setSubmitted(true);
-      toast.success("Cadastro realizado com sucesso! Você será redirecionado para seus ingressos...");
-      // Redirecionar após 2 segundos
-      setTimeout(() => {
-        setLocation("/my-tickets");
-      }, 2000);
+      setCountdown(5);
+      toast.success("Inscrição realizada com sucesso!");
     },
     onError: (error) => {
       toast.error(`Erro ao realizar inscrição: ${error.message}`);
@@ -201,15 +218,26 @@ export default function RegisterPage() {
           <CardContent className="pt-6 text-center space-y-6">
             {registrationResult.status === "approved" ? (
               <>
-                <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center mx-auto">
-                  <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-500" />
+                <div className="h-20 w-20 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center mx-auto animate-pulse">
+                  <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-500" />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold">Inscrição Confirmada!</h2>
+                  <h2 className="text-2xl font-bold text-green-600">Inscrição Confirmada!</h2>
                   <p className="text-muted-foreground">
                     Sua inscrição foi aprovada automaticamente. Você receberá seu convite com QR Code por e-mail.
                   </p>
                 </div>
+                
+                {/* Contador */}
+                <div className="py-4">
+                  <div className="text-6xl font-bold text-primary animate-bounce">
+                    {countdown}
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Redirecionando para seu ingresso...
+                  </p>
+                </div>
+                
                 <Button 
                   asChild 
                   className="w-full"
@@ -220,22 +248,45 @@ export default function RegisterPage() {
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = customColors.buttonHover}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = customColors.buttonBg}
                 >
-                  <a href={`/ticket/${registrationResult.qrCode}`} target="_blank">
-                    Ver Meu Convite
+                  <a href={`/ticket/${registrationResult.qrCode}`}>
+                    Ver Meu Ingresso Agora
                   </a>
                 </Button>
               </>
             ) : (
               <>
-                <div className="h-16 w-16 rounded-full bg-amber-100 dark:bg-amber-950 flex items-center justify-center mx-auto">
-                  <Clock className="h-8 w-8 text-amber-600 dark:text-amber-500" />
+                <div className="h-20 w-20 rounded-full bg-amber-100 dark:bg-amber-950 flex items-center justify-center mx-auto animate-pulse">
+                  <Clock className="h-10 w-10 text-amber-600 dark:text-amber-500" />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold">Inscrição Recebida!</h2>
+                  <h2 className="text-2xl font-bold text-amber-600">Inscrição Recebida!</h2>
                   <p className="text-muted-foreground">
                     Sua inscrição está aguardando aprovação do organizador. Você receberá uma notificação por e-mail quando for aprovada.
                   </p>
                 </div>
+                
+                {/* Contador */}
+                <div className="py-4">
+                  <div className="text-6xl font-bold text-amber-500 animate-bounce">
+                    {countdown}
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Redirecionando para seus ingressos...
+                  </p>
+                </div>
+                
+                <Button 
+                  onClick={() => setLocation("/my-tickets")}
+                  className="w-full"
+                  style={{
+                    backgroundColor: customColors.buttonBg,
+                    color: customColors.sidebarText,
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = customColors.buttonHover}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = customColors.buttonBg}
+                >
+                  Ver Meus Ingressos Agora
+                </Button>
               </>
             )}
           </CardContent>

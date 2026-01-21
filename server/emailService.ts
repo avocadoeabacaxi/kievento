@@ -410,9 +410,20 @@ export async function sendConfirmationEmail(params: {
   ticketUrl: string;
   qrCode: string;
 }): Promise<boolean> {
+  console.log('[Email Service] sendConfirmationEmail chamado com:', {
+    eventId: params.eventId,
+    registrationId: params.registrationId,
+    recipientEmail: params.recipientEmail,
+    participantName: params.participantName,
+    eventTitle: params.eventTitle,
+  });
+  
   try {
     // 1. Buscar configurações globais de email
+    console.log('[Email Service] Buscando configurações de email...');
     const emailConfig = await db.getActiveEmailSetting();
+    console.log('[Email Service] Configuração encontrada:', emailConfig ? { provider: emailConfig.provider, enabled: emailConfig.enabled, senderEmail: emailConfig.senderEmail } : 'null');
+    
     if (!emailConfig || emailConfig.enabled !== 1) {
       console.log('[Email Service] Configurações de email não encontradas ou desativadas');
       return false;

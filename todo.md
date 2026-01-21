@@ -766,3 +766,21 @@
 - [x] E-mail de aprovação com link do ingresso quando gestor aprova
 - [x] E-mail de rejeição quando gestor rejeita
 - [ ] Anexar ingresso JPG/PDF nos e-mails (próxima fase)
+
+## Tela de Confirmação com Contador (Jan 2026)
+- [x] Adicionar estado countdown para contador de 5 segundos
+- [x] Implementar useEffect para decrementar contador
+- [x] Atualizar tela de confirmação com contador visual animado
+- [x] Redirecionar automaticamente para central de ingressos quando contador chegar a 0
+- [x] Mostrar botão para ir direto ao ingresso sem esperar
+
+## Investigação de E-mail (Jan 2026)
+- [ ] Verificar se função sendConfirmationEmail está sendo chamada corretamente
+- [ ] Verificar logs do servidor para erros de envio
+- [ ] Testar fluxo completo de inscrição com e-mail
+
+
+## Bugs Corrigidos (Jan 2026)
+- [x] Corrigir erro "Invalid time value" na criação de inscrição (formato de data não-ISO)
+- [x] Adicionar função parseEventDate para suportar múltiplos formatos de data
+- [x] Corrigir data do evento 90006 para formato ISO
