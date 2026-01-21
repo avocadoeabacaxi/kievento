@@ -711,3 +711,9 @@
 
 ## Correção de Breadcrumb
 - [x] Ajustar estilo do breadcrumb para ter fundo transparente/colorido igual aos outros elementos
+
+## Autocomplete de Endereços com Google Places
+- [x] Criar componente AddressAutocomplete
+- [x] Integrar Google Places API
+- [x] Substituir campos de endereço no CreateEvent
+- [x] Preencher automaticamente addressLink com URL do Google Maps

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, ArrowLeft, Plus, Trash2, Upload, Info } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -416,26 +417,14 @@ export default function CreateEvent() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="address">Endereço do Evento</Label>
-                <Input
-                  id="address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Rua, número, cidade"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="addressLink">Link do Endereço (Google Maps, Waze, etc.)</Label>
-                <Input
-                  id="addressLink"
-                  type="url"
-                  value={addressLink}
-                  onChange={(e) => setAddressLink(e.target.value)}
-                  placeholder="https://maps.google.com/..."
-                />
-              </div>
+              <AddressAutocomplete
+                value={address}
+                onChange={(newAddress, newAddressLink) => {
+                  setAddress(newAddress);
+                  setAddressLink(newAddressLink);
+                }}
+                placeholder="Digite o endereço do evento..."
+              />
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
