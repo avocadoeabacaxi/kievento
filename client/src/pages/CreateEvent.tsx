@@ -810,7 +810,7 @@ export default function CreateEvent() {
                     Cancelar
                   </Button>
                 </Link>
-                {!isEditing && (
+                {(!isEditing || existingEvent?.status === 'draft') && (
                   <Button 
                     type="button"
                     variant="outline"
@@ -818,7 +818,7 @@ export default function CreateEvent() {
                     disabled={createEventMutation.isPending || updateEventMutation.isPending}
                     onClick={(e) => handleSubmit(e, 'draft')}
                   >
-                    {createEventMutation.isPending ? "Salvando..." : "Salvar Rascunho"}
+                    {createEventMutation.isPending || updateEventMutation.isPending ? "Salvando..." : "Salvar Rascunho"}
                   </Button>
                 )}
                 <Button 
@@ -828,7 +828,7 @@ export default function CreateEvent() {
                   onClick={(e) => handleSubmit(e, 'published')}
                 >
                   {isEditing 
-                    ? (updateEventMutation.isPending ? "Atualizando..." : "Atualizar Evento")
+                    ? (updateEventMutation.isPending ? "Atualizando..." : (existingEvent?.status === 'draft' ? "Publicar Evento" : "Atualizar Evento"))
                     : (createEventMutation.isPending ? "Publicando..." : "Publicar Evento")}
                 </Button>
               </div>

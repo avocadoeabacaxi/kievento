@@ -324,7 +324,12 @@ export async function getPublicEvents(filters?: { category?: string; city?: stri
     return [];
   }
 
-  let query = db.select().from(events).where(eq(events.visibility, "public"));
+  let query = db.select().from(events).where(
+    and(
+      eq(events.visibility, "public"),
+      eq(events.status, "published")
+    )
+  );
   
   const allEvents = await query;
   

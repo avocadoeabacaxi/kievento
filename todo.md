@@ -730,3 +730,12 @@
 
 ## Correção de Espaço Vazio no Final da Página
 - [x] Ajustar altura do container para evitar espaço vazio quando scroll termina
+
+## Sistema de Rascunhos
+- [x] Adicionar campo `status` no schema do banco (draft/published) - Já existe
+- [x] Migrar banco com novo campo - Já existe
+- [x] Adicionar botão "Salvar como Rascunho" no CreateEvent - Já existe
+- [x] Adicionar badge "Rascunho" no Dashboard para eventos draft - Já existe
+- [x] Adicionar botão "Publicar" no final do formulário de edição
+- [x] Criar mutation publishEvent no backend - Já existe (update com status)
+- [x] Filtrar eventos publicados na página pública (Home)
