@@ -822,3 +822,8 @@
 - [x] Adicionar botão "Reenviar Convite" ao lado de "Ver Convite" para aprovados
 - [x] Mostrar contador de quantas vezes o convite foi enviado
 - [x] Feedback visual quando e-mail é enviado com sucesso
+
+## Bug: Contador de Reenvios Não Aparece (Jan 2026)
+- [x] Verificar se emailSentCount está sendo retornado na query de registrations
+- [x] Corrigir exibição do contador na interface (contador só aparece após primeiro reenvio)
+- [x] Testar envio de convite (funciona, contador é atualizado no banco)

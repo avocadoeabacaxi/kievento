@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, email, emailSentCount, lastEmailSentAt FROM registrations WHERE status = 'approved' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, name, email, emailSentCount, lastEmailSentAt FROM registrations WHERE status = 'approved' LIMIT 5;",
+  "rows": [
+    {
+      "id": "90001",
+      "name": "Firnando Teste",
+      "email": "firnando@gmail.com",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90002",
+      "name": "Firnando Teste",
+      "email": "firnando@gmail.com",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90003",
+      "name": "Firnando Teste",
+      "email": "firnando@gmail.com",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90004",
+      "name": "FERNANDO GONCALVES DE MATOS MACHADO",
+      "email": "fernando@avocado.buzz",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90005",
+      "name": "FERNANDO GONCALVES DE MATOS MACHADO",
+      "email": "fernando@avocado.buzz",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\temailSentCount\tlastEmailSentAt\n90001\tFirnando Teste\tfirnando@gmail.com\t0\tNULL\n90002\tFirnando Teste\tfirnando@gmail.com\t0\tNULL\n90003\tFirnando Teste\tfirnando@gmail.com\t0\tNULL\n90004\tFERNANDO GONCALVES DE MATOS MACHADO\tfernando@avocado.buzz\t0\tNULL\n90005\tFERNANDO GONCALVES DE MATOS MACHADO\tfernando@avocado.buzz\t0\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

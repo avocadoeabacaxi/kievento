@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, name, emailSentCount, lastEmailSentAt FROM registrations WHERE eventId = 90007 ORDER BY lastEmailSentAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, name, emailSentCount, lastEmailSentAt FROM registrations WHERE eventId = 90007 ORDER BY lastEmailSentAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "90023",
+      "name": "Teste Final",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90024",
+      "name": "Teste Final",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90025",
+      "name": "Fernando Machado",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90026",
+      "name": "Fernando Machado",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90022",
+      "name": "Teste Manus Email",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temailSentCount\tlastEmailSentAt\n90023\tTeste Final\t0\tNULL\n90024\tTeste Final\t0\tNULL\n90025\tFernando Machado\t0\tNULL\n90026\tFernando Machado\t0\tNULL\n90022\tTeste Manus Email\t0\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}
