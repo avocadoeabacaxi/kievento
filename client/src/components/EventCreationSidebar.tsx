@@ -24,7 +24,7 @@ export default function EventCreationSidebar({
   const progress = ((completedSteps.size / steps.length) * 100).toFixed(0);
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0">
+    <div className="bg-white flex flex-col h-full">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <h2 className="text-xl font-bold text-gray-900">Criar Evento</h2>

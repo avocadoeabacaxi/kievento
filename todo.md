@@ -722,3 +722,8 @@
 - [x] Adicionar Header component na RegisterPage
 - [x] Mostrar botões "Entrar" e "Cadastrar" para usuários não logados
 - [x] Mostrar avatar com dropdown para usuários logados
+
+## Layout Fixo na Página de Criar/Editar Evento
+- [x] Tornar menu lateral fixo (não rola com o conteúdo)
+- [x] Adicionar scroll apenas na área de conteúdo/formulário)
+- [x] Ajustar espaçamento e organização geral
