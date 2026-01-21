@@ -520,20 +520,28 @@ export default function EventDetails() {
                           </Button>
                           <Button
                             size="sm"
-                            variant="outline"
-                            onClick={() => resendInviteMutation.mutate({ registrationId: reg.id })}
+                            variant={(reg as any).emailSentCount > 0 ? "outline" : "default"}
+                            className={(reg as any).emailSentCount > 0 ? "" : "bg-blue-600 hover:bg-blue-700 text-white"}
+                            onClick={() => {
+                              console.log('Reenviando convite para:', reg.id, reg.email);
+                              resendInviteMutation.mutate({ registrationId: reg.id });
+                            }}
                             disabled={resendInviteMutation.isPending}
-                            title={(reg as any).emailSentCount > 0 ? `Enviado ${(reg as any).emailSentCount}x` : 'Reenviar convite por e-mail'}
+                            title={(reg as any).emailSentCount > 0 ? `Enviado ${(reg as any).emailSentCount}x - Clique para reenviar` : 'Enviar convite por e-mail'}
                           >
                             {resendInviteMutation.isPending ? (
                               <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
                             ) : (
                               <Send className="h-4 w-4 mr-1" />
                             )}
-                            Reenviar
-                            {(reg as any).emailSentCount > 0 && (
-                              <Badge variant="secondary" className="ml-1 text-xs">
+                            {(reg as any).emailSentCount > 0 ? 'Reenviar' : 'Enviar'}
+                            {(reg as any).emailSentCount > 0 ? (
+                              <Badge variant="secondary" className="ml-1 text-xs bg-green-100 text-green-800">
                                 {(reg as any).emailSentCount}x
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary" className="ml-1 text-xs bg-yellow-100 text-yellow-800">
+                                Pendente
                               </Badge>
                             )}
                           </Button>

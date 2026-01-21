@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, email, emailSentCount, lastEmailSentAt FROM registrations WHERE eventId = 90007 LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, name, email, emailSentCount, lastEmailSentAt FROM registrations WHERE eventId = 90007 LIMIT 5;",
+  "rows": [
+    {
+      "id": "90022",
+      "name": "Teste Manus Email",
+      "email": "firnando@gmail.com",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90023",
+      "name": "Teste Final",
+      "email": "firnando@gmail.com",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90024",
+      "name": "Teste Final",
+      "email": "firnando@gmail.com",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90025",
+      "name": "Fernando Machado",
+      "email": "fernando@avocado.buzz",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    },
+    {
+      "id": "90026",
+      "name": "Fernando Machado",
+      "email": "fernando@avocado.buzz",
+      "emailSentCount": "0",
+      "lastEmailSentAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\temailSentCount\tlastEmailSentAt\n90022\tTeste Manus Email\tfirnando@gmail.com\t0\tNULL\n90023\tTeste Final\tfirnando@gmail.com\t0\tNULL\n90024\tTeste Final\tfirnando@gmail.com\t0\tNULL\n90025\tFernando Machado\tfernando@avocado.buzz\t0\tNULL\n90026\tFernando Machado\tfernando@avocado.buzz\t0\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

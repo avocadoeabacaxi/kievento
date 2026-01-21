@@ -897,6 +897,12 @@ export const appRouter = router({
 
             if (success) {
               successCount++;
+              // Atualizar contador de envios
+              const currentCount = (registration as any).emailSentCount || 0;
+              await db.updateRegistration(registration.id, {
+                emailSentCount: currentCount + 1,
+                lastEmailSentAt: new Date(),
+              });
             } else {
               failCount++;
             }

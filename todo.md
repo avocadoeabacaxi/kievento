@@ -833,3 +833,15 @@
 - [x] Comparar código de envio entre inscrição e aprovação/reenvio (todas usam configuração centralizada)
 - [x] Verificar logs de erro no servidor
 - [x] Corrigir problema de envio (atualizado para Resend com API Key)
+
+## Bug: Botões de Envio de E-mail Não Funcionam (Jan 2026)
+- [ ] Corrigir botão Reenviar individual que não está funcionando
+- [ ] Corrigir botão Enviar Emails em massa que não está funcionando
+- [ ] Adicionar indicação visual de quais e-mails já foram enviados ou não
+
+
+## Correções de Envio de E-mail (Jan 2026)
+- [x] Melhorar botão Reenviar com indicação visual de status (Pendente/Nx)
+- [x] Adicionar atualização do contador emailSentCount no envio em massa
+- [x] Configurar Resend como provedor de e-mail unificado
+- [x] Configurar remetente como KiEvento <contato@kievento.com.br>
