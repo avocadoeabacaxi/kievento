@@ -70,11 +70,11 @@ export default function Dashboard() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => {
               // Exibir horário literal sem conversão
-              const eventDateStr = typeof event.eventDate === 'string' ? event.eventDate : new Date(event.eventDate).toISOString();
-              const [datePart, timePart] = eventDateStr.split('T');
-              const [year, month, day] = datePart.split('-');
-              const formattedDate = `${day}/${month}/${year}`;
-              const formattedTime = timePart.substring(0, 5); // HH:mm
+              const eventDateStr = typeof event.eventDate === 'string' ? event.eventDate : (event.eventDate ? new Date(event.eventDate).toISOString() : '');
+              const [datePart = '', timePart = ''] = eventDateStr.split('T');
+              const [year = '', month = '', day = ''] = datePart.split('-');
+              const formattedDate = datePart ? `${day}/${month}/${year}` : 'Data não definida';
+              const formattedTime = timePart ? timePart.substring(0, 5) : ''; // HH:mm
 
               return (
                 <Card 

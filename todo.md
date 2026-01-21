@@ -789,3 +789,9 @@
 - [x] Corrigir URL base do link de ingresso no e-mail (usar kievento.com.br ao invés de manus.space)
 - [x] Adicionar variável CUSTOM_DOMAIN ao env.ts
 - [x] Atualizar todas as ocorrências de baseUrl para usar domínio personalizado
+
+## Bug: Erro no Login Manual (Jan 2026)
+- [x] Corrigir erro "Cannot read properties of undefined (reading 'substring')" ao fazer login manual
+- [x] Adicionar verificações de null/undefined em Dashboard.tsx
+- [x] Adicionar verificações de null/undefined em EventDetails.tsx
+- [x] Adicionar verificações de null/undefined em RegisterPage.tsx

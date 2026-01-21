@@ -199,13 +199,15 @@ export default function EventDetails() {
               <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Data e Horário</div>
               <div className="text-lg font-medium">
                 {(() => {
+                  if (!event.eventDate) return 'Data não definida';
                   const eventDateStr = typeof event.eventDate === 'string' ? event.eventDate : new Date(event.eventDate).toISOString();
-                  const [datePart, timePart] = eventDateStr.split('T');
+                  const [datePart = '', timePart = ''] = eventDateStr.split('T');
+                  if (!datePart) return 'Data não definida';
                   const [year, month, day] = datePart.split('-');
                   const monthNames = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-                  const monthName = monthNames[parseInt(month) - 1];
-                  const time = timePart.substring(0, 5);
-                  return `${parseInt(day)} de ${monthName} de ${year} às ${time}`;
+                  const monthName = monthNames[parseInt(month) - 1] || 'janeiro';
+                  const time = timePart ? timePart.substring(0, 5) : '00:00';
+                  return `${parseInt(day) || 1} de ${monthName} de ${year || '2025'} às ${time}`;
                 })()}
               </div>
             </div>
