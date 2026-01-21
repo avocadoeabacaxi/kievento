@@ -758,3 +758,11 @@
 - [x] Corrigir perda de dados ao editar evento - data/hora, categoria, cidade e visibilidade voltam para padrão
 
 - [ ] Corrigir envio de e-mail de teste com Resend - não está funcionando
+- [ ] Corrigir botão "Confirmar Inscrição" que não está funcionando na página de registro
+
+## Sistema de E-mails por Tipo de Evento
+- [x] E-mail de confirmação com link do ingresso para eventos abertos
+- [x] E-mail de "Aguardando Aprovação" para eventos com aprovação
+- [x] E-mail de aprovação com link do ingresso quando gestor aprova
+- [x] E-mail de rejeição quando gestor rejeita
+- [ ] Anexar ingresso JPG/PDF nos e-mails (próxima fase)

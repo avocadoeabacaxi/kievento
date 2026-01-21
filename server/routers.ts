@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { nanoid } from 'nanoid';
-import { sendEmail, sendTestEmail, sendEventEmail, getApprovalEmailTemplate, getRejectionEmailTemplate, getConfirmationEmailTemplate } from './emailService';
+import { sendEmail, sendTestEmail, sendEventEmail, sendConfirmationEmail, sendPendingEmail, sendApprovalEmail, sendRejectionEmail, getApprovalEmailTemplate, getRejectionEmailTemplate, getConfirmationEmailTemplate } from './emailService';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ENV } from './_core/env';
@@ -375,26 +375,50 @@ export const appRouter = router({
           await db.incrementTicketTypeSold(input.ticketTypeId);
         }
 
-        // Enviar e-mail de confirmação para eventos abertos
-        if (status === 'approved') {
+        // Enviar e-mail baseado no tipo de evento
+        if (status === 'pending') {
+          // Evento com aprovação - enviar e-mail de aguardando
+          const eventDateObj = new Date(event.eventDate + ':00');
+          const eventDateFormatted = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+          
+          try {
+            await sendPendingEmail({
+              eventId: input.eventId,
+              registrationId: registrationId,
+              recipientEmail: input.email,
+              participantName: input.name,
+              eventTitle: event.title,
+              eventDate: eventDateFormatted,
+            });
+          } catch (emailError) {
+            console.error('[Registration] Erro ao enviar e-mail de aguardando aprovação:', emailError);
+          }
+        } else if (status === 'approved') {
           const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
           const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
           // eventDate já é string literal, formatar para exibição
           const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
-          const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+          const eventDateFormatted = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
           const [address] = event.address?.split('|') || [];
 
-          await sendEmail({
-            to: input.email,
-            subject: `✅ Inscrição confirmada - ${event.title}`,
-            html: getConfirmationEmailTemplate({
+          // Usar sendConfirmationEmail que usa o provedor configurado (Resend)
+          // Esta função SEMPRE envia o e-mail, mesmo sem template personalizado
+          try {
+            await sendConfirmationEmail({
+              eventId: input.eventId,
+              registrationId: registrationId,
+              recipientEmail: input.email,
               participantName: input.name,
               eventTitle: event.title,
-              eventDate,
+              eventDate: eventDateFormatted,
               eventAddress: address,
               ticketUrl,
-            }),
-          });
+              qrCode,
+            });
+          } catch (emailError) {
+            console.error('[Registration] Erro ao enviar e-mail de confirmação:', emailError);
+            // Não falhar a inscrição se o e-mail falhar
+          }
         }
 
         return { registrationId, qrCode, status };
@@ -451,22 +475,33 @@ export const appRouter = router({
         const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
         const [address] = event.address?.split('|') || [];
 
-        const templateType = input.status === 'approved' ? 'approval' : 'rejection';
-        await sendEventEmail({
-          eventId: registration.eventId,
-          registrationId: input.registrationId,
-          templateType,
-          recipientEmail: registration.email,
-          variables: {
-            nome: registration.name,
-            email: registration.email,
-            evento: event.title,
-            data: eventDate,
-            local: address,
-            qrcode: registration.qrCode || undefined,
-            convite_url: ticketUrl,
-          },
-        });
+        // Enviar e-mail de aprovação ou rejeição usando funções específicas
+        try {
+          if (input.status === 'approved') {
+            await sendApprovalEmail({
+              eventId: registration.eventId,
+              registrationId: input.registrationId,
+              recipientEmail: registration.email,
+              participantName: registration.name,
+              eventTitle: event.title,
+              eventDate,
+              eventAddress: address,
+              ticketUrl,
+              qrCode: registration.qrCode || '',
+            });
+          } else {
+            await sendRejectionEmail({
+              eventId: registration.eventId,
+              registrationId: input.registrationId,
+              recipientEmail: registration.email,
+              participantName: registration.name,
+              eventTitle: event.title,
+            });
+          }
+        } catch (emailError) {
+          console.error('[Registration] Erro ao enviar e-mail de status:', emailError);
+          // Não falhar a atualização se o e-mail falhar
+        }
 
         return { success: true };
       }),

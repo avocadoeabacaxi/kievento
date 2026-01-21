@@ -394,3 +394,318 @@ export function getConfirmationEmailTemplate(params: {
 ${params.eventAddress ? `<p><strong>Local:</strong> ${params.eventAddress}</p>` : ''}
 <p>Acesse seu ingresso: <a href="${params.ticketUrl}">Clique aqui</a></p>`;
 }
+
+/**
+ * Envia e-mail de confirmação de inscrição usando template padrão ou personalizado
+ * Esta função SEMPRE envia o e-mail, mesmo sem template personalizado
+ */
+export async function sendConfirmationEmail(params: {
+  eventId: number;
+  registrationId: number;
+  recipientEmail: string;
+  participantName: string;
+  eventTitle: string;
+  eventDate: string;
+  eventAddress?: string;
+  ticketUrl: string;
+  qrCode: string;
+}): Promise<boolean> {
+  try {
+    // 1. Buscar configurações globais de email
+    const emailConfig = await db.getActiveEmailSetting();
+    if (!emailConfig || emailConfig.enabled !== 1) {
+      console.log('[Email Service] Configurações de email não encontradas ou desativadas');
+      return false;
+    }
+
+    // 2. Tentar buscar template personalizado
+    const customTemplate = await db.getEmailTemplateByEventAndType(params.eventId, 'confirmation');
+    
+    let subject: string;
+    let html: string;
+
+    if (customTemplate && customTemplate.enabled === 1) {
+      // Usar template personalizado
+      const variables = {
+        nome: params.participantName,
+        email: params.recipientEmail,
+        evento: params.eventTitle,
+        data: params.eventDate,
+        local: params.eventAddress || '',
+        qrcode: params.qrCode,
+        convite_url: params.ticketUrl,
+      };
+      subject = replaceVariables(customTemplate.subject, variables);
+      html = replaceVariables(customTemplate.htmlBody, variables);
+    } else {
+      // Usar template padrão
+      subject = `✅ Inscrição Confirmada - ${params.eventTitle}`;
+      html = getConfirmationEmailTemplate({
+        participantName: params.participantName,
+        eventTitle: params.eventTitle,
+        eventDate: params.eventDate,
+        eventAddress: params.eventAddress,
+        ticketUrl: params.ticketUrl,
+      });
+    }
+
+    // 3. Criar log de email
+    const logId = await db.createEmailLog({
+      eventId: params.eventId,
+      registrationId: params.registrationId,
+      templateType: 'confirmation',
+      recipient: params.recipientEmail,
+      subject,
+      status: 'pending',
+    });
+
+    // 4. Enviar email usando o provedor configurado
+    const success = await sendEmailWithProvider({
+      to: params.recipientEmail,
+      subject,
+      html,
+      config: emailConfig,
+    });
+
+    // 5. Atualizar log
+    await db.updateEmailLog(logId, {
+      status: success ? 'sent' : 'failed',
+      sentAt: success ? new Date() : undefined,
+      error: success ? undefined : 'Falha ao enviar email',
+    });
+
+    console.log(`[Email Service] E-mail de confirmação ${success ? 'enviado' : 'falhou'} para ${params.recipientEmail}`);
+    return success;
+  } catch (error) {
+    console.error('[Email Service] Erro ao enviar e-mail de confirmação:', error);
+    return false;
+  }
+}
+
+/**
+ * Envia e-mail de "Aguardando Aprovação" para eventos que requerem aprovação
+ */
+export async function sendPendingEmail(params: {
+  eventId: number;
+  registrationId: number;
+  recipientEmail: string;
+  participantName: string;
+  eventTitle: string;
+  eventDate: string;
+}): Promise<boolean> {
+  try {
+    const emailConfig = await db.getActiveEmailSetting();
+    if (!emailConfig || emailConfig.enabled !== 1) {
+      console.log('[Email Service] Configurações de email não encontradas ou desativadas');
+      return false;
+    }
+
+    // Tentar buscar template personalizado
+    const customTemplate = await db.getEmailTemplateByEventAndType(params.eventId, 'pending');
+    
+    let subject: string;
+    let html: string;
+
+    if (customTemplate && customTemplate.enabled === 1) {
+      const variables = {
+        nome: params.participantName,
+        email: params.recipientEmail,
+        evento: params.eventTitle,
+        data: params.eventDate,
+        local: '',
+      };
+      subject = replaceVariables(customTemplate.subject, variables);
+      html = replaceVariables(customTemplate.htmlBody, variables);
+    } else {
+      // Template padrão
+      subject = `⏳ Inscrição Recebida - ${params.eventTitle}`;
+      html = `<h2>Olá, ${params.participantName}!</h2>
+<p>Sua inscrição para o evento <strong>${params.eventTitle}</strong> foi recebida com sucesso!</p>
+<p><strong>Data do evento:</strong> ${params.eventDate}</p>
+<p>Sua inscrição está <strong>aguardando aprovação</strong> do organizador.</p>
+<p>Você receberá um e-mail assim que sua inscrição for analisada.</p>
+<p>Obrigado pelo interesse!</p>`;
+    }
+
+    const logId = await db.createEmailLog({
+      eventId: params.eventId,
+      registrationId: params.registrationId,
+      templateType: 'pending',
+      recipient: params.recipientEmail,
+      subject,
+      status: 'pending',
+    });
+
+    const success = await sendEmailWithProvider({
+      to: params.recipientEmail,
+      subject,
+      html,
+      config: emailConfig,
+    });
+
+    await db.updateEmailLog(logId, {
+      status: success ? 'sent' : 'failed',
+      sentAt: success ? new Date() : undefined,
+      error: success ? undefined : 'Falha ao enviar email',
+    });
+
+    console.log(`[Email Service] E-mail de aguardando aprovação ${success ? 'enviado' : 'falhou'} para ${params.recipientEmail}`);
+    return success;
+  } catch (error) {
+    console.error('[Email Service] Erro ao enviar e-mail de aguardando aprovação:', error);
+    return false;
+  }
+}
+
+/**
+ * Envia e-mail de aprovação com link do ingresso
+ */
+export async function sendApprovalEmail(params: {
+  eventId: number;
+  registrationId: number;
+  recipientEmail: string;
+  participantName: string;
+  eventTitle: string;
+  eventDate: string;
+  eventAddress?: string;
+  ticketUrl: string;
+  qrCode: string;
+}): Promise<boolean> {
+  try {
+    const emailConfig = await db.getActiveEmailSetting();
+    if (!emailConfig || emailConfig.enabled !== 1) {
+      console.log('[Email Service] Configurações de email não encontradas ou desativadas');
+      return false;
+    }
+
+    // Tentar buscar template personalizado
+    const customTemplate = await db.getEmailTemplateByEventAndType(params.eventId, 'approval');
+    
+    let subject: string;
+    let html: string;
+
+    if (customTemplate && customTemplate.enabled === 1) {
+      const variables = {
+        nome: params.participantName,
+        email: params.recipientEmail,
+        evento: params.eventTitle,
+        data: params.eventDate,
+        local: params.eventAddress || '',
+        qrcode: params.qrCode,
+        convite_url: params.ticketUrl,
+      };
+      subject = replaceVariables(customTemplate.subject, variables);
+      html = replaceVariables(customTemplate.htmlBody, variables);
+    } else {
+      // Template padrão
+      subject = `✅ Inscrição Aprovada - ${params.eventTitle}`;
+      html = getApprovalEmailTemplate({
+        participantName: params.participantName,
+        eventTitle: params.eventTitle,
+        eventDate: params.eventDate,
+        eventAddress: params.eventAddress,
+        ticketUrl: params.ticketUrl,
+      });
+    }
+
+    const logId = await db.createEmailLog({
+      eventId: params.eventId,
+      registrationId: params.registrationId,
+      templateType: 'approval',
+      recipient: params.recipientEmail,
+      subject,
+      status: 'pending',
+    });
+
+    const success = await sendEmailWithProvider({
+      to: params.recipientEmail,
+      subject,
+      html,
+      config: emailConfig,
+    });
+
+    await db.updateEmailLog(logId, {
+      status: success ? 'sent' : 'failed',
+      sentAt: success ? new Date() : undefined,
+      error: success ? undefined : 'Falha ao enviar email',
+    });
+
+    console.log(`[Email Service] E-mail de aprovação ${success ? 'enviado' : 'falhou'} para ${params.recipientEmail}`);
+    return success;
+  } catch (error) {
+    console.error('[Email Service] Erro ao enviar e-mail de aprovação:', error);
+    return false;
+  }
+}
+
+/**
+ * Envia e-mail de rejeição
+ */
+export async function sendRejectionEmail(params: {
+  eventId: number;
+  registrationId: number;
+  recipientEmail: string;
+  participantName: string;
+  eventTitle: string;
+}): Promise<boolean> {
+  try {
+    const emailConfig = await db.getActiveEmailSetting();
+    if (!emailConfig || emailConfig.enabled !== 1) {
+      console.log('[Email Service] Configurações de email não encontradas ou desativadas');
+      return false;
+    }
+
+    // Tentar buscar template personalizado
+    const customTemplate = await db.getEmailTemplateByEventAndType(params.eventId, 'rejection');
+    
+    let subject: string;
+    let html: string;
+
+    if (customTemplate && customTemplate.enabled === 1) {
+      const variables = {
+        nome: params.participantName,
+        email: params.recipientEmail,
+        evento: params.eventTitle,
+        data: '',
+        local: '',
+      };
+      subject = replaceVariables(customTemplate.subject, variables);
+      html = replaceVariables(customTemplate.htmlBody, variables);
+    } else {
+      // Template padrão
+      subject = `Inscrição Não Aprovada - ${params.eventTitle}`;
+      html = getRejectionEmailTemplate({
+        participantName: params.participantName,
+        eventTitle: params.eventTitle,
+      });
+    }
+
+    const logId = await db.createEmailLog({
+      eventId: params.eventId,
+      registrationId: params.registrationId,
+      templateType: 'rejection',
+      recipient: params.recipientEmail,
+      subject,
+      status: 'pending',
+    });
+
+    const success = await sendEmailWithProvider({
+      to: params.recipientEmail,
+      subject,
+      html,
+      config: emailConfig,
+    });
+
+    await db.updateEmailLog(logId, {
+      status: success ? 'sent' : 'failed',
+      sentAt: success ? new Date() : undefined,
+      error: success ? undefined : 'Falha ao enviar email',
+    });
+
+    console.log(`[Email Service] E-mail de rejeição ${success ? 'enviado' : 'falhou'} para ${params.recipientEmail}`);
+    return success;
+  } catch (error) {
+    console.error('[Email Service] Erro ao enviar e-mail de rejeição:', error);
+    return false;
+  }
+}
