@@ -552,7 +552,12 @@ export const appRouter = router({
         registrationId: z.number(),
       }))
       .mutation(async ({ ctx, input }) => {
+        console.log('[resendInvite] ========== INICIANDO REENVIO ==========');
+        console.log('[resendInvite] registrationId:', input.registrationId);
+        console.log('[resendInvite] user:', ctx.user?.id, ctx.user?.name);
+        
         const registration = await db.getRegistrationById(input.registrationId);
+        console.log('[resendInvite] registration encontrada:', registration ? 'SIM' : 'NÃO');
         if (!registration) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Registration not found' });
         }
@@ -573,13 +578,67 @@ export const appRouter = router({
         // Preparar dados para envio de e-mail
         const baseUrl = ENV.customDomain ? `https://${ENV.customDomain}` : (ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000');
         const ticketUrl = `${baseUrl}/ticket/${registration.qrCode}`;
-        const eventDateObj = new Date(event.eventDate + ':00');
-        const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+        
+        // Parsing robusto da data do evento
+        let eventDate: string;
+        try {
+          // Se já é um objeto Date
+          const eventDateValue = event.eventDate as unknown;
+          if (eventDateValue instanceof Date) {
+            eventDate = format(eventDateValue, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+          } else {
+            // Se é string, tentar diferentes formatos
+            const dateStr = String(event.eventDate);
+            let eventDateObj: Date;
+            
+            // Formato ISO: 2026-02-04T08:00:00
+            if (dateStr.includes('T')) {
+              eventDateObj = new Date(dateStr);
+            }
+            // Formato: 2026-02-04 08:00
+            else if (dateStr.includes(' ')) {
+              eventDateObj = new Date(dateStr.replace(' ', 'T') + ':00');
+            }
+            // Formato: 2026-02-04T08:00 (sem segundos)
+            else if (dateStr.length === 16) {
+              eventDateObj = new Date(dateStr + ':00');
+            }
+            // Outros formatos
+            else {
+              eventDateObj = new Date(dateStr);
+            }
+            
+            // Verificar se a data é válida
+            if (isNaN(eventDateObj.getTime())) {
+              console.error('[resendInvite] Data inválida:', dateStr);
+              eventDate = dateStr; // Usar string original como fallback
+            } else {
+              eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+            }
+          }
+        } catch (dateError) {
+          console.error('[resendInvite] Erro ao formatar data:', dateError);
+          eventDate = String(event.eventDate); // Fallback para string original
+        }
         const [address] = event.address?.split('|') || [];
 
         // Enviar e-mail de aprovação (convite)
+        console.log('[resendInvite] Preparando envio de email...');
+        console.log('[resendInvite] Dados:', {
+          eventId: registration.eventId,
+          registrationId: input.registrationId,
+          recipientEmail: registration.email,
+          participantName: registration.name,
+          eventTitle: event.title,
+          eventDate,
+          eventAddress: address,
+          ticketUrl,
+          qrCode: registration.qrCode,
+        });
+        
         try {
-          await sendApprovalEmail({
+          console.log('[resendInvite] Chamando sendApprovalEmail...');
+          const emailResult = await sendApprovalEmail({
             eventId: registration.eventId,
             registrationId: input.registrationId,
             recipientEmail: registration.email,
@@ -590,6 +649,7 @@ export const appRouter = router({
             ticketUrl,
             qrCode: registration.qrCode || '',
           });
+          console.log('[resendInvite] Resultado sendApprovalEmail:', emailResult);
 
           // Incrementar contador e atualizar data do último envio
           const currentCount = (registration as any).emailSentCount || 0;

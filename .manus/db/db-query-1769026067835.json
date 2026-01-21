@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, title, eventDate, registrationType, status, visibility, userId, createdAt FROM events ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, title, eventDate, registrationType, status, visibility, userId, createdAt FROM events ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "90009",
+      "title": "Conversa de Padaria",
+      "eventDate": "2026-02-04T08:00:00",
+      "registrationType": "approval",
+      "status": "published",
+      "visibility": "public",
+      "userId": "90125",
+      "createdAt": "2026-01-21 18:57:50"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\teventDate\tregistrationType\tstatus\tvisibility\tuserId\tcreatedAt\n90009\tConversa de Padaria\t2026-02-04T08:00:00\tapproval\tpublished\tpublic\t90125\t2026-01-21 18:57:50\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

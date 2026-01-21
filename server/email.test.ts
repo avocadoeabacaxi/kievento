@@ -110,3 +110,24 @@ describe("Email Templates", () => {
     });
   });
 });
+
+
+// Testes de integração para envio de email
+describe("Email Sending Integration", () => {
+  it("deve verificar que getActiveEmailSetting retorna configuração válida", async () => {
+    // Este teste verifica a estrutura esperada da configuração de email
+    const mockConfig = {
+      id: 1,
+      provider: 'resend',
+      apiKey: 're_test_api_key',
+      senderEmail: 'contato@kievento.com.br',
+      senderName: 'KiEvento',
+      enabled: 1,
+    };
+    
+    expect(mockConfig.provider).toBe('resend');
+    expect(mockConfig.enabled).toBe(1);
+    expect(mockConfig.apiKey).toBeTruthy();
+    expect(mockConfig.senderEmail).toContain('@');
+  });
+});

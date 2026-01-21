@@ -845,3 +845,17 @@
 - [x] Adicionar atualização do contador emailSentCount no envio em massa
 - [x] Configurar Resend como provedor de e-mail unificado
 - [x] Configurar remetente como KiEvento <contato@kievento.com.br>
+
+
+## URGENTE: Botão Enviar Não Envia E-mail (Jan 2026)
+- [ ] Investigar por que o botão fica "Pendente" mas não envia e-mail
+- [ ] Verificar logs de erro no servidor
+- [ ] Corrigir problema de envio com Resend
+
+
+## Bug Fix - Envio de E-mails (21/01/2026)
+- [x] Corrigido erro "Invalid time value" no parsing de data do evento
+- [x] Implementado parsing robusto de data suportando múltiplos formatos (ISO, com espaço, sem segundos)
+- [x] Adicionado fallback para formatos de data inválidos
+- [x] Criado teste unitário para validar parsing de datas (date-parsing.test.ts)
+- [x] Testado envio de e-mail via interface - funcionando corretamente

@@ -1,0 +1,29 @@
+{
+  "query": "SELECT * FROM emailSettings;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT * FROM emailSettings;",
+  "rows": [
+    {
+      "id": "1",
+      "provider": "resend",
+      "smtpHost": "",
+      "smtpPort": "587",
+      "smtpUser": "",
+      "smtpPassword": "",
+      "smtpSecure": "1",
+      "apiKey": "re_5rGt5Qe4_JpKap8qTQEQ6hu612nwB8GLU",
+      "awsRegion": "",
+      "awsAccessKey": "",
+      "awsSecretKey": "",
+      "senderEmail": "contato@kievento.com.br",
+      "senderName": "KiEvento",
+      "replyToEmail": "contato@kievento.com.br",
+      "enabled": "1",
+      "createdAt": "2026-01-21 03:59:22",
+      "updatedAt": "2026-01-21 19:51:15"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tprovider\tsmtpHost\tsmtpPort\tsmtpUser\tsmtpPassword\tsmtpSecure\tapiKey\tawsRegion\tawsAccessKey\tawsSecretKey\tsenderEmail\tsenderName\treplyToEmail\tenabled\tcreatedAt\tupdatedAt\n1\tresend\t\t587\t\t\t1\tre_5rGt5Qe4_JpKap8qTQEQ6hu612nwB8GLU\t\t\t\tcontato@kievento.com.br\tKiEvento\tcontato@kievento.com.br\t1\t2026-01-21 03:59:22\t2026-01-21 19:51:15\n",
+  "stderr": "",
+  "execution_time_ms": 75
+}

@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id, name, email, status, eventId, qrCode, emailSentCount FROM registrations WHERE eventId = 90009;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, name, email, status, eventId, qrCode, emailSentCount FROM registrations WHERE eventId = 90009;",
+  "rows": [
+    {
+      "id": "90047",
+      "name": "FERNANDO GONCALVES DE MATOS MACHADO",
+      "email": "fernando@avocado.buzz",
+      "status": "approved",
+      "eventId": "90009",
+      "qrCode": "uXexmEqMy-_8INme",
+      "emailSentCount": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tstatus\teventId\tqrCode\temailSentCount\n90047\tFERNANDO GONCALVES DE MATOS MACHADO\tfernando@avocado.buzz\tapproved\t90009\tuXexmEqMy-_8INme\t0\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

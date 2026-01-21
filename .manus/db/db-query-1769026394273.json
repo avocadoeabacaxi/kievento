@@ -1,0 +1,37 @@
+{
+  "query": "SELECT id, recipient, subject, status, error, sentAt, createdAt FROM emailLogs ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, recipient, subject, status, error, sentAt, createdAt FROM emailLogs ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "3",
+      "recipient": "fernando@avocado.buzz",
+      "subject": "⏳ Inscrição Recebida - Conversa de Padaria",
+      "status": "sent",
+      "error": "NULL",
+      "sentAt": "2026-01-21 19:00:23",
+      "createdAt": "2026-01-21 19:00:22"
+    },
+    {
+      "id": "2",
+      "recipient": "fernando@avocado.buzz",
+      "subject": "✅ Inscrição Confirmada - Evento Teste Email",
+      "status": "sent",
+      "error": "NULL",
+      "sentAt": "2026-01-21 11:22:32",
+      "createdAt": "2026-01-21 11:22:31"
+    },
+    {
+      "id": "1",
+      "recipient": "firnando@gmail.com",
+      "subject": "✅ Inscrição Confirmada - Teste de Horário Literal",
+      "status": "sent",
+      "error": "NULL",
+      "sentAt": "2026-01-21 11:20:31",
+      "createdAt": "2026-01-21 11:20:29"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\trecipient\tsubject\tstatus\terror\tsentAt\tcreatedAt\n3\tfernando@avocado.buzz\t⏳ Inscrição Recebida - Conversa de Padaria\tsent\tNULL\t2026-01-21 19:00:23\t2026-01-21 19:00:22\n2\tfernando@avocado.buzz\t✅ Inscrição Confirmada - Evento Teste Email\tsent\tNULL\t2026-01-21 11:22:32\t2026-01-21 11:22:31\n1\tfirnando@gmail.com\t✅ Inscrição Confirmada - Teste de Horário Literal\tsent\tNULL\t2026-01-21 11:20:31\t2026-01-21 11:20:29\n",
+  "stderr": "",
+  "execution_time_ms": 48
+}

@@ -170,10 +170,13 @@ async function sendEmailWithProvider(params: {
 }): Promise<boolean> {
   const { to, subject, html, config, attachments } = params;
 
-  console.log('[Email Service] Enviando email:');
-  console.log('Para:', to);
-  console.log('Assunto:', subject);
-  console.log('Provedor:', config.provider);
+  console.log('[Email Service] ========== sendEmailWithProvider ==========');
+  console.log('[Email Service] Para:', to);
+  console.log('[Email Service] Assunto:', subject);
+  console.log('[Email Service] Provedor:', config.provider);
+  console.log('[Email Service] API Key (primeiros 10 chars):', config.apiKey?.substring(0, 10) + '...');
+  console.log('[Email Service] Sender Email:', config.senderEmail);
+  console.log('[Email Service] Sender Name:', config.senderName);
 
   try {
     switch (config.provider) {
@@ -294,9 +297,11 @@ async function sendWithResend(params: {
   config: any;
   attachments?: Array<{ filename: string; content: Buffer; contentType: string }>;
 }): Promise<boolean> {
+  console.log('[Email Service] ========== sendWithResend ==========');
   const { Resend } = await import('resend');
   const { to, subject, html, config, attachments } = params;
 
+  console.log('[Email Service] Criando instância Resend com API Key:', config.apiKey?.substring(0, 15) + '...');
   const resend = new Resend(config.apiKey);
 
   const emailData: any = {
@@ -582,12 +587,21 @@ export async function sendApprovalEmail(params: {
   ticketUrl: string;
   qrCode: string;
 }): Promise<boolean> {
+  console.log('[Email Service] ========== INICIANDO sendApprovalEmail ==========');
+  console.log('[Email Service] Params:', JSON.stringify(params, null, 2));
+  
   try {
+    console.log('[Email Service] Buscando configurações de email...');
     const emailConfig = await db.getActiveEmailSetting();
+    console.log('[Email Service] emailConfig encontrado:', emailConfig ? 'SIM' : 'NÃO');
+    console.log('[Email Service] emailConfig.enabled:', emailConfig?.enabled);
+    
     if (!emailConfig || emailConfig.enabled !== 1) {
       console.log('[Email Service] Configurações de email não encontradas ou desativadas');
       return false;
     }
+    
+    console.log('[Email Service] Configuração de email OK - Provider:', emailConfig.provider);
 
     // Tentar buscar template personalizado
     const customTemplate = await db.getEmailTemplateByEventAndType(params.eventId, 'approval');
