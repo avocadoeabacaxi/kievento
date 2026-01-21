@@ -190,10 +190,22 @@ export const appRouter = router({
         eventDate: z.string().optional(),
         registrationDeadline: z.string().optional(),
         address: z.string().optional(),
+        addressLink: z.string().optional(),
+        category: z.string().optional(),
+        city: z.string().optional(),
+        visibility: z.enum(['private', 'public']).optional(),
         registrationType: z.enum(['open', 'approval']).optional(),
         status: z.enum(['draft', 'published']).optional(),
         bannerBase64: z.string().optional(),
         cardImageBase64: z.string().optional(),
+        faq: z.string().optional(),
+        formFields: z.array(z.object({
+          label: z.string(),
+          fieldType: z.string(),
+          required: z.boolean(),
+          order: z.number(),
+          options: z.string().optional(),
+        })).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const event = await db.getEventById(input.eventId);
@@ -220,8 +232,13 @@ export const appRouter = router({
             : input.registrationDeadline;
         }
         if (input.address !== undefined) updateData.address = input.address;
+        if (input.addressLink !== undefined) updateData.addressLink = input.addressLink;
+        if (input.category !== undefined) updateData.category = input.category;
+        if (input.city !== undefined) updateData.city = input.city;
+        if (input.visibility !== undefined) updateData.visibility = input.visibility;
         if (input.registrationType) updateData.registrationType = input.registrationType;
         if (input.status) updateData.status = input.status;
+        if (input.faq !== undefined) updateData.faq = input.faq;
 
         if (input.bannerBase64) {
           const base64Data = input.bannerBase64.replace(/^data:image\/\w+;base64,/, '');

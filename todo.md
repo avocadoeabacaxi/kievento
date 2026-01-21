@@ -754,3 +754,5 @@
 - [x] Testar com novo evento - Usuário deve criar NOVO evento para validar
 
 - [x] Corrigir erro "toISOString is not a function" ao criar eventos - backend tentando converter string para ISO
+
+- [x] Corrigir perda de dados ao editar evento - data/hora, categoria, cidade e visibilidade voltam para padrão

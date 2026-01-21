@@ -172,8 +172,9 @@ export default function CreateEvent() {
     if (existingEvent) {
       setTitle(existingEvent.title);
       setDescription(existingEvent.description || "");
-      setEventDate(new Date(existingEvent.eventDate).toISOString().slice(0, 16));
-      setRegistrationDeadline(existingEvent.registrationDeadline ? new Date(existingEvent.registrationDeadline).toISOString().slice(0, 16) : "");
+      // Usar string diretamente sem conversão (já está no formato ISO)
+      setEventDate(existingEvent.eventDate.slice(0, 16)); // Remove segundos se existir
+      setRegistrationDeadline(existingEvent.registrationDeadline ? existingEvent.registrationDeadline.slice(0, 16) : "");
       setAddress(existingEvent.address || "");
       setAddressLink(existingEvent.addressLink || "");
       setCategory(existingEvent.category || "");
