@@ -803,3 +803,10 @@
   - [x] Atualizar routers.ts para salvar campos condicionais
   - [x] Atualizar CreateEvent.tsx para configurar campos condicionais
   - [x] Atualizar RegisterPage.tsx para mostrar campo condicional quando ativado
+
+## Refatoração: Interface de Opções do Campo Select (Jan 2026)
+- [x] Mudar de "separado por vírgula" para adicionar opções individualmente
+- [x] Cada opção tem checkbox para ativar campo condicional
+- [x] Campo de texto para a pergunta condicional ao lado do checkbox
+- [x] Atualizar RegisterPage para suportar novo formato
+- [x] Manter compatibilidade com formato antigo (string separada por vírgula)

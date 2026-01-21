@@ -23,14 +23,21 @@ import { EventEmailSettings } from "@/components/EventEmailSettings";
 
 type FormFieldType = "text" | "email" | "phone" | "textarea" | "select" | "checkbox" | "cpf" | "cnpj" | "cep";
 
+type SelectOption = {
+  value: string;
+  hasConditional: boolean;
+  conditionalLabel?: string;
+};
+
 type FormField = {
   label: string;
   fieldType: FormFieldType;
-  options?: string;
+  options?: string; // Para compatibilidade: string separada por vírgula OU JSON de SelectOption[]
   required: boolean;
   order: number;
-  conditionalTrigger?: string; // Opção que ativa campo condicional (ex: "Sim")
-  conditionalLabel?: string; // Label do campo condicional (ex: "Qual restrição?")
+  conditionalTrigger?: string; // Mantém para compatibilidade
+  conditionalLabel?: string; // Mantém para compatibilidade
+  selectOptions?: SelectOption[]; // Novo formato: array de opções com configuração individual
 };
 
 export default function CreateEvent() {
@@ -190,15 +197,35 @@ export default function CreateEvent() {
         setCardImagePreview(existingEvent.cardImageUrl);
       }
       if (existingEvent.formFields) {
-        setFormFields(existingEvent.formFields.map(f => ({
-          label: f.label,
-          fieldType: f.fieldType,
-          options: f.options || undefined,
-          required: f.required === 1,
-          order: f.order,
-          conditionalTrigger: f.conditionalTrigger || undefined,
-          conditionalLabel: f.conditionalLabel || undefined,
-        })));
+        setFormFields(existingEvent.formFields.map(f => {
+          // Tentar parsear options como JSON (novo formato) ou manter como string (formato antigo)
+          let selectOptions: SelectOption[] | undefined;
+          if (f.options) {
+            try {
+              const parsed = JSON.parse(f.options);
+              if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object') {
+                selectOptions = parsed as SelectOption[];
+              }
+            } catch {
+              // Formato antigo: string separada por vírgula - converter para novo formato
+              selectOptions = f.options.split(',').map(opt => ({
+                value: opt.trim(),
+                hasConditional: opt.trim() === f.conditionalTrigger,
+                conditionalLabel: opt.trim() === f.conditionalTrigger ? (f.conditionalLabel || undefined) : undefined,
+              }));
+            }
+          }
+          return {
+            label: f.label,
+            fieldType: f.fieldType,
+            options: f.options || undefined,
+            required: f.required === 1,
+            order: f.order,
+            conditionalTrigger: f.conditionalTrigger || undefined,
+            conditionalLabel: f.conditionalLabel || undefined,
+            selectOptions,
+          };
+        }));
       }
       if (existingEvent.faq) {
         try {
@@ -305,10 +332,17 @@ export default function CreateEvent() {
       bannerBase64: bannerBase64 || undefined,
       cardImageBase64: cardImageBase64 || undefined,
       faq: faqItems.length > 0 ? JSON.stringify(faqItems.filter(item => item.question && item.answer)) : undefined,
-      formFields: formFields.map((f) => ({
-        ...f,
-        options: f.options || undefined,
-      })),
+      formFields: formFields.map((f) => {
+        // Converter selectOptions para formato de string para salvar no banco
+        let optionsStr = f.options;
+        if (f.selectOptions && f.selectOptions.length > 0) {
+          optionsStr = JSON.stringify(f.selectOptions);
+        }
+        return {
+          ...f,
+          options: optionsStr || undefined,
+        };
+      }),
     };
 
     if (isEditing) {
@@ -628,52 +662,92 @@ export default function CreateEvent() {
                     </div>
 
                     {(field.fieldType === "select" || field.fieldType === "checkbox") && (
-                      <div className="space-y-2">
-                        <Label>Opções (separadas por vírgula)</Label>
-                        <Input
-                          value={field.options || ""}
-                          onChange={(e) => updateFormField(index, { options: e.target.value })}
-                          placeholder="Opção 1, Opção 2, Opção 3"
-                        />
-                      </div>
-                    )}
-
-                    {/* Campo Condicional - aparece apenas para campos do tipo select */}
-                    {field.fieldType === "select" && field.options && (
-                      <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                        <Label className="text-blue-700 font-medium">Campo Condicional (Opcional)</Label>
-                        <p className="text-sm text-blue-600 mb-3">Quando o usuário selecionar uma opção específica, um campo adicional aparecerá para ele preencher.</p>
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Opção que ativa o campo</Label>
-                            <Select
-                              value={field.conditionalTrigger || ""}
-                              onValueChange={(v) => updateFormField(index, { conditionalTrigger: v === "none" ? undefined : v })}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Nenhum" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="none">Nenhum (desativado)</SelectItem>
-                                {field.options.split(",").map((option, idx) => (
-                                  <SelectItem key={idx} value={option.trim()}>
-                                    {option.trim()}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          {field.conditionalTrigger && (
-                            <div className="space-y-2">
-                              <Label>Pergunta do campo adicional</Label>
-                              <Input
-                                value={field.conditionalLabel || ""}
-                                onChange={(e) => updateFormField(index, { conditionalLabel: e.target.value })}
-                                placeholder="Ex: Qual restrição alimentar?"
-                              />
-                            </div>
-                          )}
+                      <div className="space-y-3 mt-4">
+                        <div className="flex items-center justify-between">
+                          <Label className="font-medium">Opções de Resposta</Label>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const currentOptions = field.selectOptions || [];
+                              updateFormField(index, {
+                                selectOptions: [...currentOptions, { value: "", hasConditional: false }]
+                              });
+                            }}
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Adicionar Opção
+                          </Button>
                         </div>
+                        
+                        {(field.selectOptions || []).map((opt, optIdx) => (
+                          <div key={optIdx} className="p-3 border rounded-lg bg-gray-50 space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Input
+                                value={opt.value}
+                                onChange={(e) => {
+                                  const newOptions = [...(field.selectOptions || [])];
+                                  newOptions[optIdx] = { ...newOptions[optIdx], value: e.target.value };
+                                  updateFormField(index, { selectOptions: newOptions });
+                                }}
+                                placeholder={`Opção ${optIdx + 1}`}
+                                className="flex-1"
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  const newOptions = (field.selectOptions || []).filter((_, i) => i !== optIdx);
+                                  updateFormField(index, { selectOptions: newOptions });
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </div>
+                            
+                            {field.fieldType === "select" && (
+                              <div className="flex items-start gap-3 pl-2">
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Checkbox
+                                    id={`conditional-${index}-${optIdx}`}
+                                    checked={opt.hasConditional}
+                                    onCheckedChange={(checked) => {
+                                      const newOptions = [...(field.selectOptions || [])];
+                                      newOptions[optIdx] = { 
+                                        ...newOptions[optIdx], 
+                                        hasConditional: checked as boolean,
+                                        conditionalLabel: checked ? newOptions[optIdx].conditionalLabel : undefined
+                                      };
+                                      updateFormField(index, { selectOptions: newOptions });
+                                    }}
+                                  />
+                                  <Label htmlFor={`conditional-${index}-${optIdx}`} className="text-sm text-gray-600 cursor-pointer">
+                                    Ativar campo condicional
+                                  </Label>
+                                </div>
+                                
+                                {opt.hasConditional && (
+                                  <Input
+                                    value={opt.conditionalLabel || ""}
+                                    onChange={(e) => {
+                                      const newOptions = [...(field.selectOptions || [])];
+                                      newOptions[optIdx] = { ...newOptions[optIdx], conditionalLabel: e.target.value };
+                                      updateFormField(index, { selectOptions: newOptions });
+                                    }}
+                                    placeholder="Pergunta adicional (ex: Qual restrição?)"
+                                    className="flex-1"
+                                  />
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        
+                        {(field.selectOptions || []).length === 0 && (
+                          <p className="text-sm text-gray-500 italic">Clique em "Adicionar Opção" para criar as opções de resposta</p>
+                        )}
                       </div>
                     )}
                   </div>

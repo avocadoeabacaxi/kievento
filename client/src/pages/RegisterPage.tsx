@@ -600,73 +600,126 @@ export default function RegisterPage() {
                       />
                     )}
 
-                    {field.fieldType === "select" && field.options && (
-                      <>
-                        <Select
-                          value={formData[field.label] || ""}
-                          onValueChange={(value) => setFormData({ ...formData, [field.label]: value })}
-                          required={field.required === 1}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione uma opção" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {field.options.split(",").map((option, idx) => (
-                              <SelectItem key={idx} value={option.trim()}>
-                                {option.trim()}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        
-                        {/* Campo Condicional - aparece quando a opção trigger é selecionada */}
-                        {field.conditionalTrigger && 
-                         field.conditionalLabel && 
-                         formData[field.label] === field.conditionalTrigger && (
-                          <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
-                            <Label htmlFor={`field-${field.id}-conditional`} className="text-amber-800">
-                              {field.conditionalLabel}
-                              <span className="text-destructive ml-1">*</span>
-                            </Label>
-                            <Input
-                              id={`field-${field.id}-conditional`}
-                              type="text"
-                              className="mt-2"
-                              value={formData[`${field.label}_condicional`] || ""}
-                              onChange={(e) => setFormData({ ...formData, [`${field.label}_condicional`]: e.target.value })}
-                              required
-                              placeholder="Digite sua resposta..."
-                            />
-                          </div>
-                        )}
-                      </>
-                    )}
+                    {field.fieldType === "select" && field.options && (() => {
+                      // Parsear opções - suporta formato antigo (string) e novo (JSON)
+                      let selectOptions: { value: string; hasConditional?: boolean; conditionalLabel?: string }[] = [];
+                      try {
+                        const parsed = JSON.parse(field.options);
+                        if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object') {
+                          selectOptions = parsed;
+                        } else {
+                          selectOptions = field.options.split(',').map(opt => ({ value: opt.trim() }));
+                        }
+                      } catch {
+                        selectOptions = field.options.split(',').map(opt => ({ value: opt.trim() }));
+                      }
+                      
+                      // Encontrar opção selecionada para verificar campo condicional
+                      const selectedOption = selectOptions.find(opt => opt.value === formData[field.label]);
+                      
+                      return (
+                        <>
+                          <Select
+                            value={formData[field.label] || ""}
+                            onValueChange={(value) => setFormData({ ...formData, [field.label]: value })}
+                            required={field.required === 1}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione uma opção" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {selectOptions.map((opt, idx) => (
+                                <SelectItem key={idx} value={opt.value}>
+                                  {opt.value}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          
+                          {/* Campo Condicional - aparece quando a opção selecionada tem condicional ativo */}
+                          {selectedOption?.hasConditional && selectedOption?.conditionalLabel && (
+                            <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                              <Label htmlFor={`field-${field.id}-conditional`} className="text-amber-800">
+                                {selectedOption.conditionalLabel}
+                                <span className="text-destructive ml-1">*</span>
+                              </Label>
+                              <Input
+                                id={`field-${field.id}-conditional`}
+                                type="text"
+                                className="mt-2"
+                                value={formData[`${field.label}_condicional`] || ""}
+                                onChange={(e) => setFormData({ ...formData, [`${field.label}_condicional`]: e.target.value })}
+                                required
+                                placeholder="Digite sua resposta..."
+                              />
+                            </div>
+                          )}
+                          
+                          {/* Compatibilidade com formato antigo */}
+                          {!selectedOption?.hasConditional && 
+                           field.conditionalTrigger && 
+                           field.conditionalLabel && 
+                           formData[field.label] === field.conditionalTrigger && (
+                            <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                              <Label htmlFor={`field-${field.id}-conditional-legacy`} className="text-amber-800">
+                                {field.conditionalLabel}
+                                <span className="text-destructive ml-1">*</span>
+                              </Label>
+                              <Input
+                                id={`field-${field.id}-conditional-legacy`}
+                                type="text"
+                                className="mt-2"
+                                value={formData[`${field.label}_condicional`] || ""}
+                                onChange={(e) => setFormData({ ...formData, [`${field.label}_condicional`]: e.target.value })}
+                                required
+                                placeholder="Digite sua resposta..."
+                              />
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
 
-                    {field.fieldType === "checkbox" && field.options && (
-                      <div className="space-y-2">
-                        {field.options.split(",").map((option, idx) => (
-                          <div key={idx} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`${field.id}-${idx}`}
-                              checked={formData[field.label]?.includes(option.trim())}
-                              onCheckedChange={(checked) => {
-                                const current = formData[field.label] || [];
-                                const updated = checked
-                                  ? [...current, option.trim()]
-                                  : current.filter((v: string) => v !== option.trim());
-                                setFormData({ ...formData, [field.label]: updated });
-                              }}
-                            />
-                            <label
-                              htmlFor={`${field.id}-${idx}`}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                              {option.trim()}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {field.fieldType === "checkbox" && field.options && (() => {
+                      // Parsear opções - suporta formato antigo (string) e novo (JSON)
+                      let checkboxOptions: { value: string }[] = [];
+                      try {
+                        const parsed = JSON.parse(field.options);
+                        if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object') {
+                          checkboxOptions = parsed;
+                        } else {
+                          checkboxOptions = field.options.split(',').map(opt => ({ value: opt.trim() }));
+                        }
+                      } catch {
+                        checkboxOptions = field.options.split(',').map(opt => ({ value: opt.trim() }));
+                      }
+                      
+                      return (
+                        <div className="space-y-2">
+                          {checkboxOptions.map((opt, idx) => (
+                            <div key={idx} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`${field.id}-${idx}`}
+                                checked={formData[field.label]?.includes(opt.value)}
+                                onCheckedChange={(checked) => {
+                                  const current = formData[field.label] || [];
+                                  const updated = checked
+                                    ? [...current, opt.value]
+                                    : current.filter((v: string) => v !== opt.value);
+                                  setFormData({ ...formData, [field.label]: updated });
+                                }}
+                              />
+                              <label
+                                htmlFor={`${field.id}-${idx}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {opt.value}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                 ))}
 
