@@ -56,6 +56,8 @@ export const appRouter = router({
           options: z.string().optional(),
           required: z.boolean(),
           order: z.number(),
+          conditionalTrigger: z.string().optional(), // Opção que ativa campo condicional
+          conditionalLabel: z.string().optional(), // Label do campo condicional
         })).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -123,9 +125,11 @@ export const appRouter = router({
               eventId: Number(eventId),
               label: field.label,
               fieldType: field.fieldType,
-              options: field.options,
+              options: field.options || null,
               required: field.required ? 1 : 0,
               order: field.order,
+              conditionalTrigger: field.conditionalTrigger || null,
+              conditionalLabel: field.conditionalLabel || null,
             });
           }
         }
@@ -205,6 +209,8 @@ export const appRouter = router({
           required: z.boolean(),
           order: z.number(),
           options: z.string().optional(),
+          conditionalTrigger: z.string().optional(), // Opção que ativa campo condicional
+          conditionalLabel: z.string().optional(), // Label do campo condicional
         })).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -250,6 +256,27 @@ export const appRouter = router({
         }
 
         await db.updateEvent(input.eventId, updateData);
+
+        // Atualizar campos do formulário se fornecidos
+        if (input.formFields && input.formFields.length > 0) {
+          // Deletar campos existentes
+          await db.deleteFormFieldsByEventId(input.eventId);
+          
+          // Criar novos campos
+          for (const field of input.formFields) {
+            await db.createFormField({
+              eventId: input.eventId,
+              label: field.label,
+              fieldType: field.fieldType as 'text' | 'email' | 'phone' | 'textarea' | 'select' | 'checkbox' | 'cpf' | 'cnpj' | 'cep',
+              options: field.options || null,
+              required: field.required ? 1 : 0,
+              order: field.order,
+              conditionalTrigger: field.conditionalTrigger || null,
+              conditionalLabel: field.conditionalLabel || null,
+            });
+          }
+        }
+
         return { success: true };
       }),
 

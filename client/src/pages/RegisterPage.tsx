@@ -601,22 +601,45 @@ export default function RegisterPage() {
                     )}
 
                     {field.fieldType === "select" && field.options && (
-                      <Select
-                        value={formData[field.label] || ""}
-                        onValueChange={(value) => setFormData({ ...formData, [field.label]: value })}
-                        required={field.required === 1}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione uma opção" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {field.options.split(",").map((option, idx) => (
-                            <SelectItem key={idx} value={option.trim()}>
-                              {option.trim()}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <>
+                        <Select
+                          value={formData[field.label] || ""}
+                          onValueChange={(value) => setFormData({ ...formData, [field.label]: value })}
+                          required={field.required === 1}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione uma opção" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {field.options.split(",").map((option, idx) => (
+                              <SelectItem key={idx} value={option.trim()}>
+                                {option.trim()}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        
+                        {/* Campo Condicional - aparece quando a opção trigger é selecionada */}
+                        {field.conditionalTrigger && 
+                         field.conditionalLabel && 
+                         formData[field.label] === field.conditionalTrigger && (
+                          <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                            <Label htmlFor={`field-${field.id}-conditional`} className="text-amber-800">
+                              {field.conditionalLabel}
+                              <span className="text-destructive ml-1">*</span>
+                            </Label>
+                            <Input
+                              id={`field-${field.id}-conditional`}
+                              type="text"
+                              className="mt-2"
+                              value={formData[`${field.label}_condicional`] || ""}
+                              onChange={(e) => setFormData({ ...formData, [`${field.label}_condicional`]: e.target.value })}
+                              required
+                              placeholder="Digite sua resposta..."
+                            />
+                          </div>
+                        )}
+                      </>
                     )}
 
                     {field.fieldType === "checkbox" && field.options && (

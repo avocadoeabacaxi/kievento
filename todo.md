@@ -795,3 +795,11 @@
 - [x] Adicionar verificações de null/undefined em Dashboard.tsx
 - [x] Adicionar verificações de null/undefined em EventDetails.tsx
 - [x] Adicionar verificações de null/undefined em RegisterPage.tsx
+
+## Bug: Edição de Evento e Campo Condicional (Jan 2026)
+- [x] Corrigir problema de edição de evento (formFields não eram salvos na atualização)
+- [x] Implementar campo condicional em seleções Sim/Não (quando seleciona uma opção, aparece campo adicional)
+  - [x] Adicionar colunas conditionalTrigger e conditionalLabel no schema
+  - [x] Atualizar routers.ts para salvar campos condicionais
+  - [x] Atualizar CreateEvent.tsx para configurar campos condicionais
+  - [x] Atualizar RegisterPage.tsx para mostrar campo condicional quando ativado

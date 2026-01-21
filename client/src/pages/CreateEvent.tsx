@@ -29,6 +29,8 @@ type FormField = {
   options?: string;
   required: boolean;
   order: number;
+  conditionalTrigger?: string; // Opção que ativa campo condicional (ex: "Sim")
+  conditionalLabel?: string; // Label do campo condicional (ex: "Qual restrição?")
 };
 
 export default function CreateEvent() {
@@ -193,7 +195,9 @@ export default function CreateEvent() {
           fieldType: f.fieldType,
           options: f.options || undefined,
           required: f.required === 1,
-          order: f.order
+          order: f.order,
+          conditionalTrigger: f.conditionalTrigger || undefined,
+          conditionalLabel: f.conditionalLabel || undefined,
         })));
       }
       if (existingEvent.faq) {
@@ -631,6 +635,45 @@ export default function CreateEvent() {
                           onChange={(e) => updateFormField(index, { options: e.target.value })}
                           placeholder="Opção 1, Opção 2, Opção 3"
                         />
+                      </div>
+                    )}
+
+                    {/* Campo Condicional - aparece apenas para campos do tipo select */}
+                    {field.fieldType === "select" && field.options && (
+                      <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <Label className="text-blue-700 font-medium">Campo Condicional (Opcional)</Label>
+                        <p className="text-sm text-blue-600 mb-3">Quando o usuário selecionar uma opção específica, um campo adicional aparecerá para ele preencher.</p>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Opção que ativa o campo</Label>
+                            <Select
+                              value={field.conditionalTrigger || ""}
+                              onValueChange={(v) => updateFormField(index, { conditionalTrigger: v === "none" ? undefined : v })}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Nenhum" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">Nenhum (desativado)</SelectItem>
+                                {field.options.split(",").map((option, idx) => (
+                                  <SelectItem key={idx} value={option.trim()}>
+                                    {option.trim()}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {field.conditionalTrigger && (
+                            <div className="space-y-2">
+                              <Label>Pergunta do campo adicional</Label>
+                              <Input
+                                value={field.conditionalLabel || ""}
+                                onChange={(e) => updateFormField(index, { conditionalLabel: e.target.value })}
+                                placeholder="Ex: Qual restrição alimentar?"
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

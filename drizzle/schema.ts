@@ -103,6 +103,9 @@ export const formFields = mysqlTable("formFields", {
   options: text("options"), // JSON array para select/checkbox
   required: int("required").default(1).notNull(), // 1 = true, 0 = false
   order: int("order").notNull(),
+  // Campos condicionais: quando uma opção específica é selecionada, mostra um campo adicional
+  conditionalTrigger: varchar("conditionalTrigger", { length: 100 }), // Opção que ativa o campo condicional (ex: "Sim")
+  conditionalLabel: varchar("conditionalLabel", { length: 255 }), // Label do campo condicional (ex: "Qual restrição?")
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
