@@ -647,3 +647,22 @@
 - [x] Aplicar parseEventDateTime em createEvent e updateEvent
 - [x] Agora salva data considerando timezone do evento (17:16 GMT-3 salva corretamente)
 - [ ] Testar: cadastrar 17:16 e verificar se aparece 17:16 em todos os lugares
+
+## Teste Completo de Validação de Timezone
+- [x] Consultar evento "Papo de Padaria" no banco de dados
+- [x] Verificar horário no Dashboard (10:03 - INCORRETO)
+- [x] Verificar horário em EventDetails (10:03 - INCORRETO)
+- [x] Verificar horário na página pública RegisterPage (10:03 - INCORRETO)
+- [x] Documentar resultados - PROBLEMA CRÍTICO: conversão dupla de timezone
+
+## CORREÇÃO URGENTE: Remover Conversão Dupla de Timezone
+- [x] Remover parseEventDateTime do backend (server/routers.ts)
+- [x] Voltar a usar new Date(input.eventDate) direto
+- [x] Remover arquivo timezoneUtils.ts
+- [ ] Testar novamente com evento real
+
+## Expansão da Personalização Visual
+- [x] Aplicar cor da barra lateral no header com logo (toda a barra superior)
+- [x] Aplicar cor dos botões em TODOS os botões da página de cadastro (Ver Mapa, Confirmar Inscrição, Ver Convite)
+- [x] Aplicar gradiente de fundo em TODA a página (body completo com linear-gradient)
+- [x] Aplicar filtro branco no logo quando fundo é colorido

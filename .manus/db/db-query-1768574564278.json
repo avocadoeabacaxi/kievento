@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, title, eventDate, timezone, CONVERT_TZ(eventDate, '+00:00', '-03:00') as eventDate_BRT FROM events WHERE title LIKE '%Papo%' ORDER BY id DESC LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, title, eventDate, timezone, CONVERT_TZ(eventDate, '+00:00', '-03:00') as eventDate_BRT FROM events WHERE title LIKE '%Papo%' ORDER BY id DESC LIMIT 1;",
+  "rows": [
+    {
+      "id": "22",
+      "title": "Papo de Padaria",
+      "eventDate": "2026-02-04 10:03:00",
+      "timezone": "America/Sao_Paulo",
+      "eventDate_BRT": "2026-02-04 07:03:00.000000"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\teventDate\ttimezone\teventDate_BRT\n22\tPapo de Padaria\t2026-02-04 10:03:00\tAmerica/Sao_Paulo\t2026-02-04 07:03:00.000000\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

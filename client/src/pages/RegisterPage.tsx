@@ -256,9 +256,12 @@ export default function RegisterPage() {
       }}
     >
       {/* Logo Centralizada */}
-      <div className="w-full bg-white border-b py-3">
+      <div 
+        className="w-full border-b py-3"
+        style={{ backgroundColor: customColors.sidebarBg }}
+      >
         <div className="container flex justify-center">
-          <img src="/logo.png" alt="KiEvento" className="h-10" />
+          <img src="/logo.png" alt="KiEvento" className="h-10" style={{ filter: 'brightness(0) invert(1)' }} />
         </div>
       </div>
 
@@ -308,7 +311,13 @@ export default function RegisterPage() {
                       href={addressLink} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm font-semibold transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors"
+                      style={{
+                        backgroundColor: customColors.buttonBg,
+                        color: customColors.sidebarText,
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = customColors.buttonHover}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = customColors.buttonBg}
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

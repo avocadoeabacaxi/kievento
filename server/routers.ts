@@ -12,7 +12,7 @@ import { ENV } from './_core/env';
 import { storagePut } from "./storage";
 import * as db from "./db";
 import { generateUniqueSlug } from "./slugUtils";
-import { parseEventDateTime } from "./timezoneUtils";
+
 
 // Middleware para verificar se o usuário é admin
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -92,8 +92,8 @@ export const appRouter = router({
           userId: ctx.user.id,
           title: input.title,
           description: input.description,
-          eventDate: parseEventDateTime(input.eventDate, "America/Sao_Paulo"),
-          registrationDeadline: input.registrationDeadline ? parseEventDateTime(input.registrationDeadline, "America/Sao_Paulo") : undefined,
+          eventDate: new Date(input.eventDate),
+          registrationDeadline: input.registrationDeadline ? new Date(input.registrationDeadline) : undefined,
           address: input.address,
           bannerUrl,
           bannerKey,
@@ -199,9 +199,9 @@ export const appRouter = router({
         const updateData: any = {};
         if (input.title) updateData.title = input.title;
         if (input.description !== undefined) updateData.description = input.description;
-        if (input.eventDate) updateData.eventDate = parseEventDateTime(input.eventDate, "America/Sao_Paulo");
+        if (input.eventDate) updateData.eventDate = new Date(input.eventDate);
         if (input.registrationDeadline !== undefined) {
-          updateData.registrationDeadline = input.registrationDeadline ? parseEventDateTime(input.registrationDeadline, "America/Sao_Paulo") : null;
+          updateData.registrationDeadline = input.registrationDeadline ? new Date(input.registrationDeadline) : null;
         }
         if (input.address !== undefined) updateData.address = input.address;
         if (input.registrationType) updateData.registrationType = input.registrationType;
