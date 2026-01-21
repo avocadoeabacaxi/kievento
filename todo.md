@@ -752,3 +752,5 @@
 - [x] Frontend RegisterPage: Exibir string direto sem format()
 - [x] Frontend EventDetails: Exibir string direto sem format()
 - [x] Testar com novo evento - Usuário deve criar NOVO evento para validar
+
+- [x] Corrigir erro "toISOString is not a function" ao criar eventos - backend tentando converter string para ISO

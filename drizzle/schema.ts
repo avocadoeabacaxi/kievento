@@ -55,7 +55,7 @@ export const events = mysqlTable("events", {
   userId: int("userId").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  eventDate: timestamp("eventDate").notNull(),
+  eventDate: varchar("eventDate", { length: 50 }).notNull(), // String literal: "2025-01-25T14:30"
   address: text("address"),
   addressLink: text("addressLink"), // Link do Google Maps ou similar
   bannerUrl: text("bannerUrl"),
@@ -71,7 +71,7 @@ export const events = mysqlTable("events", {
   status: mysqlEnum("status", ["draft", "published"]).default("draft").notNull(), // Status do evento (rascunho ou publicado)
   slug: varchar("slug", { length: 255 }).notNull().unique(), // URL amigável gerada a partir do título
   faq: text("faq"), // JSON string: [{question: string, answer: string}]
-  registrationDeadline: timestamp("registrationDeadline"), // Data limite para inscrições
+  registrationDeadline: varchar("registrationDeadline", { length: 50 }), // String literal: "2025-01-25T14:30"
   hasTicketTypes: tinyint("hasTicketTypes").default(0).notNull(), // Sistema de ingressos ativado? (0=false, 1=true)
   timezone: varchar("timezone", { length: 100 }).default("America/Sao_Paulo").notNull(), // Fuso horário do evento
   

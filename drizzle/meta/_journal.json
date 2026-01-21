@@ -134,6 +134,13 @@
       "when": 1768962342451,
       "tag": "0018_pale_black_bird",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1768965778860,
+      "tag": "0019_gifted_phalanx",
+      "breakpoints": true
     }
   ]
 }

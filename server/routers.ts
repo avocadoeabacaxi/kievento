@@ -88,12 +88,20 @@ export const appRouter = router({
         // Gerar slug único a partir do título
         const slug = await generateUniqueSlug(input.title);
 
+        // Adicionar :00 se não tiver segundos para formar ISO válido
+        const eventDateWithSeconds = input.eventDate.includes(':') && !input.eventDate.match(/:\d{2}:\d{2}/) 
+          ? input.eventDate + ':00' 
+          : input.eventDate;
+        const registrationDeadlineWithSeconds = input.registrationDeadline && input.registrationDeadline.includes(':') && !input.registrationDeadline.match(/:\d{2}:\d{2}/)
+          ? input.registrationDeadline + ':00'
+          : input.registrationDeadline;
+
         const eventId = await db.createEvent({
           userId: ctx.user.id,
           title: input.title,
           description: input.description,
-          eventDate: input.eventDate as any, // Salvar como string literal
-          registrationDeadline: input.registrationDeadline ? new Date(input.registrationDeadline) : undefined,
+          eventDate: eventDateWithSeconds,
+          registrationDeadline: registrationDeadlineWithSeconds,
           address: input.address,
           bannerUrl,
           bannerKey,
@@ -199,9 +207,17 @@ export const appRouter = router({
         const updateData: any = {};
         if (input.title) updateData.title = input.title;
         if (input.description !== undefined) updateData.description = input.description;
-        if (input.eventDate) updateData.eventDate = input.eventDate as any; // Salvar como string literal
+        if (input.eventDate) {
+          // Adicionar :00 se não tiver segundos
+          updateData.eventDate = input.eventDate.includes(':') && !input.eventDate.match(/:\d{2}:\d{2}/)
+            ? input.eventDate + ':00'
+            : input.eventDate;
+        }
         if (input.registrationDeadline !== undefined) {
-          updateData.registrationDeadline = input.registrationDeadline ? new Date(input.registrationDeadline) : null;
+          // Adicionar :00 se não tiver segundos
+          updateData.registrationDeadline = input.registrationDeadline && input.registrationDeadline.includes(':') && !input.registrationDeadline.match(/:\d{2}:\d{2}/)
+            ? input.registrationDeadline + ':00'
+            : input.registrationDeadline;
         }
         if (input.address !== undefined) updateData.address = input.address;
         if (input.registrationType) updateData.registrationType = input.registrationType;
@@ -346,7 +362,9 @@ export const appRouter = router({
         if (status === 'approved') {
           const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
           const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
-          const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+          // eventDate já é string literal, formatar para exibição
+          const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
+          const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
           const [address] = event.address?.split('|') || [];
 
           await sendEmail({
@@ -411,7 +429,9 @@ export const appRouter = router({
         // Enviar e-mail automático usando templates personalizados
         const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
         const ticketUrl = `${baseUrl}/ticket/${registration.qrCode}`;
-        const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+        // eventDate já é string literal, formatar para exibição
+        const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
+        const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
         const [address] = event.address?.split('|') || [];
 
         const templateType = input.status === 'approved' ? 'approval' : 'rejection';
@@ -595,7 +615,9 @@ export const appRouter = router({
         if (status === 'approved') {
           const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
           const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
-          const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+          // eventDate já é string literal, formatar para exibição
+          const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
+          const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
           const [address] = event.address?.split('|') || [];
 
           await sendEmail({
@@ -691,7 +713,9 @@ export const appRouter = router({
 
         // Enviar emails em paralelo (máximo 10 por vez para não sobrecarregar)
         const baseUrl = ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000';
-        const eventDate = format(new Date(event.eventDate), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
+        // eventDate já é string literal, formatar para exibição
+        const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
+        const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
         const [address] = event.address?.split('|') || [];
 
         let successCount = 0;
