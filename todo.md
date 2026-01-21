@@ -873,4 +873,5 @@
 - [x] Ocultar imagem do evento na página de gerenciamento
 - [x] Remover tipo de evento da exibição
 - [x] Remover descrição do evento da exibição
-- [x] Manter apenas título, data e local do evento
+- [x] Remover endereço/local do evento
+- [x] Manter apenas título e data do evento
