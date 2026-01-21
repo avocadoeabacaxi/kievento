@@ -20,6 +20,7 @@ import parse from "html-react-parser";
 import { MaskedInput } from "@/components/MaskedInput";
 import CookieBanner from "@/components/CookieBanner";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 export default function RegisterPage() {
   const [, params] = useRoute("/register/:id");
@@ -254,15 +255,8 @@ export default function RegisterPage() {
         background: `linear-gradient(135deg, ${customColors.bgGradientStart} 0%, ${customColors.bgGradientEnd} 100%)`
       }}
     >
-      {/* Logo Centralizada */}
-      <div 
-        className="w-full border-b py-3"
-        style={{ backgroundColor: customColors.sidebarBg }}
-      >
-        <div className="container flex justify-center">
-          <img src="/logo.png" alt="KiEvento" className="h-10" />
-        </div>
-      </div>
+      {/* Header com Autenticação */}
+      <Header />
 
       {/* Event Header */}
       <div className="bg-gradient-to-b from-primary/10 to-background pb-4">

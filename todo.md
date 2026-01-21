@@ -717,3 +717,8 @@
 - [x] Integrar Google Places API
 - [x] Substituir campos de endereço no CreateEvent
 - [x] Preencher automaticamente addressLink com URL do Google Maps
+
+## Header com Autenticação na RegisterPage
+- [x] Adicionar Header component na RegisterPage
+- [x] Mostrar botões "Entrar" e "Cadastrar" para usuários não logados
+- [x] Mostrar avatar com dropdown para usuários logados
