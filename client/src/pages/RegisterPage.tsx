@@ -332,12 +332,30 @@ export default function RegisterPage() {
                   {parse(eventData.description)}
                 </CardContent>
               </Card>
+              {!isAuthenticated && (
+                <div className="mt-4 text-center">
+                  <Button
+                    size="lg"
+                    style={{
+                      backgroundColor: customColors.buttonBg,
+                      color: customColors.sidebarText,
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = customColors.buttonHover}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = customColors.buttonBg}
+                    onClick={() => window.location.href = getLoginUrl()}
+                  >
+                    Acesse para fazer sua inscrição
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
 
       {/* Registration Form */}
+      {isAuthenticated && (
+      <>
       <div className="container max-w-2xl py-6 space-y-6">
         {/* Tipo de Ingresso Disponível */}
         {!!eventData?.hasTicketTypes && activeTicketType && (
@@ -626,6 +644,8 @@ export default function RegisterPage() {
           return null;
         })()}
       </div>
+      </>
+      )}
       
       <Footer />
       <CookieBanner />

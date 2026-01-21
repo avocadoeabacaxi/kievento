@@ -739,3 +739,9 @@
 - [x] Adicionar botão "Publicar" no final do formulário de edição
 - [x] Criar mutation publishEvent no backend - Já existe (update com status)
 - [x] Filtrar eventos publicados na página pública (Home)
+
+## Controle de Acesso ao Formulário de Inscrição
+- [x] Ocultar formulário de inscrição quando usuário não está logado
+- [x] Adicionar botão "Acesse para fazer sua inscrição" abaixo da descrição do evento
+- [x] Redirecionar para login ao clicar no botão
+- [x] Mostrar formulário automaticamente quando usuário está logado
