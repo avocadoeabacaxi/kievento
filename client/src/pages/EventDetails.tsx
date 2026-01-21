@@ -196,14 +196,8 @@ export default function EventDetails() {
         />
         
         <div className="space-y-6">
-        {/* Event Header */}
+        {/* Event Header - Simplificado */}
         <div className="space-y-4">
-          {event.bannerUrl && (
-            <div className="h-32 w-full max-w-md overflow-hidden rounded-lg border">
-              <img src={event.bannerUrl} alt={event.title} className="w-full h-full object-cover" />
-            </div>
-          )}
-
           <div className="space-y-4">
             <h1 className="text-3xl font-bold mb-4">{event.title}</h1>
             
@@ -251,25 +245,7 @@ export default function EventDetails() {
                 </div>
               );
             })()}
-
-            {/* Tipo de Inscrição */}
-            <div className="border-l-4 border-primary pl-4 py-2">
-              <div className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">Tipo de Inscrição</div>
-              <div className="text-lg font-medium">
-                <Badge variant={event.registrationType === "open" ? "default" : "secondary"} className="text-sm">
-                  {event.registrationType === "open" ? "Inscrição Aberta" : "Com Aprovação"}
-                </Badge>
-              </div>
-            </div>
           </div>
-
-          {event.description && (
-            <Card>
-              <CardContent className="pt-6 prose prose-sm max-w-none">
-                {parse(event.description)}
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Stats */}

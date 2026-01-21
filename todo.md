@@ -867,3 +867,10 @@
 - [x] Anexar PDF do convite ao e-mail de aprovação
 - [x] Testar envio de e-mail com PDF anexado
 - [x] Criar testes unitários para geração de PDF (5 testes passando)
+
+
+## Simplificação da Página de Gerenciar Evento (21/01/2026)
+- [x] Ocultar imagem do evento na página de gerenciamento
+- [x] Remover tipo de evento da exibição
+- [x] Remover descrição do evento da exibição
+- [x] Manter apenas título, data e local do evento
