@@ -875,3 +875,11 @@
 - [x] Remover descrição do evento da exibição
 - [x] Remover endereço/local do evento
 - [x] Manter apenas título e data do evento
+
+
+## Botão de Excluir Participantes (29/01/2026)
+- [x] Criar rota de exclusão de participante no backend
+- [x] Adicionar botão de excluir na aba Pendentes
+- [x] Adicionar botão de excluir na aba Aprovados
+- [x] Adicionar confirmação antes de excluir
+- [x] Criar testes unitários (4 testes passando)

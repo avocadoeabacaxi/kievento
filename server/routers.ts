@@ -903,6 +903,29 @@ export const appRouter = router({
         return { csv, filename: `participantes-${event.title.replace(/\s+/g, '-')}-${Date.now()}.csv` };
       }),
 
+    // Excluir inscrição
+    delete: protectedProcedure
+      .input(z.object({ registrationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const registration = await db.getRegistrationById(input.registrationId);
+        if (!registration) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Inscrição não encontrada' });
+        }
+
+        const event = await db.getEventById(registration.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Evento não encontrado' });
+        }
+
+        // Verificar permissão (dono do evento ou admin)
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Sem permissão para excluir esta inscrição' });
+        }
+
+        await db.deleteRegistration(input.registrationId);
+        return { success: true, message: 'Inscrição excluída com sucesso' };
+      }),
+
     // Enviar emails em massa
     sendBulkEmails: protectedProcedure
       .input(z.object({

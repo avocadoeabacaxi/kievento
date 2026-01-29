@@ -255,6 +255,12 @@ export async function checkInRegistration(id: number, userId: number) {
   }).where(eq(registrations.id, id));
 }
 
+export async function deleteRegistration(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(registrations).where(eq(registrations.id, id));
+}
+
 export async function getEventStats(eventId: number) {
   const db = await getDb();
   if (!db) return { total: 0, pending: 0, approved: 0, rejected: 0, checkedIn: 0 };
