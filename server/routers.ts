@@ -826,26 +826,29 @@ export const appRouter = router({
           await db.incrementTicketTypeSold(input.ticketTypeId);
         }
 
-        // Enviar e-mail de confirmação se aprovado
+        // Enviar e-mail de confirmação com PDF anexado se aprovado
         if (status === 'approved') {
           const baseUrl = ENV.customDomain ? `https://${ENV.customDomain}` : (ENV.isProduction ? `https://${ENV.appId}.manus.space` : 'http://localhost:3000');
           const ticketUrl = `${baseUrl}/ticket/${qrCode}`;
-          // eventDate já é string literal, formatar para exibição
-          const eventDateObj = new Date(event.eventDate + ':00'); // Adicionar segundos
-          const eventDate = format(eventDateObj, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR });
-          const [address] = event.address?.split('|') || [];
-
-          await sendEmail({
-            to: input.email,
-            subject: `✅ Inscrição confirmada - ${event.title}`,
-            html: getConfirmationEmailTemplate({
+          
+          // Usar sendApprovalEmail que já inclui PDF anexado
+          try {
+            await sendApprovalEmail({
+              eventId: input.eventId,
+              registrationId: registrationId as number,
+              recipientEmail: input.email,
               participantName: input.name,
               eventTitle: event.title,
-              eventDate,
-              eventAddress: address,
+              eventDate: event.eventDate,
+              eventAddress: event.address || '',
               ticketUrl,
-            }),
-          });
+              qrCode,
+            });
+            console.log(`[CreateManual] E-mail de aprovação enviado com PDF para ${input.email}`);
+          } catch (emailError) {
+            console.error('[CreateManual] Erro ao enviar e-mail:', emailError);
+            // Não falhar o cadastro se o e-mail não for enviado
+          }
         }
 
         return { registrationId, qrCode, status };

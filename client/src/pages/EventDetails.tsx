@@ -75,8 +75,14 @@ export default function EventDetails() {
   });
 
   const createManualMutation = trpc.registrations.createManual.useMutation({
-    onSuccess: () => {
-      toast.success("Participante cadastrado com sucesso!");
+    onSuccess: (data) => {
+      toast.success(
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold">✅ Participante cadastrado com sucesso!</span>
+          <span className="text-sm text-muted-foreground">Status: {data.status === 'approved' ? 'Aprovado' : 'Pendente'}</span>
+        </div>,
+        { duration: 5000 }
+      );
       refetchRegistrations();
       setIsAddOpen(false);
       setManualFormData({});

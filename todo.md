@@ -883,3 +883,9 @@
 - [x] Adicionar botão de excluir na aba Aprovados
 - [x] Adicionar confirmação antes de excluir
 - [x] Criar testes unitários (4 testes passando)
+
+
+## Feedback Visual no Cadastro Manual (29/01/2026)
+- [x] Melhorar mensagem de confirmação ao salvar cadastro manual
+- [x] Toast com status do participante (Aprovado/Pendente)
+- [x] Enviar e-mail de aprovação com PDF anexado automaticamente
