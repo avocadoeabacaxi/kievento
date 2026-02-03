@@ -944,3 +944,10 @@
 - [x] Corrigir código do scanner de QR Code
 - [x] Adicionar solicitação explícita de permissão de câmera
 - [x] Melhorar mensagens de erro específicas para cada tipo de problema
+
+
+## Melhoria na Exportação XLS (03/02/2026)
+- [ ] Formatar exportação XLS com cada dado em sua célula
+- [ ] Adicionar cabeçalhos formatados (negrito, cor de fundo)
+- [ ] Ajustar largura das colunas automaticamente
+- [ ] Formatar datas e números corretamente

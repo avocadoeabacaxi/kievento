@@ -176,7 +176,7 @@ export default function PrintManagement() {
               overflow: hidden;
             }
             .name {
-              font-size: 12pt;
+              font-size: 16pt;
               font-weight: bold;
               text-align: center;
               line-height: 1.1;
@@ -186,7 +186,7 @@ export default function PrintManagement() {
               white-space: nowrap;
             }
             .company {
-              font-size: 9pt;
+              font-size: 12pt;
               text-align: center;
               margin-top: 0.5mm;
               max-width: 96mm;
@@ -640,20 +640,20 @@ export default function PrintManagement() {
                         padding: "8px",
                       }}
                     >
+                    <div
+                      className="font-bold text-center"
+                      style={{ fontSize: "22px", lineHeight: "1.1" }}
+                    >
+                      {selectedParticipant.name.toUpperCase()}
+                    </div>
+                    {getCompany(selectedParticipant) && (
                       <div
-                        className="font-bold text-center"
-                        style={{ fontSize: "18px", lineHeight: "1.1" }}
+                        className="text-gray-600 text-center mt-1"
+                        style={{ fontSize: "16px" }}
                       >
-                        {selectedParticipant.name.toUpperCase()}
+                        {getCompany(selectedParticipant)}
                       </div>
-                      {getCompany(selectedParticipant) && (
-                        <div
-                          className="text-gray-600 text-center mt-1"
-                          style={{ fontSize: "14px" }}
-                        >
-                          {getCompany(selectedParticipant)}
-                        </div>
-                      )}
+                    )}
                     </div>
 
                     {/* Informações do Participante */}

@@ -1,0 +1,202 @@
+import * as XLSX from 'xlsx';
+
+interface ExportColumn {
+  header: string;
+  key: string;
+  width?: number;
+}
+
+interface ExportOptions {
+  filename: string;
+  sheetName?: string;
+  columns: ExportColumn[];
+  data: Record<string, any>[];
+  title?: string;
+  subtitle?: string;
+}
+
+/**
+ * Exporta dados para arquivo XLS com formatação profissional
+ */
+export function exportToXls(options: ExportOptions): void {
+  const { filename, sheetName = 'Dados', columns, data, title, subtitle } = options;
+
+  // Criar workbook
+  const wb = XLSX.utils.book_new();
+
+  // Preparar dados para a planilha
+  const wsData: any[][] = [];
+  let startRow = 0;
+
+  // Adicionar título se fornecido
+  if (title) {
+    wsData.push([title]);
+    startRow++;
+  }
+
+  // Adicionar subtítulo se fornecido
+  if (subtitle) {
+    wsData.push([subtitle]);
+    startRow++;
+  }
+
+  // Adicionar linha em branco após título/subtítulo
+  if (title || subtitle) {
+    wsData.push([]);
+    startRow++;
+  }
+
+  // Adicionar cabeçalhos
+  const headers = columns.map(col => col.header);
+  wsData.push(headers);
+
+  // Adicionar dados
+  data.forEach(row => {
+    const rowData = columns.map(col => {
+      const value = row[col.key];
+      
+      // Formatar datas
+      if (value instanceof Date) {
+        return value.toLocaleString('pt-BR');
+      }
+      
+      // Formatar timestamps
+      if (col.key.toLowerCase().includes('at') && typeof value === 'number') {
+        return new Date(value).toLocaleString('pt-BR');
+      }
+      
+      // Formatar valores nulos/undefined
+      if (value === null || value === undefined) {
+        return '';
+      }
+      
+      return value;
+    });
+    wsData.push(rowData);
+  });
+
+  // Criar worksheet
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Configurar larguras das colunas
+  const colWidths: XLSX.ColInfo[] = columns.map((col, index) => {
+    // Calcular largura baseada no conteúdo
+    let maxWidth = col.header.length;
+    
+    data.forEach(row => {
+      const value = row[col.key];
+      const strValue = value ? String(value) : '';
+      if (strValue.length > maxWidth) {
+        maxWidth = strValue.length;
+      }
+    });
+
+    // Usar largura definida ou calculada (mínimo 10, máximo 50)
+    const width = col.width || Math.min(Math.max(maxWidth + 2, 10), 50);
+    
+    return { wch: width };
+  });
+
+  ws['!cols'] = colWidths;
+
+  // Mesclar células do título se existir
+  if (title) {
+    ws['!merges'] = ws['!merges'] || [];
+    ws['!merges'].push({
+      s: { r: 0, c: 0 },
+      e: { r: 0, c: columns.length - 1 }
+    });
+  }
+
+  // Adicionar worksheet ao workbook
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+  // Gerar arquivo e fazer download
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${filename}.xlsx`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Exporta histórico de check-ins para XLS
+ */
+export function exportCheckInHistory(
+  data: any[],
+  eventTitle: string
+): void {
+  exportToXls({
+    filename: `historico-checkins-${eventTitle.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}`,
+    sheetName: 'Check-ins',
+    title: `Histórico de Check-ins - ${eventTitle}`,
+    subtitle: `Exportado em ${new Date().toLocaleString('pt-BR')}`,
+    columns: [
+      { header: 'Nome', key: 'name', width: 30 },
+      { header: 'E-mail', key: 'email', width: 35 },
+      { header: 'Telefone', key: 'phone', width: 18 },
+      { header: 'Data/Hora Check-in', key: 'checkedInAt', width: 22 },
+      { header: 'Operador', key: 'operatorName', width: 25 }
+    ],
+    data: data.map(item => ({
+      name: item.name || '',
+      email: item.email || '',
+      phone: item.phone || '',
+      checkedInAt: item.checkedInAt ? new Date(item.checkedInAt).toLocaleString('pt-BR') : '',
+      operatorName: item.operatorName || 'Sistema'
+    }))
+  });
+}
+
+/**
+ * Exporta lista de participantes para XLS
+ */
+export function exportParticipants(
+  data: any[],
+  eventTitle: string,
+  status: 'approved' | 'pending' | 'all'
+): void {
+  const statusLabel = status === 'approved' ? 'Aprovados' : status === 'pending' ? 'Pendentes' : 'Todos';
+  
+  exportToXls({
+    filename: `participantes-${statusLabel.toLowerCase()}-${eventTitle.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}`,
+    sheetName: 'Participantes',
+    title: `Lista de Participantes ${statusLabel} - ${eventTitle}`,
+    subtitle: `Exportado em ${new Date().toLocaleString('pt-BR')} | Total: ${data.length} participantes`,
+    columns: [
+      { header: 'Nome', key: 'name', width: 30 },
+      { header: 'E-mail', key: 'email', width: 35 },
+      { header: 'Telefone', key: 'phone', width: 18 },
+      { header: 'Empresa', key: 'company', width: 25 },
+      { header: 'Status', key: 'status', width: 12 },
+      { header: 'Check-in', key: 'checkedIn', width: 12 },
+      { header: 'Data Inscrição', key: 'createdAt', width: 22 }
+    ],
+    data: data.map(item => {
+      // Extrair empresa do formData se existir
+      let company = '';
+      if (item.formData) {
+        try {
+          const formData = typeof item.formData === 'string' ? JSON.parse(item.formData) : item.formData;
+          company = formData.empresa || formData.company || formData.Empresa || formData.Company || '';
+        } catch (e) {
+          company = '';
+        }
+      }
+      
+      return {
+        name: item.name || '',
+        email: item.email || '',
+        phone: item.phone || '',
+        company: company,
+        status: item.status === 'approved' ? 'Aprovado' : item.status === 'pending' ? 'Pendente' : item.status,
+        checkedIn: item.checkedIn ? 'Sim' : 'Não',
+        createdAt: item.createdAt ? new Date(item.createdAt).toLocaleString('pt-BR') : ''
+      };
+    })
+  });
+}

@@ -30,6 +30,7 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import parse from "html-react-parser";
 import Header from "@/components/Header";
+import { exportCheckInHistory, exportParticipants } from "@/lib/exportXls";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 
