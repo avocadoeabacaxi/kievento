@@ -288,35 +288,81 @@ export default function PrintManagement() {
 
   // Iniciar scanner
   const startScanning = async () => {
-    if (!videoRef.current) return;
+    console.log("[Camera] Iniciando scanner...");
+    
+    if (!videoRef.current) {
+      console.error("[Camera] videoRef não encontrado");
+      toast.error("Erro: Elemento de vídeo não encontrado");
+      return;
+    }
+
+    // Verificar se o navegador suporta getUserMedia
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.error("[Camera] getUserMedia não suportado");
+      toast.error("Seu navegador não suporta acesso à câmera");
+      return;
+    }
 
     try {
+      // Primeiro, solicitar permissão explícita para a câmera
+      console.log("[Camera] Solicitando permissão...");
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment' } 
+      });
+      
+      // Parar o stream temporário (só usamos para obter permissão)
+      stream.getTracks().forEach(track => track.stop());
+      console.log("[Camera] Permissão concedida");
+
       readerRef.current = new BrowserMultiFormatReader();
       setIsScanning(true);
+      toast.info("Iniciando câmera...");
 
-      // Preferir câmera traseira
+      // Listar dispositivos de vídeo
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      console.log("[Camera] Dispositivos encontrados:", videoDevices.map(d => d.label));
+      
+      // Preferir câmera traseira
       const backCamera = videoDevices.find(d => 
-        d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('traseira')
+        d.label.toLowerCase().includes('back') || 
+        d.label.toLowerCase().includes('traseira') ||
+        d.label.toLowerCase().includes('rear')
       );
 
+      const deviceId = backCamera?.deviceId || (videoDevices[0]?.deviceId || undefined);
+      console.log("[Camera] Usando dispositivo:", deviceId || "padrão");
+
       await readerRef.current.decodeFromVideoDevice(
-        backCamera?.deviceId || undefined,
+        deviceId,
         videoRef.current,
         (result, error) => {
           if (result) {
+            console.log("[Camera] QR Code lido:", result.getText());
             handleQRCodeScan(result.getText());
           }
           if (error && !(error instanceof NotFoundException)) {
-            console.error("Scan error:", error);
+            console.error("[Camera] Erro de scan:", error);
           }
         }
       );
+      
+      toast.success("Câmera ativada! Aponte para o QR Code.");
     } catch (err: any) {
-      console.error("Error starting scanner:", err);
+      console.error("[Camera] Erro ao iniciar:", err);
       setIsScanning(false);
-      toast.error("Erro ao iniciar câmera. Verifique as permissões.");
+      
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        toast.error("Permissão negada. Clique no ícone de câmera na barra de endereço para permitir.");
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        toast.error("Nenhuma câmera encontrada neste dispositivo.");
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        toast.error("Câmera em uso por outro aplicativo.");
+      } else if (err.name === 'OverconstrainedError') {
+        toast.error("Câmera não suporta as configurações solicitadas.");
+      } else {
+        toast.error(`Erro ao iniciar câmera: ${err.message || 'Erro desconhecido'}`);
+      }
     }
   };
 

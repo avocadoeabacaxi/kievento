@@ -937,3 +937,10 @@
 - [x] Alterar tamanho da etiqueta de 80x30mm para 100x20mm
 - [x] Adicionar nome da empresa abaixo do nome da pessoa na etiqueta
 - [x] Atualizar preview da etiqueta na interface
+
+
+## Bug Fix - Botão da Câmera na Gestão de Impressão (03/02/2026)
+- [x] Diagnosticar por que o botão da câmera não está ativando
+- [x] Corrigir código do scanner de QR Code
+- [x] Adicionar solicitação explícita de permissão de câmera
+- [x] Melhorar mensagens de erro específicas para cada tipo de problema
