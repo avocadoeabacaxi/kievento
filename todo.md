@@ -931,3 +931,9 @@
 - [x] Criar interface de histórico de check-ins na página do evento (nova aba "Check-ins")
 - [x] Implementar exportação da lista (XLS)
 - [x] Criar testes unitários (5 testes passando)
+
+
+## Ajuste de Etiqueta de Impressão (03/02/2026)
+- [x] Alterar tamanho da etiqueta de 80x30mm para 100x20mm
+- [x] Adicionar nome da empresa abaixo do nome da pessoa na etiqueta
+- [x] Atualizar preview da etiqueta na interface

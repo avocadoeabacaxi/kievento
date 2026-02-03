@@ -156,7 +156,7 @@ export default function PrintManagement() {
           <title>Etiqueta - ${participant.name}</title>
           <style>
             @page {
-              size: 80mm 30mm;
+              size: 100mm 20mm;
               margin: 0;
             }
             * {
@@ -165,31 +165,31 @@ export default function PrintManagement() {
               box-sizing: border-box;
             }
             body {
-              width: 80mm;
-              height: 30mm;
+              width: 100mm;
+              height: 20mm;
               font-family: Arial, sans-serif;
               display: flex;
               flex-direction: column;
               justify-content: center;
               align-items: center;
-              padding: 2mm;
+              padding: 1mm 2mm;
               overflow: hidden;
             }
             .name {
-              font-size: 14pt;
+              font-size: 12pt;
               font-weight: bold;
               text-align: center;
               line-height: 1.1;
-              max-width: 76mm;
+              max-width: 96mm;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
             }
             .company {
-              font-size: 10pt;
+              font-size: 9pt;
               text-align: center;
-              margin-top: 1mm;
-              max-width: 76mm;
+              margin-top: 0.5mm;
+              max-width: 96mm;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
@@ -574,7 +574,7 @@ export default function PrintManagement() {
                   Preview da Etiqueta
                 </CardTitle>
                 <CardDescription>
-                  Impressora: Tomate MDK2054L | Etiqueta: 80x30mm
+                  Impressora: Tomate MDK2054L | Etiqueta: 100x20mm
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -585,8 +585,8 @@ export default function PrintManagement() {
                       ref={printRef}
                       className="mx-auto bg-white border-2 border-dashed border-gray-300 rounded"
                       style={{
-                        width: "302px",
-                        height: "113px",
+                        width: "378px",
+                        height: "76px",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
