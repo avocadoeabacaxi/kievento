@@ -63,6 +63,12 @@ export default function PrintManagement() {
   const printRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
+  const autoModeRef = useRef(autoMode);
+
+  // Manter ref atualizado com o estado
+  useEffect(() => {
+    autoModeRef.current = autoMode;
+  }, [autoMode]);
 
   // Buscar evento
   const { data: event, isLoading: eventLoading } = trpc.events.getById.useQuery(
@@ -261,7 +267,7 @@ export default function PrintManagement() {
         setSelectedParticipant(participant);
         
         // Se modo automático, imprimir automaticamente
-        if (autoMode) {
+        if (autoModeRef.current) {
           toast.success(`${participant.name} - Imprimindo etiqueta...`);
           handlePrint(participant, false); // Check-in já foi feito
         } else {
@@ -278,7 +284,7 @@ export default function PrintManagement() {
 
     // Resetar estado da borda após 2 segundos
     setTimeout(() => setScanBorderState('idle'), 2000);
-  }, [lastScannedCode, checkInByQrCodeMutation, approvedParticipants, autoMode, handlePrint, refetchRegistrations]);
+  }, [lastScannedCode, checkInByQrCodeMutation, handlePrint, refetchRegistrations]);
 
   // Iniciar scanner
   const startScanning = async () => {

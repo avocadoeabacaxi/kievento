@@ -918,3 +918,8 @@
 - [x] Feedback visual e sonoro ao escanear
 - [x] Toggle "Impressão Automática" no header
 - [x] Preview da etiqueta com botões "Apenas Check-in" e "Imprimir"
+
+
+## Bug Fix - Modo Automático na Gestão de Impressão (03/02/2026)
+- [x] Corrigir modo automático de leitura de QR Code (usar useRef para manter valor atualizado)
+- [x] Garantir que impressão automática funcione ao escanear
