@@ -324,6 +324,12 @@ export default function EventDetails() {
                     Scanner QR Code
                   </Button>
                 </Link>
+                <Link href={`/events/${eventId}/print`} className="w-full">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    Imprimir Etiquetas
+                  </Button>
+                </Link>
                 <Button className="bg-indigo-600 hover:bg-indigo-700 text-white" asChild>
                   <a href={`/register/${eventId}`} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />

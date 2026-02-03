@@ -22,6 +22,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 import MyTickets from "./pages/MyTickets";
 import PublicEvent from "./pages/PublicEvent";
 import NotFound from "./pages/NotFound";
+import PrintManagement from "./pages/PrintManagement";
 
 function Router() {
   const [, setLocation] = useLocation();
@@ -74,6 +75,7 @@ function Router() {
       <Route path="/e/:slug" component={PublicEvent} />
       <Route path="/events/:id" component={EventDetails} />
       <Route path="/events/:id/scan" component={ScannerPage} />
+      <Route path="/events/:id/print" component={PrintManagement} />
       <Route path="/register/:id" component={RegisterPage} />
       <Route path="/ticket/:qrCode" component={TicketPage} />
       <Route path="/404" component={NotFound} />

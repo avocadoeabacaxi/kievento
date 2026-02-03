@@ -889,3 +889,22 @@
 - [x] Melhorar mensagem de confirmação ao salvar cadastro manual
 - [x] Toast com status do participante (Aprovado/Pendente)
 - [x] Enviar e-mail de aprovação com PDF anexado automaticamente
+
+
+## Gestão de Impressão de Etiquetas (29/01/2026)
+- [ ] Criar página de Gestão de Impressão dentro do evento
+- [ ] Implementar busca de participante por nome
+- [ ] Gerar etiqueta 80x30mm para impressora Tomate MDK2054L
+- [ ] Integrar check-in automático ao imprimir etiqueta
+- [ ] Configurar impressão térmica via navegador
+
+
+## Gestão de Impressão de Etiquetas (03/02/2026)
+- [x] Criar página de Gestão de Impressão (/events/:id/print)
+- [x] Busca de participante por nome, e-mail ou empresa
+- [x] Preview da etiqueta 80x30mm com nome grande e empresa abaixo
+- [x] Impressão configurada para impressora Tomate MDK2054L
+- [x] Check-in automático ao imprimir etiqueta
+- [x] Botão "Imprimir Etiquetas" na página de detalhes do evento
+- [x] Lista de participantes aprovados com status de check-in
+- [x] Instruções de configuração da impressora na interface

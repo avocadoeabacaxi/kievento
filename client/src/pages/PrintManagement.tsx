@@ -1,0 +1,444 @@
+import { useState, useEffect, useRef } from "react";
+import { useParams, useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { toast } from "sonner";
+import { ArrowLeft, Printer, Search, User, Building2, CheckCircle2, AlertCircle } from "lucide-react";
+
+interface Participant {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string | null;
+  formData?: string | null;
+  status: string;
+  checkedIn: number;
+  qrCode: string | null;
+}
+
+export default function PrintManagement() {
+  const { id } = useParams<{ id: string }>();
+  const [, setLocation] = useLocation();
+  const { isAuthenticated } = useAuth();
+  const eventId = parseInt(id || "0");
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+  const [isPrinting, setIsPrinting] = useState(false);
+  const printRef = useRef<HTMLDivElement>(null);
+
+  // Buscar evento
+  const { data: event, isLoading: eventLoading } = trpc.events.getById.useQuery(
+    { eventId },
+    { enabled: eventId > 0 }
+  );
+
+  // Buscar participantes aprovados
+  const { data: registrations, refetch: refetchRegistrations } = trpc.registrations.listByEvent.useQuery(
+    { eventId },
+    { enabled: eventId > 0 }
+  );
+
+  // Mutation para check-in
+  const checkInMutation = trpc.registrations.checkInById.useMutation({
+    onSuccess: () => {
+      refetchRegistrations();
+    },
+  });
+
+  // Filtrar apenas aprovados
+  const approvedParticipants = registrations?.filter(
+    (r: Participant) => r.status === "approved"
+  ) || [];
+
+  // Filtrar por busca
+  const filteredParticipants = approvedParticipants.filter((p: Participant) => {
+    const searchLower = searchTerm.toLowerCase();
+    const formData = p.formData ? JSON.parse(p.formData) : {};
+    const company = formData["Empresa"] || formData["empresa"] || "";
+    
+    return (
+      p.name.toLowerCase().includes(searchLower) ||
+      p.email.toLowerCase().includes(searchLower) ||
+      company.toLowerCase().includes(searchLower)
+    );
+  });
+
+  // Extrair empresa do formData
+  const getCompany = (participant: Participant): string => {
+    if (!participant.formData) return "";
+    try {
+      const formData = JSON.parse(participant.formData);
+      return formData["Empresa"] || formData["empresa"] || formData["EMPRESA"] || "";
+    } catch {
+      return "";
+    }
+  };
+
+  // Função para imprimir etiqueta
+  const handlePrint = async (participant: Participant) => {
+    setSelectedParticipant(participant);
+    setIsPrinting(true);
+
+    // Fazer check-in se ainda não foi feito
+    if (!participant.checkedIn) {
+      try {
+        await checkInMutation.mutateAsync({ registrationId: participant.id });
+        toast.success("Check-in realizado!");
+      } catch (error) {
+        console.error("Erro no check-in:", error);
+      }
+    }
+
+    // Aguardar renderização e imprimir
+    setTimeout(() => {
+      const printContent = printRef.current;
+      if (!printContent) {
+        setIsPrinting(false);
+        return;
+      }
+
+      const printWindow = window.open("", "_blank", "width=302,height=113");
+      if (!printWindow) {
+        toast.error("Popup bloqueado. Permita popups para imprimir.");
+        setIsPrinting(false);
+        return;
+      }
+
+      const company = getCompany(participant);
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Etiqueta - ${participant.name}</title>
+          <style>
+            @page {
+              size: 80mm 30mm;
+              margin: 0;
+            }
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            body {
+              width: 80mm;
+              height: 30mm;
+              font-family: Arial, sans-serif;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              padding: 2mm;
+              overflow: hidden;
+            }
+            .name {
+              font-size: 14pt;
+              font-weight: bold;
+              text-align: center;
+              line-height: 1.1;
+              max-width: 76mm;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+            .company {
+              font-size: 10pt;
+              text-align: center;
+              margin-top: 1mm;
+              max-width: 76mm;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              color: #333;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="name">${participant.name.toUpperCase()}</div>
+          ${company ? `<div class="company">${company}</div>` : ""}
+        </body>
+        </html>
+      `);
+
+      printWindow.document.close();
+      
+      printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+        setIsPrinting(false);
+        toast.success("Etiqueta enviada para impressão!");
+      };
+
+      // Fallback se onload não disparar
+      setTimeout(() => {
+        if (!printWindow.closed) {
+          printWindow.focus();
+          printWindow.print();
+          printWindow.close();
+        }
+        setIsPrinting(false);
+      }, 1000);
+    }, 100);
+  };
+
+  // Selecionar participante ao clicar
+  const handleSelectParticipant = (participant: Participant) => {
+    setSelectedParticipant(participant);
+  };
+
+  // Redirecionar se não autenticado
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setLocation("/");
+    }
+  }, [isAuthenticated, setLocation]);
+
+  if (eventLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Evento não encontrado</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b sticky top-0 z-10">
+        <div className="container py-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setLocation(`/events/${eventId}`)}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold flex items-center gap-2">
+                <Printer className="h-5 w-5" />
+                Gestão de Impressão
+              </h1>
+              <p className="text-sm text-muted-foreground">{event.title}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container py-6">
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Coluna de Busca */}
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Search className="h-5 w-5" />
+                  Buscar Participante
+                </CardTitle>
+                <CardDescription>
+                  Digite o nome ou empresa para buscar
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Input
+                  placeholder="Nome, e-mail ou empresa..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="text-lg h-12"
+                  autoFocus
+                />
+              </CardContent>
+            </Card>
+
+            {/* Lista de Participantes */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">
+                  Participantes Aprovados ({filteredParticipants.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="max-h-[400px] overflow-y-auto">
+                  {filteredParticipants.length === 0 ? (
+                    <div className="p-4 text-center text-muted-foreground">
+                      {searchTerm ? "Nenhum participante encontrado" : "Nenhum participante aprovado"}
+                    </div>
+                  ) : (
+                    filteredParticipants.map((participant: Participant) => {
+                      const company = getCompany(participant);
+                      const isSelected = selectedParticipant?.id === participant.id;
+                      
+                      return (
+                        <div
+                          key={participant.id}
+                          className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
+                            isSelected ? "bg-primary/5 border-l-4 border-l-primary" : ""
+                          }`}
+                          onClick={() => handleSelectParticipant(participant)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                <span className="font-medium truncate">{participant.name}</span>
+                                {participant.checkedIn ? (
+                                  <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                                ) : null}
+                              </div>
+                              {company && (
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                  <span className="text-sm text-muted-foreground truncate">{company}</span>
+                                </div>
+                              )}
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePrint(participant);
+                              }}
+                              disabled={isPrinting}
+                            >
+                              <Printer className="h-4 w-4 mr-1" />
+                              Imprimir
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Coluna de Preview */}
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Printer className="h-5 w-5" />
+                  Preview da Etiqueta
+                </CardTitle>
+                <CardDescription>
+                  Impressora: Tomate MDK2054L | Etiqueta: 80x30mm
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {selectedParticipant ? (
+                  <div className="space-y-4">
+                    {/* Preview da Etiqueta */}
+                    <div
+                      ref={printRef}
+                      className="mx-auto bg-white border-2 border-dashed border-gray-300 rounded"
+                      style={{
+                        width: "302px", // 80mm em pixels (aprox)
+                        height: "113px", // 30mm em pixels (aprox)
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        padding: "8px",
+                      }}
+                    >
+                      <div
+                        className="font-bold text-center"
+                        style={{ fontSize: "18px", lineHeight: "1.1" }}
+                      >
+                        {selectedParticipant.name.toUpperCase()}
+                      </div>
+                      {getCompany(selectedParticipant) && (
+                        <div
+                          className="text-gray-600 text-center mt-1"
+                          style={{ fontSize: "14px" }}
+                        >
+                          {getCompany(selectedParticipant)}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Informações do Participante */}
+                    <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">{selectedParticipant.name}</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {selectedParticipant.email}
+                      </div>
+                      {selectedParticipant.phone && (
+                        <div className="text-sm text-muted-foreground">
+                          {selectedParticipant.phone}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 pt-2">
+                        {selectedParticipant.checkedIn ? (
+                          <span className="inline-flex items-center gap-1 text-sm text-green-600 bg-green-50 px-2 py-1 rounded">
+                            <CheckCircle2 className="h-4 w-4" />
+                            Check-in realizado
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-sm text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                            <AlertCircle className="h-4 w-4" />
+                            Aguardando check-in
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Botão de Imprimir */}
+                    <Button
+                      className="w-full h-12 text-lg"
+                      onClick={() => handlePrint(selectedParticipant)}
+                      disabled={isPrinting}
+                    >
+                      <Printer className="h-5 w-5 mr-2" />
+                      {isPrinting ? "Imprimindo..." : "Imprimir Etiqueta e Fazer Check-in"}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Printer className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                    <p>Selecione um participante para visualizar a etiqueta</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Instruções */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Instruções</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground space-y-2">
+                <p>1. Busque o participante pelo nome ou empresa</p>
+                <p>2. Clique no participante para ver o preview</p>
+                <p>3. Clique em "Imprimir Etiqueta" para enviar para a impressora</p>
+                <p>4. O check-in será feito automaticamente ao imprimir</p>
+                <div className="mt-4 p-3 bg-amber-50 rounded-lg text-amber-800">
+                  <p className="font-medium">Configuração da Impressora:</p>
+                  <p>Selecione a impressora "Tomate MDK2054L" na janela de impressão</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
