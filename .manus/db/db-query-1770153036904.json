@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, title, userId FROM events WHERE title LIKE '%Conversa%' OR title LIKE '%Padaria%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, title, userId FROM events WHERE title LIKE '%Conversa%' OR title LIKE '%Padaria%' LIMIT 5;",
+  "rows": [
+    {
+      "id": "90009",
+      "title": "Conversa de Padaria",
+      "userId": "90125"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tuserId\n90009\tConversa de Padaria\t90125\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO registrations (eventId, userId, name, email, phone, formData, status, qrCode, checkedIn, emailSentCount, createdAt, updatedAt)\nVALUES \n(90009, 1, 'Maria Silva Teste', 'maria.teste@exemplo.com', '(16) 99999-1111', '{\"Empresa\": \"Padaria Central\"}', 'approved', 'TEST-MARIA-001', 0, 0, NOW(), NOW()),\n(90009, 1, 'João Santos Teste', 'joao.teste@exemplo.com', '(16) 99999-2222', '{\"Empresa\": \"Confeitaria Doce Sabor\"}', 'approved', 'TEST-JOAO-002', 0, 0, NOW(), NOW()),\n(90009, 1, 'Ana Oliveira Teste', 'ana.teste@exemplo.com', '(16) 99999-3333', '{\"Empresa\": \"Panificadora Pão Quente\"}', 'approved', 'TEST-ANA-003', 0, 0, NOW(), NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute INSERT INTO registrations (eventId, userId, name, email, phone, formData, status, qrCode, checkedIn, emailSentCount, createdAt, updatedAt)\nVALUES \n(90009, 1, 'Maria Silva Teste', 'maria.teste@exemplo.com', '(16) 99999-1111', '{\"Empresa\": \"Padaria Central\"}', 'approved', 'TEST-MARIA-001', 0, 0, NOW(), NOW()),\n(90009, 1, 'João Santos Teste', 'joao.teste@exemplo.com', '(16) 99999-2222', '{\"Empresa\": \"Confeitaria Doce Sabor\"}', 'approved', 'TEST-JOAO-002', 0, 0, NOW(), NOW()),\n(90009, 1, 'Ana Oliveira Teste', 'ana.teste@exemplo.com', '(16) 99999-3333', '{\"Empresa\": \"Panificadora Pão Quente\"}', 'approved', 'TEST-ANA-003', 0, 0, NOW(), NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 67
+}

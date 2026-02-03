@@ -908,3 +908,13 @@
 - [x] Botão "Imprimir Etiquetas" na página de detalhes do evento
 - [x] Lista de participantes aprovados com status de check-in
 - [x] Instruções de configuração da impressora na interface
+
+
+## Melhorias na Gestão de Impressão (03/02/2026)
+- [x] Adicionar modo automático com câmera (scan QR Code + check-in + impressão automática)
+- [x] Botão para ativar/desativar câmera
+- [x] Quando ler QR Code: fazer check-in e imprimir etiqueta automaticamente
+- [x] Na busca: adicionar botão de check-in separado (sem imprimir)
+- [x] Feedback visual e sonoro ao escanear
+- [x] Toggle "Impressão Automática" no header
+- [x] Preview da etiqueta com botões "Apenas Check-in" e "Imprimir"

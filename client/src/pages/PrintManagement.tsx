@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, Printer, Search, User, Building2, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowLeft, Printer, Search, User, Building2, CheckCircle2, AlertCircle, Camera, CameraOff, UserCheck } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { BrowserMultiFormatReader } from "@zxing/browser";
+import { NotFoundException } from "@zxing/library";
 
 interface Participant {
   id: number;
@@ -19,6 +23,30 @@ interface Participant {
   qrCode: string | null;
 }
 
+// Função para tocar som
+const playSound = (type: 'success' | 'error') => {
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  if (type === 'success') {
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    gainNode.gain.value = 0.3;
+    oscillator.start();
+    setTimeout(() => oscillator.stop(), 200);
+  } else {
+    oscillator.frequency.value = 200;
+    oscillator.type = 'sawtooth';
+    gainNode.gain.value = 0.3;
+    oscillator.start();
+    setTimeout(() => oscillator.stop(), 300);
+  }
+};
+
 export default function PrintManagement() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
@@ -28,7 +56,13 @@ export default function PrintManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [autoMode, setAutoMode] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanBorderState, setScanBorderState] = useState<'idle' | 'success' | 'error'>('idle');
+  const [lastScannedCode, setLastScannedCode] = useState<string>("");
   const printRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const readerRef = useRef<BrowserMultiFormatReader | null>(null);
 
   // Buscar evento
   const { data: event, isLoading: eventLoading } = trpc.events.getById.useQuery(
@@ -48,6 +82,9 @@ export default function PrintManagement() {
       refetchRegistrations();
     },
   });
+
+  // Mutation para validar QR Code
+  const checkInByQrCodeMutation = trpc.registrations.checkInByQrCode.useMutation();
 
   // Filtrar apenas aprovados
   const approvedParticipants = registrations?.filter(
@@ -79,28 +116,24 @@ export default function PrintManagement() {
   };
 
   // Função para imprimir etiqueta
-  const handlePrint = async (participant: Participant) => {
+  const handlePrint = useCallback(async (participant: Participant, doCheckIn: boolean = true) => {
     setSelectedParticipant(participant);
     setIsPrinting(true);
 
-    // Fazer check-in se ainda não foi feito
-    if (!participant.checkedIn) {
+    // Fazer check-in se ainda não foi feito e doCheckIn é true
+    if (doCheckIn && !participant.checkedIn) {
       try {
         await checkInMutation.mutateAsync({ registrationId: participant.id });
         toast.success("Check-in realizado!");
+        playSound('success');
       } catch (error) {
         console.error("Erro no check-in:", error);
+        playSound('error');
       }
     }
 
     // Aguardar renderização e imprimir
     setTimeout(() => {
-      const printContent = printRef.current;
-      if (!printContent) {
-        setIsPrinting(false);
-        return;
-      }
-
       const printWindow = window.open("", "_blank", "width=302,height=113");
       if (!printWindow) {
         toast.error("Popup bloqueado. Permita popups para imprimir.");
@@ -185,6 +218,110 @@ export default function PrintManagement() {
         setIsPrinting(false);
       }, 1000);
     }, 100);
+  }, [checkInMutation]);
+
+  // Função para fazer apenas check-in (sem imprimir)
+  const handleCheckInOnly = async (participant: Participant) => {
+    if (participant.checkedIn) {
+      toast.info("Participante já fez check-in");
+      return;
+    }
+
+    try {
+      await checkInMutation.mutateAsync({ registrationId: participant.id });
+      toast.success(`Check-in realizado para ${participant.name}!`);
+      playSound('success');
+      refetchRegistrations();
+    } catch (error) {
+      console.error("Erro no check-in:", error);
+      toast.error("Erro ao fazer check-in");
+      playSound('error');
+    }
+  };
+
+  // Processar QR Code escaneado
+  const handleQRCodeScan = useCallback(async (qrCode: string) => {
+    // Evitar processar o mesmo código repetidamente
+    if (qrCode === lastScannedCode) return;
+    setLastScannedCode(qrCode);
+
+    // Limpar código após 3 segundos para permitir re-scan
+    setTimeout(() => setLastScannedCode(""), 3000);
+
+    try {
+      // Validar QR Code
+      const result = await checkInByQrCodeMutation.mutateAsync({ qrCode });
+      
+      if (result.success && result.registration) {
+        setScanBorderState('success');
+        playSound('success');
+        
+        // Usar o participante retornado pelo check-in
+        const participant = result.registration as unknown as Participant;
+        setSelectedParticipant(participant);
+        
+        // Se modo automático, imprimir automaticamente
+        if (autoMode) {
+          toast.success(`${participant.name} - Imprimindo etiqueta...`);
+          handlePrint(participant, false); // Check-in já foi feito
+        } else {
+          toast.success(`${participant.name} - Check-in realizado!`);
+        }
+        
+        refetchRegistrations();
+      }
+    } catch (error: any) {
+      setScanBorderState('error');
+      playSound('error');
+      toast.error(error.message || "Erro ao validar QR Code");
+    }
+
+    // Resetar estado da borda após 2 segundos
+    setTimeout(() => setScanBorderState('idle'), 2000);
+  }, [lastScannedCode, checkInByQrCodeMutation, approvedParticipants, autoMode, handlePrint, refetchRegistrations]);
+
+  // Iniciar scanner
+  const startScanning = async () => {
+    if (!videoRef.current) return;
+
+    try {
+      readerRef.current = new BrowserMultiFormatReader();
+      setIsScanning(true);
+
+      // Preferir câmera traseira
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      const backCamera = videoDevices.find(d => 
+        d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('traseira')
+      );
+
+      await readerRef.current.decodeFromVideoDevice(
+        backCamera?.deviceId || undefined,
+        videoRef.current,
+        (result, error) => {
+          if (result) {
+            handleQRCodeScan(result.getText());
+          }
+          if (error && !(error instanceof NotFoundException)) {
+            console.error("Scan error:", error);
+          }
+        }
+      );
+    } catch (err: any) {
+      console.error("Error starting scanner:", err);
+      setIsScanning(false);
+      toast.error("Erro ao iniciar câmera. Verifique as permissões.");
+    }
+  };
+
+  // Parar scanner
+  const stopScanning = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsScanning(false);
   };
 
   // Selecionar participante ao clicar
@@ -198,6 +335,13 @@ export default function PrintManagement() {
       setLocation("/");
     }
   }, [isAuthenticated, setLocation]);
+
+  // Cleanup ao desmontar
+  useEffect(() => {
+    return () => {
+      stopScanning();
+    };
+  }, []);
 
   if (eventLoading) {
     return (
@@ -220,20 +364,34 @@ export default function PrintManagement() {
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="container py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setLocation(`/events/${eventId}`)}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-bold flex items-center gap-2">
-                <Printer className="h-5 w-5" />
-                Gestão de Impressão
-              </h1>
-              <p className="text-sm text-muted-foreground">{event.title}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setLocation(`/events/${eventId}`)}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-xl font-bold flex items-center gap-2">
+                  <Printer className="h-5 w-5" />
+                  Gestão de Impressão
+                </h1>
+                <p className="text-sm text-muted-foreground">{event.title}</p>
+              </div>
+            </div>
+            
+            {/* Toggle Modo Automático */}
+            <div className="flex items-center gap-2">
+              <Switch
+                id="auto-mode"
+                checked={autoMode}
+                onCheckedChange={setAutoMode}
+              />
+              <Label htmlFor="auto-mode" className="text-sm font-medium">
+                Impressão Automática
+              </Label>
             </div>
           </div>
         </div>
@@ -241,8 +399,68 @@ export default function PrintManagement() {
 
       <div className="container py-6">
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Coluna de Busca */}
+          {/* Coluna Esquerda - Scanner e Busca */}
           <div className="space-y-4">
+            {/* Scanner de QR Code */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Camera className="h-5 w-5" />
+                  Scanner de QR Code
+                </CardTitle>
+                <CardDescription>
+                  {autoMode 
+                    ? "Modo automático: Escaneia, faz check-in e imprime" 
+                    : "Escaneia e faz check-in automaticamente"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Vídeo da câmera */}
+                <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+                  <video
+                    ref={videoRef}
+                    className="w-full h-full object-cover"
+                    playsInline
+                    muted
+                  />
+                  {!isScanning && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                      <div className="text-center text-white">
+                        <Camera className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Câmera desligada</p>
+                      </div>
+                    </div>
+                  )}
+                  {isScanning && (
+                    <div className={`absolute inset-0 border-4 pointer-events-none transition-colors ${
+                      scanBorderState === 'success' ? 'border-green-500 animate-pulse' :
+                      scanBorderState === 'error' ? 'border-red-500 animate-pulse' :
+                      'border-blue-500'
+                    }`} />
+                  )}
+                </div>
+
+                {/* Botão de controle da câmera */}
+                <Button
+                  onClick={isScanning ? stopScanning : startScanning}
+                  className={`w-full h-12 ${isScanning ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                >
+                  {isScanning ? (
+                    <>
+                      <CameraOff className="h-5 w-5 mr-2" />
+                      Desligar Câmera
+                    </>
+                  ) : (
+                    <>
+                      <Camera className="h-5 w-5 mr-2" />
+                      Ligar Câmera
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Busca Manual */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -259,7 +477,6 @@ export default function PrintManagement() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="text-lg h-12"
-                  autoFocus
                 />
               </CardContent>
             </Card>
@@ -272,7 +489,7 @@ export default function PrintManagement() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="max-h-[400px] overflow-y-auto">
+                <div className="max-h-[300px] overflow-y-auto">
                   {filteredParticipants.length === 0 ? (
                     <div className="p-4 text-center text-muted-foreground">
                       {searchTerm ? "Nenhum participante encontrado" : "Nenhum participante aprovado"}
@@ -290,7 +507,7 @@ export default function PrintManagement() {
                           }`}
                           onClick={() => handleSelectParticipant(participant)}
                         >
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
@@ -306,17 +523,32 @@ export default function PrintManagement() {
                                 </div>
                               )}
                             </div>
-                            <Button
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handlePrint(participant);
-                              }}
-                              disabled={isPrinting}
-                            >
-                              <Printer className="h-4 w-4 mr-1" />
-                              Imprimir
-                            </Button>
+                            <div className="flex gap-1 flex-shrink-0">
+                              {/* Botão Check-in */}
+                              <Button
+                                size="sm"
+                                variant={participant.checkedIn ? "outline" : "default"}
+                                className={participant.checkedIn ? "text-green-600" : "bg-blue-600 hover:bg-blue-700"}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCheckInOnly(participant);
+                                }}
+                                disabled={participant.checkedIn === 1}
+                              >
+                                <UserCheck className="h-4 w-4" />
+                              </Button>
+                              {/* Botão Imprimir */}
+                              <Button
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handlePrint(participant);
+                                }}
+                                disabled={isPrinting}
+                              >
+                                <Printer className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       );
@@ -327,7 +559,7 @@ export default function PrintManagement() {
             </Card>
           </div>
 
-          {/* Coluna de Preview */}
+          {/* Coluna Direita - Preview */}
           <div className="space-y-4">
             <Card>
               <CardHeader>
@@ -347,8 +579,8 @@ export default function PrintManagement() {
                       ref={printRef}
                       className="mx-auto bg-white border-2 border-dashed border-gray-300 rounded"
                       style={{
-                        width: "302px", // 80mm em pixels (aprox)
-                        height: "113px", // 30mm em pixels (aprox)
+                        width: "302px",
+                        height: "113px",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
@@ -401,20 +633,31 @@ export default function PrintManagement() {
                       </div>
                     </div>
 
-                    {/* Botão de Imprimir */}
-                    <Button
-                      className="w-full h-12 text-lg"
-                      onClick={() => handlePrint(selectedParticipant)}
-                      disabled={isPrinting}
-                    >
-                      <Printer className="h-5 w-5 mr-2" />
-                      {isPrinting ? "Imprimindo..." : "Imprimir Etiqueta e Fazer Check-in"}
-                    </Button>
+                    {/* Botões de Ação */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="outline"
+                        className="h-12"
+                        onClick={() => handleCheckInOnly(selectedParticipant)}
+                        disabled={selectedParticipant.checkedIn === 1}
+                      >
+                        <UserCheck className="h-5 w-5 mr-2" />
+                        Apenas Check-in
+                      </Button>
+                      <Button
+                        className="h-12"
+                        onClick={() => handlePrint(selectedParticipant)}
+                        disabled={isPrinting}
+                      >
+                        <Printer className="h-5 w-5 mr-2" />
+                        {isPrinting ? "Imprimindo..." : "Imprimir"}
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-12 text-muted-foreground">
                     <Printer className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                    <p>Selecione um participante para visualizar a etiqueta</p>
+                    <p>Selecione um participante ou escaneie um QR Code</p>
                   </div>
                 )}
               </CardContent>
@@ -426,10 +669,16 @@ export default function PrintManagement() {
                 <CardTitle className="text-base">Instruções</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2">
-                <p>1. Busque o participante pelo nome ou empresa</p>
-                <p>2. Clique no participante para ver o preview</p>
-                <p>3. Clique em "Imprimir Etiqueta" para enviar para a impressora</p>
-                <p>4. O check-in será feito automaticamente ao imprimir</p>
+                <p><strong>Modo Manual:</strong></p>
+                <p>1. Busque o participante ou escaneie o QR Code</p>
+                <p>2. Clique no ícone <UserCheck className="h-4 w-4 inline" /> para fazer apenas check-in</p>
+                <p>3. Clique no ícone <Printer className="h-4 w-4 inline" /> para imprimir etiqueta</p>
+                
+                <div className="mt-4 p-3 bg-green-50 rounded-lg text-green-800">
+                  <p className="font-medium">Modo Automático (ativar no topo):</p>
+                  <p>Ao escanear o QR Code, o sistema faz check-in e imprime automaticamente!</p>
+                </div>
+                
                 <div className="mt-4 p-3 bg-amber-50 rounded-lg text-amber-800">
                   <p className="font-medium">Configuração da Impressora:</p>
                   <p>Selecione a impressora "Tomate MDK2054L" na janela de impressão</p>
