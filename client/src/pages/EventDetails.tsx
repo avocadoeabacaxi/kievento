@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail, UserCog, Settings as SettingsIcon, Send, RefreshCw } from "lucide-react";
+import { ArrowLeft, Users, CheckCircle, Clock, XCircle, Search, QrCode as QrCodeIcon, ExternalLink, Trash2, Download, Plus, Eye, Mail, UserCog, Settings as SettingsIcon, Send, RefreshCw, History, FileSpreadsheet } from "lucide-react";
 import EventCollaborators from "@/components/EventCollaborators";
 import EventSettingsTab from "@/components/EventSettingsTab";
 import {
@@ -51,6 +51,7 @@ export default function EventDetails() {
   const { data: registrations, refetch: refetchRegistrations } = trpc.registrations.listByEvent.useQuery({ eventId });
   const { data: stats } = trpc.events.getStats.useQuery({ eventId });
   const { data: permissions } = trpc.collaborators.getPermissions.useQuery({ eventId });
+  const { data: checkInHistory, refetch: refetchCheckInHistory } = trpc.registrations.checkInHistory.useQuery({ eventId });
 
   const sendBulkEmailsMutation = trpc.registrations.sendBulkEmails.useMutation({
     onSuccess: (data) => {
@@ -379,7 +380,7 @@ export default function EventDetails() {
               </div>
 
               <Tabs defaultValue="pending">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 gap-1">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 gap-1">
                   <TabsTrigger value="pending" className="text-xs sm:text-sm">
                     Pendentes ({pendingRegistrations.length})
                   </TabsTrigger>
@@ -396,6 +397,10 @@ export default function EventDetails() {
                   <TabsTrigger value="settings" className="text-xs sm:text-sm">
                     <SettingsIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Configurações
+                  </TabsTrigger>
+                  <TabsTrigger value="checkin-history" className="text-xs sm:text-sm">
+                    <History className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    Histórico ({checkInHistory?.length || 0})
                   </TabsTrigger>
                 </TabsList>
 
@@ -595,6 +600,85 @@ export default function EventDetails() {
 
                 <TabsContent value="settings" className="mt-4">
                   <EventSettingsTab eventId={eventId} event={event} refetch={() => {}} />
+                </TabsContent>
+
+                <TabsContent value="checkin-history" className="space-y-4 mt-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">Histórico de Check-ins</h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (!checkInHistory || checkInHistory.length === 0) {
+                          toast.error('Nenhum check-in para exportar');
+                          return;
+                        }
+                        // Gerar XLS
+                        const headers = ['Nome', 'Email', 'Telefone', 'Check-in Em', 'Check-in Por'];
+                        const rows = checkInHistory.map((item: any) => [
+                          item.name,
+                          item.email,
+                          item.phone || '',
+                          item.checkedInAt ? new Date(item.checkedInAt).toLocaleString('pt-BR') : '',
+                          item.operatorName || 'Sistema'
+                        ]);
+                        
+                        // Criar CSV (compatível com Excel)
+                        const BOM = '\uFEFF';
+                        const csv = BOM + [headers.join(';'), ...rows.map(row => row.map(cell => `"${cell}"`).join(';'))].join('\n');
+                        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `historico-checkins-${event?.title?.replace(/\s+/g, '-') || 'evento'}-${Date.now()}.csv`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        toast.success('Histórico exportado com sucesso!');
+                      }}
+                    >
+                      <FileSpreadsheet className="h-4 w-4 mr-2" />
+                      Exportar XLS
+                    </Button>
+                  </div>
+                  
+                  {!checkInHistory || checkInHistory.length === 0 ? (
+                    <div className="text-center py-12">
+                      <History className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground">Nenhum check-in realizado ainda</p>
+                    </div>
+                  ) : (
+                    <div className="border rounded-lg overflow-hidden">
+                      <table className="w-full">
+                        <thead className="bg-muted">
+                          <tr>
+                            <th className="text-left p-3 text-sm font-medium">Participante</th>
+                            <th className="text-left p-3 text-sm font-medium hidden sm:table-cell">Email</th>
+                            <th className="text-left p-3 text-sm font-medium">Check-in Em</th>
+                            <th className="text-left p-3 text-sm font-medium hidden md:table-cell">Realizado Por</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {checkInHistory.map((item: any, index: number) => (
+                            <tr key={item.id} className={index % 2 === 0 ? 'bg-background' : 'bg-muted/30'}>
+                              <td className="p-3">
+                                <div>
+                                  <p className="font-medium text-sm">{item.name}</p>
+                                  <p className="text-xs text-muted-foreground sm:hidden">{item.email}</p>
+                                </div>
+                              </td>
+                              <td className="p-3 text-sm hidden sm:table-cell">{item.email}</td>
+                              <td className="p-3 text-sm">
+                                {item.checkedInAt ? new Date(item.checkedInAt).toLocaleString('pt-BR') : '-'}
+                              </td>
+                              <td className="p-3 text-sm hidden md:table-cell">
+                                <Badge variant="outline">{item.operatorName || 'Sistema'}</Badge>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </TabsContent>
               </Tabs>
             </div>

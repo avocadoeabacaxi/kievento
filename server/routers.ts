@@ -929,6 +929,53 @@ export const appRouter = router({
         return { success: true, message: 'Inscrição excluída com sucesso' };
       }),
 
+    // Histórico de check-ins
+    checkInHistory: protectedProcedure
+      .input(z.object({ eventId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const event = await db.getEventById(input.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        return db.getCheckInHistory(input.eventId);
+      }),
+
+    // Exportar histórico de check-ins para XLS
+    exportCheckInHistory: protectedProcedure
+      .input(z.object({ eventId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const event = await db.getEventById(input.eventId);
+        if (!event) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        }
+
+        if (event.userId !== ctx.user.id && ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not authorized' });
+        }
+
+        const history = await db.getCheckInHistory(input.eventId);
+        
+        // Gerar dados para exportação
+        const data = history.map((item: any) => ({
+          nome: item.name,
+          email: item.email,
+          telefone: item.phone || '',
+          checkinEm: item.checkedInAt ? new Date(item.checkedInAt).toLocaleString('pt-BR') : '',
+          checkinPor: item.operatorName,
+        }));
+
+        return {
+          data,
+          eventTitle: event.title,
+          totalCheckIns: history.length,
+        };
+      }),
+
     // Enviar emails em massa
     sendBulkEmails: protectedProcedure
       .input(z.object({

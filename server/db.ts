@@ -206,6 +206,38 @@ export async function getRegistrationsByEventId(eventId: number) {
   return db.select().from(registrations).where(eq(registrations.eventId, eventId)).orderBy(desc(registrations.createdAt));
 }
 
+// Buscar histórico de check-ins de um evento
+export async function getCheckInHistory(eventId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Buscar registrações com check-in feito, ordenadas por data de check-in
+  const checkedInRegistrations = await db.select()
+    .from(registrations)
+    .where(and(
+      eq(registrations.eventId, eventId),
+      eq(registrations.checkedIn, 1)
+    ))
+    .orderBy(desc(registrations.checkedInAt));
+  
+  // Buscar informações de quem fez o check-in
+  const historyWithOperator = await Promise.all(
+    checkedInRegistrations.map(async (reg) => {
+      let operatorName = 'Sistema';
+      if (reg.checkedInBy) {
+        const operator = await getUserById(reg.checkedInBy);
+        operatorName = operator?.name || 'Usuário desconhecido';
+      }
+      return {
+        ...reg,
+        operatorName,
+      };
+    })
+  );
+  
+  return historyWithOperator;
+}
+
 export async function getAllRegistrations() {
   const db = await getDb();
   if (!db) return [];

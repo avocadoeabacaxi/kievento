@@ -923,3 +923,11 @@
 ## Bug Fix - Modo Automático na Gestão de Impressão (03/02/2026)
 - [x] Corrigir modo automático de leitura de QR Code (usar useRef para manter valor atualizado)
 - [x] Garantir que impressão automática funcione ao escanear
+
+
+## Histórico de Check-ins (03/02/2026)
+- [x] Verificar/atualizar schema para armazenar dados de check-in (quem fez, quando)
+- [x] Criar rota de API para listar histórico de check-ins (getCheckInHistory)
+- [x] Criar interface de histórico de check-ins na página do evento (nova aba "Check-ins")
+- [x] Implementar exportação da lista (XLS)
+- [x] Criar testes unitários (5 testes passando)
