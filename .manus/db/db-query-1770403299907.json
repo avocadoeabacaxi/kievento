@@ -1,0 +1,19 @@
+{
+  "query": "SELECT formData FROM registrations WHERE eventId = 90009 AND formData IS NOT NULL LIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT formData FROM registrations WHERE eventId = 90009 AND formData IS NOT NULL LIMIT 3;",
+  "rows": [
+    {
+      "formData": "{\"Nome Completo\":\"Isadora de Lima Tonioli\",\"E-mail\":\"ecotel@ecotelribeirao.com.br\",\"Telefone\":\"(16) 3515-6400\",\"CNPJ\":\"21.833.283/0001-22\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"gold pães\"}"
+    },
+    {
+      "formData": "{\"Nome Completo\":\"Elisângela Maria de Andrade Oliveira\",\"E-mail\":\"elisa.gaby27@gmail.com\",\"Telefone\":\"(16) 99178-9306\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao\",\"CNPJ\":\"39.522.604/0001-33\"}"
+    },
+    {
+      "formData": "{\"Nome Completo\":\"Eliana Donizete Barbosa Marçal \",\"E-mail\":\"elisa.gaby27@gmail.com\",\"Telefone\":\"(16) 99178-9306\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao \",\"CNPJ\":\"39.522.604/0001-33\"}"
+    }
+  ],
+  "messages": [],
+  "stdout": "formData\n{\"Nome Completo\":\"Isadora de Lima Tonioli\",\"E-mail\":\"ecotel@ecotelribeirao.com.br\",\"Telefone\":\"(16) 3515-6400\",\"CNPJ\":\"21.833.283/0001-22\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"gold pães\"}\n{\"Nome Completo\":\"Elisângela Maria de Andrade Oliveira\",\"E-mail\":\"elisa.gaby27@gmail.com\",\"Telefone\":\"(16) 99178-9306\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao\",\"CNPJ\":\"39.522.604/0001-33\"}\n{\"Nome Completo\":\"Eliana Donizete Barbosa Marçal \",\"E-mail\":\"elisa.gaby27@gmail.com\",\"Telefone\":\"(16) 99178-9306\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao \",\"CNPJ\":\"39.522.604/0001-33\"}\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

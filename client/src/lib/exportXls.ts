@@ -79,7 +79,7 @@ export function exportToXls(options: ExportOptions): void {
   const ws = XLSX.utils.aoa_to_sheet(wsData);
 
   // Configurar larguras das colunas
-  const colWidths: XLSX.ColInfo[] = columns.map((col, index) => {
+  const colWidths: XLSX.ColInfo[] = columns.map((col) => {
     // Calcular largura baseada no conteúdo
     let maxWidth = col.header.length;
     
@@ -124,6 +124,45 @@ export function exportToXls(options: ExportOptions): void {
 }
 
 /**
+ * Extrai todos os campos únicos do formData de todos os participantes
+ * Ignora campos que terminam com _condicional (são campos auxiliares)
+ */
+function extractFormDataFields(data: any[]): string[] {
+  const fieldsSet = new Set<string>();
+  
+  data.forEach(item => {
+    if (item.formData) {
+      try {
+        const formData = typeof item.formData === 'string' ? JSON.parse(item.formData) : item.formData;
+        Object.keys(formData).forEach(key => {
+          // Ignorar campos auxiliares (_condicional) e campos já cobertos (Nome Completo, E-mail, Telefone)
+          if (!key.endsWith('_condicional')) {
+            fieldsSet.add(key);
+          }
+        });
+      } catch (e) {
+        // Ignorar formData inválido
+      }
+    }
+  });
+  
+  return Array.from(fieldsSet);
+}
+
+/**
+ * Extrai valor de um campo do formData
+ */
+function getFormDataValue(item: any, fieldName: string): string {
+  if (!item.formData) return '';
+  try {
+    const formData = typeof item.formData === 'string' ? JSON.parse(item.formData) : item.formData;
+    return formData[fieldName] || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+/**
  * Exporta histórico de check-ins para XLS
  */
 export function exportCheckInHistory(
@@ -134,7 +173,7 @@ export function exportCheckInHistory(
     filename: `historico-checkins-${eventTitle.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}`,
     sheetName: 'Check-ins',
     title: `Histórico de Check-ins - ${eventTitle}`,
-    subtitle: `Exportado em ${new Date().toLocaleString('pt-BR')}`,
+    subtitle: `Exportado em ${new Date().toLocaleString('pt-BR')} | Total: ${data.length} check-ins`,
     columns: [
       { header: 'Nome', key: 'name', width: 30 },
       { header: 'E-mail', key: 'email', width: 35 },
@@ -153,7 +192,8 @@ export function exportCheckInHistory(
 }
 
 /**
- * Exporta lista de participantes para XLS
+ * Exporta lista de participantes para XLS com TODOS os dados do cadastro
+ * Inclui campos fixos + todos os campos dinâmicos do formData
  */
 export function exportParticipants(
   data: any[],
@@ -162,41 +202,62 @@ export function exportParticipants(
 ): void {
   const statusLabel = status === 'approved' ? 'Aprovados' : status === 'pending' ? 'Pendentes' : 'Todos';
   
+  // Extrair todos os campos únicos do formData de todos os participantes
+  const formDataFields = extractFormDataFields(data);
+  
+  // Campos fixos que já existem como colunas separadas
+  const fixedFieldNames = ['Nome Completo', 'E-mail', 'Telefone', 'nome completo', 'e-mail', 'telefone', 'email', 'nome', 'phone', 'name'];
+  
+  // Filtrar campos do formData que não são duplicatas dos campos fixos
+  const extraFields = formDataFields.filter(field => {
+    const lower = field.toLowerCase();
+    return !fixedFieldNames.some(f => f.toLowerCase() === lower);
+  });
+  
+  // Montar colunas: fixas + dinâmicas do formData
+  const columns: ExportColumn[] = [
+    { header: 'Nome', key: 'name', width: 35 },
+    { header: 'E-mail', key: 'email', width: 35 },
+    { header: 'Telefone', key: 'phone', width: 20 },
+    { header: 'Status', key: 'status', width: 12 },
+    { header: 'Check-in', key: 'checkedIn', width: 12 },
+    { header: 'Data Inscrição', key: 'createdAt', width: 22 },
+  ];
+  
+  // Adicionar colunas dinâmicas do formData
+  extraFields.forEach(field => {
+    columns.push({
+      header: field,
+      key: `formData_${field}`,
+      width: Math.min(Math.max(field.length + 5, 15), 40)
+    });
+  });
+  
+  // Montar dados com todos os campos
+  const exportData = data.map(item => {
+    const row: Record<string, any> = {
+      name: item.name || '',
+      email: item.email || '',
+      phone: item.phone || '',
+      status: item.status === 'approved' ? 'Aprovado' : item.status === 'pending' ? 'Pendente' : item.status === 'rejected' ? 'Rejeitado' : item.status,
+      checkedIn: item.checkedIn ? 'Sim' : 'Não',
+      createdAt: item.createdAt ? new Date(item.createdAt).toLocaleString('pt-BR') : ''
+    };
+    
+    // Adicionar todos os campos do formData
+    extraFields.forEach(field => {
+      row[`formData_${field}`] = getFormDataValue(item, field);
+    });
+    
+    return row;
+  });
+  
   exportToXls({
     filename: `participantes-${statusLabel.toLowerCase()}-${eventTitle.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}`,
     sheetName: 'Participantes',
     title: `Lista de Participantes ${statusLabel} - ${eventTitle}`,
     subtitle: `Exportado em ${new Date().toLocaleString('pt-BR')} | Total: ${data.length} participantes`,
-    columns: [
-      { header: 'Nome', key: 'name', width: 30 },
-      { header: 'E-mail', key: 'email', width: 35 },
-      { header: 'Telefone', key: 'phone', width: 18 },
-      { header: 'Empresa', key: 'company', width: 25 },
-      { header: 'Status', key: 'status', width: 12 },
-      { header: 'Check-in', key: 'checkedIn', width: 12 },
-      { header: 'Data Inscrição', key: 'createdAt', width: 22 }
-    ],
-    data: data.map(item => {
-      // Extrair empresa do formData se existir
-      let company = '';
-      if (item.formData) {
-        try {
-          const formData = typeof item.formData === 'string' ? JSON.parse(item.formData) : item.formData;
-          company = formData.empresa || formData.company || formData.Empresa || formData.Company || '';
-        } catch (e) {
-          company = '';
-        }
-      }
-      
-      return {
-        name: item.name || '',
-        email: item.email || '',
-        phone: item.phone || '',
-        company: company,
-        status: item.status === 'approved' ? 'Aprovado' : item.status === 'pending' ? 'Pendente' : item.status,
-        checkedIn: item.checkedIn ? 'Sim' : 'Não',
-        createdAt: item.createdAt ? new Date(item.createdAt).toLocaleString('pt-BR') : ''
-      };
-    })
+    columns,
+    data: exportData
   });
 }

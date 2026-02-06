@@ -104,21 +104,13 @@ export default function EventDetails() {
     },
   });
 
-  const { data: csvData, refetch: refetchCsv } = trpc.registrations.exportToCsv.useQuery(
-    { eventId, status: 'all' },
-    { enabled: false }
-  );
-
-  const handleExportCsv = async () => {
-    const result = await refetchCsv();
-    if (result.data) {
-      const blob = new Blob([result.data.csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = result.data.filename;
-      link.click();
-      toast.success("Lista exportada com sucesso!");
+  const handleExportXls = () => {
+    if (!registrations || registrations.length === 0) {
+      toast.error('Nenhum participante para exportar');
+      return;
     }
+    exportParticipants(registrations, event?.title || 'evento', 'all');
+    toast.success('Lista exportada com sucesso!');
   };
 
   const handleManualSubmit = () => {
@@ -297,7 +289,7 @@ export default function EventDetails() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 <Button 
                   className="bg-green-600 hover:bg-green-700 text-white" 
-                  onClick={handleExportCsv}
+                  onClick={handleExportXls}
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Exportar Excel
@@ -614,26 +606,7 @@ export default function EventDetails() {
                           toast.error('Nenhum check-in para exportar');
                           return;
                         }
-                        // Gerar XLS
-                        const headers = ['Nome', 'Email', 'Telefone', 'Check-in Em', 'Check-in Por'];
-                        const rows = checkInHistory.map((item: any) => [
-                          item.name,
-                          item.email,
-                          item.phone || '',
-                          item.checkedInAt ? new Date(item.checkedInAt).toLocaleString('pt-BR') : '',
-                          item.operatorName || 'Sistema'
-                        ]);
-                        
-                        // Criar CSV (compatível com Excel)
-                        const BOM = '\uFEFF';
-                        const csv = BOM + [headers.join(';'), ...rows.map(row => row.map(cell => `"${cell}"`).join(';'))].join('\n');
-                        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `historico-checkins-${event?.title?.replace(/\s+/g, '-') || 'evento'}-${Date.now()}.csv`;
-                        a.click();
-                        URL.revokeObjectURL(url);
+                        exportCheckInHistory(checkInHistory, event?.title || 'evento');
                         toast.success('Histórico exportado com sucesso!');
                       }}
                     >

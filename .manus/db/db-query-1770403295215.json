@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, email, phone, formData FROM registrations WHERE eventId = 90009 LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3VWFAu8PFS2ufim.ed75fb479c08 --database KfEY3nsQjbLdeh7YzxdytQ --execute SELECT id, name, email, phone, formData FROM registrations WHERE eventId = 90009 LIMIT 5;",
+  "rows": [
+    {
+      "id": "150001",
+      "name": "Isadora de Lima Tonioli",
+      "email": "ecotel@ecotelribeirao.com.br",
+      "phone": "(16) 3515-6400",
+      "formData": "{\"Nome Completo\":\"Isadora de Lima Tonioli\",\"E-mail\":\"ecotel@ecotelribeirao.com.br\",\"Telefone\":\"(16) 3515-6400\",\"CNPJ\":\"21.833.283/0001-22\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"gold pães\"}"
+    },
+    {
+      "id": "180001",
+      "name": "Elisângela Maria de Andrade Oliveira",
+      "email": "elisa.gaby27@gmail.com",
+      "phone": "(16) 99178-9306",
+      "formData": "{\"Nome Completo\":\"Elisângela Maria de Andrade Oliveira\",\"E-mail\":\"elisa.gaby27@gmail.com\",\"Telefone\":\"(16) 99178-9306\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao\",\"CNPJ\":\"39.522.604/0001-33\"}"
+    },
+    {
+      "id": "180002",
+      "name": "Eliana Donizete Barbosa Marçal ",
+      "email": "elisa.gaby27@gmail.com",
+      "phone": "(16) 99178-9306",
+      "formData": "{\"Nome Completo\":\"Eliana Donizete Barbosa Marçal \",\"E-mail\":\"elisa.gaby27@gmail.com\",\"Telefone\":\"(16) 99178-9306\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao \",\"CNPJ\":\"39.522.604/0001-33\"}"
+    },
+    {
+      "id": "180003",
+      "name": "MARIANNA PRADO SOUZA CRUZ",
+      "email": "mariannaeguilherme@gmail.com",
+      "phone": "(16) 99311-8783",
+      "formData": "{\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pão \",\"Você é cliente Gold Pão?\":\"Sim\",\"CNPJ\":\"26.782.357/0001-62\",\"Telefone\":\"(16) 99311-8783\",\"E-mail\":\"mariannaeguilherme@gmail.com\",\"Nome Completo\":\"MARIANNA PRADO SOUZA CRUZ\"}"
+    },
+    {
+      "id": "210001",
+      "name": "Mariana de fatima noel ",
+      "email": "marianafatnoel@gmail.com",
+      "phone": "(16) 99237-8484",
+      "formData": "{\"Nome Completo\":\"Mariana de fatima noel \",\"E-mail\":\"marianafatnoel@gmail.com\",\"Telefone\":\"(16) 99237-8484\",\"CNPJ\":\"44.674.126/0001-17\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao \"}"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tphone\tformData\n150001\tIsadora de Lima Tonioli\tecotel@ecotelribeirao.com.br\t(16) 3515-6400\t{\"Nome Completo\":\"Isadora de Lima Tonioli\",\"E-mail\":\"ecotel@ecotelribeirao.com.br\",\"Telefone\":\"(16) 3515-6400\",\"CNPJ\":\"21.833.283/0001-22\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"gold pães\"}\n180001\tElisângela Maria de Andrade Oliveira\telisa.gaby27@gmail.com\t(16) 99178-9306\t{\"Nome Completo\":\"Elisângela Maria de Andrade Oliveira\",\"E-mail\":\"elisa.gaby27@gmail.com\",\"Telefone\":\"(16) 99178-9306\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao\",\"CNPJ\":\"39.522.604/0001-33\"}\n180002\tEliana Donizete Barbosa Marçal \telisa.gaby27@gmail.com\t(16) 99178-9306\t{\"Nome Completo\":\"Eliana Donizete Barbosa Marçal \",\"E-mail\":\"elisa.gaby27@gmail.com\",\"Telefone\":\"(16) 99178-9306\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao \",\"CNPJ\":\"39.522.604/0001-33\"}\n180003\tMARIANNA PRADO SOUZA CRUZ\tmariannaeguilherme@gmail.com\t(16) 99311-8783\t{\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pão \",\"Você é cliente Gold Pão?\":\"Sim\",\"CNPJ\":\"26.782.357/0001-62\",\"Telefone\":\"(16) 99311-8783\",\"E-mail\":\"mariannaeguilherme@gmail.com\",\"Nome Completo\":\"MARIANNA PRADO SOUZA CRUZ\"}\n210001\tMariana de fatima noel \tmarianafatnoel@gmail.com\t(16) 99237-8484\t{\"Nome Completo\":\"Mariana de fatima noel \",\"E-mail\":\"marianafatnoel@gmail.com\",\"Telefone\":\"(16) 99237-8484\",\"CNPJ\":\"44.674.126/0001-17\",\"Você é cliente Gold Pão?\":\"Sim\",\"Você trabalha com panificação congelada?\":\"Sim\",\"Você trabalha com panificação congelada?_condicional\":\"Gold pao \"}\n",
+  "stderr": "",
+  "execution_time_ms": 201
+}

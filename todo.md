@@ -947,7 +947,17 @@
 
 
 ## Melhoria na Exportação XLS (03/02/2026)
-- [ ] Formatar exportação XLS com cada dado em sua célula
-- [ ] Adicionar cabeçalhos formatados (negrito, cor de fundo)
-- [ ] Ajustar largura das colunas automaticamente
-- [ ] Formatar datas e números corretamente
+- [x] Formatar exportação XLS com cada dado em sua célula
+- [x] Adicionar cabeçalhos formatados (negrito, cor de fundo)
+- [x] Ajustar largura das colunas automaticamente
+- [x] Formatar datas e números corretamente
+
+
+## Exportação XLS com Todos os Dados do Cadastro (06/02/2026)
+- [x] Incluir todos os campos do formData na exportação XLS
+- [x] Formatação profissional com cada dado em sua célula
+- [x] Cabeçalhos formatados e larguras ajustadas
+- [x] Campos dinâmicos extraídos automaticamente (CNPJ, Empresa, perguntas, etc.)
+- [x] Campos _condicional filtrados automaticamente
+- [x] Histórico de check-ins também exporta em XLS formatado
+- [x] Testes unitários (6 testes passando)
