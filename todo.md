@@ -961,3 +961,8 @@
 - [x] Campos _condicional filtrados automaticamente
 - [x] Histórico de check-ins também exporta em XLS formatado
 - [x] Testes unitários (6 testes passando)
+
+
+## Bug Fix - Formulário Reseta ao Selecionar Gold Pão (19/06/2026)
+- [x] Identificar causa do reset do formulário ao selecionar "Sim" no campo "Você é cliente Gold Pão?"
+- [x] Corrigir bug de reset do formulário

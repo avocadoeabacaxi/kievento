@@ -147,6 +147,28 @@ export default function RegisterPage() {
       }
     }
 
+    // Validar campos condicionais obrigatórios
+    for (const field of eventData!.formFields) {
+      if (field.fieldType === "select" && field.options && formData[field.label]) {
+        try {
+          const parsed = JSON.parse(field.options);
+          if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object') {
+            const selectedOpt = parsed.find((opt: any) => opt.value === formData[field.label]);
+            if (selectedOpt?.hasConditional && selectedOpt?.conditionalLabel && !formData[`${field.label}_condicional`]) {
+              toast.error(`O campo "${selectedOpt.conditionalLabel}" é obrigatório`);
+              return;
+            }
+          }
+        } catch {
+          // formato antigo - verificar conditionalTrigger
+          if (field.conditionalTrigger && field.conditionalLabel && formData[field.label] === field.conditionalTrigger && !formData[`${field.label}_condicional`]) {
+            toast.error(`O campo "${field.conditionalLabel}" é obrigatório`);
+            return;
+          }
+        }
+      }
+    }
+
     // Se não estiver logado, salvar dados e redirecionar para login
     if (!isAuthenticated) {
       // Salvar dados da inscrição em sessionStorage
@@ -517,7 +539,7 @@ export default function RegisterPage() {
                         id={`field-${field.id}`}
                         type="text"
                         value={formData[field.label] || ""}
-                        onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                        onChange={(e) => setFormData(prev => ({ ...prev, [field.label]: e.target.value }))}
                         required={field.required === 1}
                       />
                     )}
@@ -527,7 +549,7 @@ export default function RegisterPage() {
                         id={`field-${field.id}`}
                         type="email"
                         value={formData[field.label] || ""}
-                        onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                        onChange={(e) => setFormData(prev => ({ ...prev, [field.label]: e.target.value }))}
                         required={field.required === 1}
                       />
                     )}
@@ -537,7 +559,7 @@ export default function RegisterPage() {
                         mask="phone"
                         value={formData[field.label] || ""}
                         onChange={(e) =>
-                          setFormData({ ...formData, [field.label]: e.target.value })
+                          setFormData(prev => ({ ...prev, [field.label]: e.target.value }))
                         }
                         placeholder="(00) 00000-0000"
                         required={field.required === 1}
@@ -549,7 +571,7 @@ export default function RegisterPage() {
                         mask="cpf"
                         value={formData[field.label] || ""}
                         onChange={(e) =>
-                          setFormData({ ...formData, [field.label]: e.target.value })
+                          setFormData(prev => ({ ...prev, [field.label]: e.target.value }))
                         }
                         placeholder="000.000.000-00"
                         required={field.required === 1}
@@ -561,7 +583,7 @@ export default function RegisterPage() {
                         mask="cnpj"
                         value={formData[field.label] || ""}
                         onChange={(e) =>
-                          setFormData({ ...formData, [field.label]: e.target.value })
+                          setFormData(prev => ({ ...prev, [field.label]: e.target.value }))
                         }
                         placeholder="00.000.000/0000-00"
                         required={field.required === 1}
@@ -574,7 +596,7 @@ export default function RegisterPage() {
                           mask="cep"
                           value={formData[field.label] || ""}
                           onChange={(e) =>
-                            setFormData({ ...formData, [field.label]: e.target.value })
+                            setFormData(prev => ({ ...prev, [field.label]: e.target.value }))
                           }
                           onBlur={(e) =>
                             handleCepBlur(e.target.value, field.label)
@@ -594,7 +616,7 @@ export default function RegisterPage() {
                       <Textarea
                         id={`field-${field.id}`}
                         value={formData[field.label] || ""}
-                        onChange={(e) => setFormData({ ...formData, [field.label]: e.target.value })}
+                        onChange={(e) => setFormData(prev => ({ ...prev, [field.label]: e.target.value }))}
                         required={field.required === 1}
                         rows={4}
                       />
@@ -621,8 +643,7 @@ export default function RegisterPage() {
                         <>
                           <Select
                             value={formData[field.label] || ""}
-                            onValueChange={(value) => setFormData({ ...formData, [field.label]: value })}
-                            required={field.required === 1}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, [field.label]: value }))}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Selecione uma opção" />
@@ -648,8 +669,7 @@ export default function RegisterPage() {
                                 type="text"
                                 className="mt-2"
                                 value={formData[`${field.label}_condicional`] || ""}
-                                onChange={(e) => setFormData({ ...formData, [`${field.label}_condicional`]: e.target.value })}
-                                required
+                                onChange={(e) => setFormData(prev => ({ ...prev, [`${field.label}_condicional`]: e.target.value }))}
                                 placeholder="Digite sua resposta..."
                               />
                             </div>
@@ -670,8 +690,7 @@ export default function RegisterPage() {
                                 type="text"
                                 className="mt-2"
                                 value={formData[`${field.label}_condicional`] || ""}
-                                onChange={(e) => setFormData({ ...formData, [`${field.label}_condicional`]: e.target.value })}
-                                required
+                                onChange={(e) => setFormData(prev => ({ ...prev, [`${field.label}_condicional`]: e.target.value }))}
                                 placeholder="Digite sua resposta..."
                               />
                             </div>
@@ -706,7 +725,7 @@ export default function RegisterPage() {
                                   const updated = checked
                                     ? [...current, opt.value]
                                     : current.filter((v: string) => v !== opt.value);
-                                  setFormData({ ...formData, [field.label]: updated });
+                                  setFormData(prev => ({ ...prev, [field.label]: updated }));
                                 }}
                               />
                               <label
